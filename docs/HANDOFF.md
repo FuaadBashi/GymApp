@@ -6,14 +6,14 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 0.3.**
+**Next card: 0.4.**
 
 ## Cards
 
 ### Phase 0: Foundation ([spec](specs/00-foundation.md))
 - [x] 0.1 Domain types, and TrainingMath on load modes
 - [x] 0.2 Database schema, records and AppDatabase
-- [ ] 0.3 Library and exercise-map files
+- [x] 0.3 Library and exercise-map files
 - [ ] 0.4 JEFIT CSV reader
 - [ ] 0.5 JEFIT importer
 - [ ] 0.6 Wire the database into the app, and an import screen
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **0.3**: Shared fields are a protocol (ExerciseDefinition) with two concrete Decodable structs; BundledExercises loads either file and names it on failure. LibrarySeeder uses insert(onConflict: .ignore). 32 tests.
 - **0.2**: Schema.swift holds the spec SQL verbatim as migration v1; Records.swift has one nonisolated struct per table; AppDatabase as specified. ImportRunRecord.report is a String until 0.5. SchemaTests.swift also defines a small Make helper for test records. 28 tests.
 - **0.1**: Domain enums in ExerciseTypes.swift; TrainingMath now takes LoadMode and skips drop segments in records; PastSet moved to Domain. The prototype maps ProtoEquipment to a LoadMode. 17 tests.
 
