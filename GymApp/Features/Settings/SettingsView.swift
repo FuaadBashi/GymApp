@@ -37,6 +37,12 @@ struct SettingsView: View {
     @State private var choosingFile = false
     @State private var importing = false
     @State private var report: PresentedReport?
+    @State private var csv: SharedFile?
+
+    private struct SharedFile: Identifiable {
+        let id = UUID()
+        let url: URL
+    }
 
     private struct PresentedReport: Identifiable {
         let id = UUID()
@@ -87,6 +93,7 @@ struct SettingsView: View {
                 Section("Data") {
                     NavigationLink("Backups & recovery") { RecoveryView(db: model.db) }
                     Button("Import JEFIT export…", systemImage: "square.and.arrow.down") { choosingFile = true }
+                    Button("Export sets as CSV", systemImage: "tablecells") { exportCSV() }
                     if let totals = model.totals {
                         Text("\(totals.workouts.formatted()) workouts · \(totals.sets.formatted()) sets · \(totals.exercises.formatted()) of your exercises")
                             .font(.footnote)
@@ -96,6 +103,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .onChange(of: model.settings) { model.save() }
+            .sheet(item: $csv) { BackupShareSheet(url: $0.url) }
             .task { await model.reload() }
             .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.commaSeparatedText, .plainText, .data]) { result in
                 if case .success(let url) = result { runImport(url) }
@@ -113,6 +121,18 @@ struct SettingsView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(model.lastError ?? "")
+            }
+        }
+    }
+
+    /// Every completed set, Strong-compatible columns first (docs/EXPORT_FORMAT.md).
+    private func exportCSV() {
+        Task {
+            do {
+                let url = try await model.db.reader.read { try CSVExport.write($0) }
+                csv = SharedFile(url: url)
+            } catch {
+                model.lastError = error.localizedDescription
             }
         }
     }

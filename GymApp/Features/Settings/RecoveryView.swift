@@ -121,7 +121,7 @@ struct RecoveryView: View {
     }
 }
 
-private struct BackupShareSheet: UIViewControllerRepresentable {
+struct BackupShareSheet: UIViewControllerRepresentable {
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController {
         UIActivityViewController(activityItems: [url], applicationActivities: nil)
