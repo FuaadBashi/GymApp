@@ -134,6 +134,20 @@ struct DataLayerTests {
         #expect(throws: ProgramError.copyIntoItself) { try db.writer.write { try ProgramWrites.copyDay($0, from: target, into: target) } }
     }
 
+    @Test func addedExercisesGoAfterTheDaysOwnInTapOrder() throws {
+        let dayId = try db.writer.write { db -> String in
+            for id in ["e1", "e2", "e3"] { try TestData.exercise(db, id: id) }
+            let p = try TestData.program(db)
+            let day = try TestData.day(db, programId: p.id, name: "D", position: 0, items: ["e1"])
+            try ProgramWrites.addExercises(db, dayId: day.id, exerciseIds: ["e3", "e2"], settings: AppSettings())
+            return day.id
+        }
+        let detail = try #require(try db.reader.read { try ProgramQueries.detail($0, dayId: dayId) })
+        #expect(detail.items.map(\.exercise.id) == ["e1", "e3", "e2"])
+        #expect(detail.items.map(\.dayExercise.position) == [0, 1, 2])
+        #expect(detail.items.last?.dayExercise.targetSets == AppSettings().defaultSets)
+    }
+
     // MARK: Custom exercises
 
     @Test func aDuplicateNameIsRejected() throws {

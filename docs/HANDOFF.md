@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 1.8.**
+**Next card: 1.9.**
 
 ## Cards
 
@@ -27,7 +27,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 1.5 Create and edit exercises
 - [x] 1.6 Train tab and programs
 - [x] 1.7 Day editor
-- [ ] 1.8 Exercise picker
+- [x] 1.8 Exercise picker
 - [ ] 1.9 Suggest a day
 - [ ] 1.10 Phase close
 
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **1.8**: Exercise picker: focus toggle, multi-select in tap order, In this day rows, New exercise.
 - **1.7**: Day editor: rename, focus menu, item list (edit sheet, reorder, delete), Add exercises / Suggest a day, and Copy from another day (nested menu by program, confirm before replace). Simulator: copying JEFIT 2FBD 2 into Full Body 2 gave 10 exercises with last-time values from 11 Oct through lineage. Card hit areas use .contentShape(.rect). Picker and suggestions are stubs until 1.8 and 1.9.
 - **1.6**: Train tab (Next up with last-time summaries, other days), Programs list (Active, Programs, Archived; swipe to archive or delete app programs), Program detail (reorder, delete, make active, rename, add day), New program split picker. Routing uses TrainRoute through one NavigationStack path. TrainViewModel.card() is shared with Program detail. Simulator: a new Full Body (3 days) shows Next up Full Body 1, never done; the JEFIT programs are under Archived. Rows inside List use .buttonStyle(.plain) to avoid accent-tinted text.
 - **1.5**: Exercise editor (create, edit, duplicate from library) with muscle multi-select and the derived region shown. The load mode is locked when there is history. Duplicate names are rejected, library names included, shown inline (checked on the simulator with 'barbell squat'). Simulator taps landing mid-typing can save a truncated name: pause before tapping Save when testing.
