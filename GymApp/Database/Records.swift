@@ -146,5 +146,5 @@ nonisolated struct ImportRunRecord: Codable, Identifiable, Hashable, FetchableRe
     var fileName: String
     var fileSHA256: String
     var ranAt: Date
-    var report: String
+    var report: ImportReport
 }

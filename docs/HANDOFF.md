@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 0.5.**
+**Next card: 0.6.**
 
 ## Cards
 
@@ -15,7 +15,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 0.2 Database schema, records and AppDatabase
 - [x] 0.3 Library and exercise-map files
 - [x] 0.4 JEFIT CSV reader
-- [ ] 0.5 JEFIT importer
+- [x] 0.5 JEFIT importer
 - [ ] 0.6 Wire the database into the app, and an import screen
 - [ ] 0.7 Phase close
 
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **0.5**: Importer mirrors reference_import.py step by step; rounding is half-to-even to match Python's round(). run() takes optional fileName/fileSHA256 for the import-run row. ImportReport is Hashable (ImportRunRecord needs it). Real export imports in 0.45 s and matches every count, skip reason, spot-checked workout and exercise best. 42 tests.
 - **0.4**: Byte-level RFC 4180 tokeniser over the whole file, then section/block walk. GymAppTests/Fixtures.swift holds fixture paths, including the real export and hasRealExport. The real-export test ran (not skipped): every documented row count matches. 37 tests.
 - **0.3**: Shared fields are a protocol (ExerciseDefinition) with two concrete Decodable structs; BundledExercises loads either file and names it on failure. LibrarySeeder uses insert(onConflict: .ignore). 32 tests.
 - **0.2**: Schema.swift holds the spec SQL verbatim as migration v1; Records.swift has one nonisolated struct per table; AppDatabase as specified. ImportRunRecord.report is a String until 0.5. SchemaTests.swift also defines a small Make helper for test records. 28 tests.
