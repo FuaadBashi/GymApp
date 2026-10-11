@@ -11,7 +11,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -34,7 +34,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -119,7 +119,7 @@
    "equipment": "barbell",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -321,7 +321,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -411,7 +411,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -515,7 +515,7 @@
    "equipment": "cable",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -562,7 +562,7 @@
    "equipment": "dumbbell",
    "loadMode": "perSide",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -746,7 +746,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -788,7 +788,7 @@
    "equipment": "machine",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -816,7 +816,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -900,7 +900,7 @@
    "equipment": "barbell",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -1073,7 +1073,7 @@
    "equipment": "machine",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -1205,7 +1205,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -1419,7 +1419,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -1567,7 +1567,7 @@
    "equipment": "machine",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -1618,7 +1618,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -1706,7 +1706,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -1725,7 +1725,7 @@
    "equipment": "machine",
    "loadMode": "total",
    "primaryMuscles": [
-    "lower back"
+    "lowerBack"
    ],
    "secondaryMuscles": [
     "glutes",
@@ -1771,7 +1771,7 @@
    "equipment": "cable",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -1817,7 +1817,7 @@
    "equipment": "dumbbell",
    "loadMode": "perHand",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -1845,7 +1845,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -1868,7 +1868,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -1972,7 +1972,7 @@
    "equipment": "plate",
    "loadMode": "total",
    "primaryMuscles": [
-    "lower back"
+    "lowerBack"
    ],
    "secondaryMuscles": [
     "glutes",
@@ -2124,7 +2124,7 @@
    "equipment": "cable",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2152,7 +2152,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -2476,7 +2476,7 @@
    "equipment": "smith",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2522,7 +2522,7 @@
    "equipment": "dumbbell",
    "loadMode": "perHand",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2546,7 +2546,7 @@
    "equipment": "dumbbell",
    "loadMode": "perHand",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2638,7 +2638,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -2661,7 +2661,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -2723,7 +2723,7 @@
    "equipment": "barbell",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2897,7 +2897,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -2936,7 +2936,7 @@
    "equipment": "band",
    "loadMode": "repsOnly",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -2980,7 +2980,7 @@
    "equipment": "dumbbell",
    "loadMode": "perHand",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -3452,7 +3452,7 @@
    "equipment": "barbell",
    "loadMode": "total",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -3524,7 +3524,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -3570,7 +3570,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -3702,7 +3702,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -3768,7 +3768,7 @@
    ],
    "secondaryMuscles": [
     "biceps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -3912,7 +3912,7 @@
    "equipment": "kettlebell",
    "loadMode": "perSide",
    "primaryMuscles": [
-    "middle back",
+    "middleBack",
     "lats"
    ],
    "secondaryMuscles": [
@@ -3962,7 +3962,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",
@@ -4111,7 +4111,7 @@
    ],
    "secondaryMuscles": [
     "traps",
-    "middle back"
+    "middleBack"
    ],
    "force": "pull",
    "mechanic": "isolation",
@@ -4326,7 +4326,7 @@
    ],
    "secondaryMuscles": [
     "glutes",
-    "lower back"
+    "lowerBack"
    ],
    "force": "pull",
    "mechanic": "compound",

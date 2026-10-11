@@ -1,0 +1,111 @@
+
+### SETTING ##########################################
+
+row_id,USERID,TIMESTAMP,gender,currentRoutine,DOB,name,length,mass,dbversion,vibration,alarm,timer,sets,targetrep,age,zonedifference,location,use_location,screenon,auto_lock,lastlogs,preloadreps,exp_level,fit_goal,audio_reminder,audio_exercise_tips,audio_personal_tips,week_start
+1,7,"2026-01-01 00:00:00",M,1,2000-01-01,," cm"," kg",,,,90,3,8,0,0,,0,0,0,1,0,0,0,0,0,0,7
+
+
+######################################################
+
+### PROFILE ##########################################
+
+row_id,USERID,TIMESTAMP,_id,mydate,weight,fatpercent,chest,arms,waist,calves,height,hips,thighs,shoulders,neck,forearms,logTime
+1,7,"2026-01-01 00:00:00",1,2025-12-01,80.5,18,100,38,0,0,180,0,0,0,0,0,1764547200
+
+
+######################################################
+
+### ROUTINES #########################################
+
+row_id,USERID,TIMESTAMP,_id,name,difficulty,focus,dayaweek,description,daytype,tags,rdb_id,bannerCode,progression_flag
+1,7,"2026-01-01 00:00:00",1,"Test Plan",0,1,31,,0," ",0,,0
+
+row_id,USERID,TIMESTAMP,package,_id,name,day,dayIndex,interval_mode,rest_day,week,sort_order,day_completed_timestamp
+2,7,"2026-01-01 00:00:00",1,10,"Day A
+with a newline",8,1,0,0,0,0,"2026-01-02 10:00:00"
+
+row_id,USERID,TIMESTAMP,belongSys,superset,_id,exercise_id,belongplan,exercisename,setcount,timer,logs,bodypart,mysort,targetrep,setdone,setdonetime,interval_time,interval_unit,rest_time_enabled,interval_time_enabled,is_tier_primary
+3,7,"2026-01-01 00:00:00",1,0,100,2,10,"Barbell Bench Press",3,90,"60x8,60x8,60x7",3,0,"8,8,7",0,0,0,sec,1,0,
+
+row_id,USERID,TIMESTAMP,belongSys,superset,_id,exercise_id,belongplan,exercisename,setcount,timer,logs,bodypart,mysort,targetrep,setdone,setdonetime,interval_time,interval_unit,rest_time_enabled,interval_time_enabled,is_tier_primary
+4,7,"2026-01-01 00:00:00",1,0,101,322,10,"Walking",1,60,"0x30",10,1,"30",0,0,0,sec,1,0,
+
+
+######################################################
+
+### WORKOUT SESSIONS #################################
+
+rowid,_id,USERID,edit_time,day_id,total_time,workout_time,rest_time,wasted_time,total_exercise,total_weight,recordbreak,starttime,endtime,workout_mode,TIMESTAMP,calories,avg_heart_rate
+1,500,7,0,0,1800,600,600,600,4,1000,0,1767348000,1767349800,0,"2026-01-02 10:30:00",0,
+2,501,7,0,0,60,0,0,60,0,0,0,1767434400,1767434460,0,"2026-01-03 10:01:00",0,
+
+
+######################################################
+
+### EXERCISE LOGS ####################################
+
+USERID,TIMESTAMP,belongSys,logs,_id,record,mydate,eid,ename,day_item_id,belongsession,logTime,interval_logs,auto_generated
+7,"2026-01-02 10:30:00",1,"27.0x4,22.5x8",900,0,2026-01-02,149,"Cable Tricep Pushdown (V-Bar)",0,500,1767348000,"0,0",
+7,"2026-01-02 10:30:00",1,"39.9999x5,59.9999x3",901,0,2026-01-02,2,"Barbell Bench Press",100,500,1767348000,"0,0",
+7,"2026-01-02 10:30:00",1,"45.0x6",902,0,2026-01-02,1262,"Machine Assisted Pull-Up",0,500,1767348000,"0",
+7,"2026-01-02 10:30:00",1,"10x7,10x0",903,0,2026-01-02,690,"Hanging Knee Raise",0,500,1767348000,"0,0",
+7,"2026-01-02 10:30:00",1,"0x30",904,0,2026-01-02,322,"Walking",101,500,1767348000,"0",
+
+
+######################################################
+
+### EXERCISE SET LOGS ################################
+
+_id,userid,exercise_log_id,set_index,weight_lbs,reps,calories,distance_mi,speed_mph,laps,duration,set_type,log_time,TIMESTAMP
+1,7,900,0,59.5247,15,,,,,0,warm-up,1767348100,"2026-01-02 10:31:40"
+2,7,900,1,79.3663,12,,,,,0,default,1767348200,"2026-01-02 10:33:20"
+3,7,900,1,99.2079,10,,,,,0,failure,1767348300,"2026-01-02 10:35:00"
+4,7,902,0,99.2079,6,,,,,0,default,1767348400,"2026-01-02 10:36:40"
+5,7,903,0,,7,,,,,0,default,1767348500,"2026-01-02 10:38:20"
+6,7,903,1,,0,,,,,0,default,1767348600,"2026-01-02 10:40:00"
+7,7,999,0,44.0924,10,,,,,0,default,1767348700,"2026-01-02 10:41:40"
+
+
+######################################################
+
+### EXERCISE RECORDS #################################
+
+row_id,USERID,TIMESTAMP,_id,belongSys,record,eid,target1RM,mydate,goalDate,recordReachTime,sort_order
+1,7,"2026-01-02 10:30:00",1,1,70,2,0,,0,0,0
+
+
+######################################################
+
+### CARDIO LOGS ######################################
+
+
+######################################################
+
+### CARDIO EXERCISE LOGS #############################
+
+
+######################################################
+
+### CUSTOM EXERCISES #################################
+
+
+######################################################
+
+### FAVORITE EXERCISES ###############################
+
+row_id,_id,userid,edit_time,exercise_id,belongSys,TIMESTAMP
+1,1,7,0,2,1,"2026-01-01 00:00:00"
+
+
+######################################################
+
+### NOTES ############################################
+
+row_id,TIMESTAMP,USERID,_id,eid,belongSys,mynote,title,mydate,logTime,label,bodypart,is_recovered,type
+1,"2026-01-02 10:30:00",7,1,2,1,"Seat level 4
+Keep elbows ""tucked""",,2025-12-20,1766188800,0,0,0,0
+2,"2026-01-02 10:30:00",7,2,2,1,"Newer note",,2026-01-02,1767312000,0,0,0,0
+3,"2026-01-02 10:30:00",7,3,0,0,"General note",,2026-01-02,1767312000,0,0,0,0
+
+
+######################################################

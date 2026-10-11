@@ -1,0 +1,31 @@
+{
+ "source": "jefit_mini.csv",
+ "counts": {
+  "exercise": 196,
+  "program": 1,
+  "programDay": 1,
+  "dayExercise": 1,
+  "workout": 1,
+  "workoutExercise": 4,
+  "workoutSet": 6,
+  "workoutsLinkedToADay": 1,
+  "exerciseNote": 2,
+  "exercisesWithStickyNote": 1,
+  "bodyEntry": 1,
+  "favoriteExercises": 1
+ },
+ "skips": {
+  "dayExercise: cardio, not supported yet": 1,
+  "exercise log: cardio, not supported yet": 1,
+  "exercise: cardio, not supported yet": 3,
+  "favourite: exercise not imported": 0,
+  "note: not attached to an exercise": 1,
+  "section: CARDIO EXERCISE LOGS, not supported yet": 0,
+  "section: CARDIO LOGS, not supported yet": 0,
+  "section: EXERCISE RECORDS, derived instead (rulebook §5)": 1,
+  "set row: duplicate set index, later row kept": 1,
+  "set row: no matching exercise log": 1,
+  "set: zero reps": 1,
+  "workout: empty in JEFIT (no exercises logged)": 1
+ }
+}

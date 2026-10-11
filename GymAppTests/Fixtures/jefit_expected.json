@@ -1,0 +1,518 @@
+{
+ "source": "jefit-export-2026-10-11.csv",
+ "counts": {
+  "exercise": 196,
+  "program": 2,
+  "programDay": 32,
+  "dayExercise": 192,
+  "workout": 468,
+  "workoutExercise": 2541,
+  "workoutSet": 7751,
+  "workoutsLinkedToADay": 241,
+  "exerciseNote": 243,
+  "exercisesWithStickyNote": 57,
+  "bodyEntry": 66,
+  "favoriteExercises": 3
+ },
+ "skips": {
+  "dayExercise: cardio, not supported yet": 5,
+  "dayExercise: exercise never logged, so not in the exercise map": 1,
+  "exercise log: cardio, not supported yet": 9,
+  "exercise log: no sets left": 2,
+  "exercise: cardio, not supported yet": 3,
+  "favourite: exercise not imported": 0,
+  "note: not attached to an exercise": 4,
+  "section: CARDIO EXERCISE LOGS, not supported yet": 12,
+  "section: CARDIO LOGS, not supported yet": 25,
+  "section: EXERCISE RECORDS, derived instead (rulebook §5)": 203,
+  "set row: duplicate set index, later row kept": 1,
+  "set row: no matching exercise log": 3,
+  "set: zero reps": 12,
+  "workout: empty in JEFIT (no exercises logged)": 20,
+  "workout: only cardio or empty exercise logs": 4
+ },
+ "workouts": {
+  "pushdown_2024_12_27": {
+   "externalId": "jefit:session:1735318609",
+   "startedAt": 1735318609,
+   "endedAt": 1735322904,
+   "programDayExternalId": "jefit:day:68",
+   "exercises": [
+    {
+     "exerciseId": "jefit:1:93",
+     "name": "Barbell Deadlift",
+     "sets": [
+      [
+       4000,
+       10,
+       "working"
+      ],
+      [
+       6000,
+       5,
+       "working"
+      ],
+      [
+       8000,
+       3,
+       "working"
+      ],
+      [
+       10000,
+       10,
+       "working"
+      ],
+      [
+       9000,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:113",
+     "name": "Barbell Preacher Curl",
+     "sets": [
+      [
+       2220,
+       7,
+       "working"
+      ],
+      [
+       2470,
+       3,
+       "working"
+      ],
+      [
+       1970,
+       7,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:149",
+     "name": "Cable Tricep Pushdown (V-Bar)",
+     "sets": [
+      [
+       2700,
+       15,
+       "working"
+      ],
+      [
+       3600,
+       12,
+       "working"
+      ],
+      [
+       4500,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:132",
+     "name": "Machine Leg Press",
+     "sets": [
+      [
+       8000,
+       10,
+       "working"
+      ],
+      [
+       10000,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:104",
+     "name": "Cable Reverse Curl",
+     "sets": [
+      [
+       1500,
+       11,
+       "working"
+      ],
+      [
+       1750,
+       11,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:1253",
+     "name": "Machine Single-Leg Press",
+     "sets": [
+      [
+       2730,
+       11,
+       "working"
+      ],
+      [
+       2500,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:770",
+     "name": "Machine Lateral Shoulder Raise",
+     "sets": [
+      [
+       4610,
+       10,
+       "working"
+      ],
+      [
+       4500,
+       13,
+       "working"
+      ]
+     ]
+    }
+   ]
+  },
+  "latest_1_of_3": {
+   "externalId": "jefit:session:1791230081",
+   "startedAt": 1791230081,
+   "endedAt": 1791231166,
+   "programDayExternalId": "jefit:day:61",
+   "exercises": [
+    {
+     "exerciseId": "jefit:1:46",
+     "name": "Machine Shoulder Press",
+     "sets": [
+      [
+       1400,
+       8,
+       "working"
+      ],
+      [
+       2700,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:90",
+     "name": "Dumbbell One-Arm Row",
+     "sets": [
+      [
+       1200,
+       12,
+       "working"
+      ],
+      [
+       1400,
+       8,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:86",
+     "name": "Cable Lat Pulldown (Wide Grip)",
+     "sets": [
+      [
+       5200,
+       7,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:130",
+     "name": "Machine Leg Extension",
+     "sets": [
+      [
+       5900,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:178",
+     "name": "Machine Incline Chest Press",
+     "sets": [
+      [
+       4000,
+       8,
+       "working"
+      ]
+     ]
+    }
+   ]
+  },
+  "latest_2_of_3": {
+   "externalId": "jefit:session:1791401238",
+   "startedAt": 1791401238,
+   "endedAt": 1791402823,
+   "programDayExternalId": "jefit:day:60",
+   "exercises": [
+    {
+     "exerciseId": "jefit:1:2",
+     "name": "Barbell Bench Press",
+     "sets": [
+      [
+       2000,
+       10,
+       "working"
+      ],
+      [
+       5000,
+       10,
+       "working"
+      ],
+      [
+       4000,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:86",
+     "name": "Cable Lat Pulldown (Wide Grip)",
+     "sets": [
+      [
+       4500,
+       10,
+       "working"
+      ],
+      [
+       5900,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:130",
+     "name": "Machine Leg Extension",
+     "sets": [
+      [
+       7900,
+       6,
+       "working"
+      ],
+      [
+       8130,
+       5,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:46",
+     "name": "Machine Shoulder Press",
+     "sets": [
+      [
+       2300,
+       8,
+       "working"
+      ],
+      [
+       2930,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:700",
+     "name": "Machine Seated Row",
+     "sets": [
+      [
+       5000,
+       4,
+       "working"
+      ],
+      [
+       4000,
+       5,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:106",
+     "name": "Dumbbell Incline Curl",
+     "sets": [
+      [
+       600,
+       10,
+       "working"
+      ],
+      [
+       800,
+       9,
+       "working"
+      ]
+     ]
+    }
+   ]
+  },
+  "latest_3_of_3": {
+   "externalId": "jefit:session:1791681878",
+   "startedAt": 1791681878,
+   "endedAt": 1791683702,
+   "programDayExternalId": "jefit:day:61",
+   "exercises": [
+    {
+     "exerciseId": "jefit:1:12",
+     "name": "Barbell Squat",
+     "sets": [
+      [
+       2000,
+       2,
+       "working"
+      ],
+      [
+       2000,
+       6,
+       "working"
+      ],
+      [
+       2000,
+       5,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:497",
+     "name": "Weight Plate Squat",
+     "sets": [
+      [
+       1000,
+       7,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:1262",
+     "name": "Machine Assisted Pull-Up",
+     "sets": [
+      [
+       -4500,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:700",
+     "name": "Machine Seated Row",
+     "sets": [
+      [
+       3200,
+       10,
+       "working"
+      ],
+      [
+       5200,
+       2,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:459",
+     "name": "Machine Dip",
+     "sets": [
+      [
+       2300,
+       15,
+       "working"
+      ],
+      [
+       3200,
+       10,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:161",
+     "name": "Machine Seated Leg Curl",
+     "sets": [
+      [
+       5000,
+       1,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:160",
+     "name": "Machine Leg Curl (Prone)",
+     "sets": [
+      [
+       4100,
+       6,
+       "working"
+      ]
+     ]
+    },
+    {
+     "exerciseId": "jefit:1:1270",
+     "name": "Machine Inner Chest Press",
+     "sets": [
+      [
+       1000,
+       10,
+       "working"
+      ],
+      [
+       3000,
+       10,
+       "working"
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ "exercises": {
+  "jefit:1:2": {
+   "sets": 415,
+   "heaviestHundredths": 7750,
+   "bestE1RMKg": 93.33
+  },
+  "jefit:1:12": {
+   "sets": 332,
+   "heaviestHundredths": 10500,
+   "bestE1RMKg": 123.5
+  },
+  "jefit:1:93": {
+   "sets": 543,
+   "heaviestHundredths": 13750,
+   "bestE1RMKg": 170.0
+  },
+  "jefit:1:86": {
+   "sets": 239,
+   "heaviestHundredths": 8600,
+   "bestE1RMKg": 106.07
+  },
+  "jefit:1:1262": {
+   "sets": 102,
+   "allLoadsNegative": true
+  },
+  "jefit:1:690": {
+   "sets": 11,
+   "allLoadsNull": true
+  },
+  "jefit:1:83": {
+   "sets": 27,
+   "allLoadsZero": true
+  }
+ }
+}

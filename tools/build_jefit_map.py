@@ -100,6 +100,11 @@ OVERRIDES = {
 BODYWEIGHT_REPS_ONLY = r"push-up|knee raise|leg raise|hip raise|decline crunch|reverse crunch|plank|bodyweight squat|arm circles|side neck"
 
 
+def camel(muscle):
+    """Muscle raw values are camelCase in the app; the dataset spells two with spaces."""
+    return {"lower back": "lowerBack", "middle back": "middleBack"}.get(muscle, muscle)
+
+
 def latest_names(logs, custom):
     names, counts, last = {}, {}, {}
     for l in sorted(logs, key=lambda l: l["mydate"]):
@@ -145,7 +150,8 @@ def classify(key, name):
         region = "upper"
     entry = {
         "jefitId": key, "name": name, "equipment": equipment, "loadMode": load_mode,
-        "primaryMuscles": prim, "secondaryMuscles": sec, "force": force, "mechanic": mech,
+        "primaryMuscles": [camel(m) for m in prim], "secondaryMuscles": [camel(m) for m in sec],
+        "force": force, "mechanic": mech,
         "category": cat, "bodyRegion": region, "movementPattern": pattern,
         "importWeights": None,
         "negateOnImport": "assisted" in n,
