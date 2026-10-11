@@ -6,6 +6,8 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
+**Next card: 3.1.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+
 **Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
 The post-phase-2 additions are implemented and tested locally, with initial media
 coverage for eight barbell and bodyweight lifts; see [02a-additions.md](specs/02a-additions.md).
@@ -48,8 +50,16 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 2.9 Lock-screen countdown (Live Activity)
 - [x] 2.10 Remove the prototype and close the phase
 
-### Phases 3–5 ([outline](specs/03-05-outline.md))
-Specified after the post-phase-2 additions; these additions take priority before phase 3.
+### Phase 3: History and analytics, lean ([spec](specs/03-history-analytics.md))
+- [ ] 3.1 History queries
+- [ ] 3.2 History tab
+- [ ] 3.3 Workout detail and editing
+- [ ] 3.4 Exercise progress and records
+- [ ] 3.5 Progress tab
+- [ ] 3.6 Phase close
+
+### Phases 4–5 ([outline](specs/03-05-outline.md))
+Specified when phase 3 closes.
 
 ## Requested after phase 2
 

@@ -9,7 +9,8 @@ rely on everything before it.
 | [00-foundation.md](00-foundation.md) | 0: database, JEFIT import, exercise library | full |
 | [01-programs-library.md](01-programs-library.md) | 1: programs and the exercise library | full |
 | [02-workout-screen.md](02-workout-screen.md) | 2: workout screen | full |
-| [03-05-outline.md](03-05-outline.md) | 3–5: history and analytics, export and backups, phone | outline, specified in full after phase 2 |
+| [03-history-analytics.md](03-history-analytics.md) | 3: history and analytics, lean | full |
+| [03-05-outline.md](03-05-outline.md) | 4–5: export and backups, phone | outline |
 
 Progress is tracked in [../HANDOFF.md](../HANDOFF.md).
 
