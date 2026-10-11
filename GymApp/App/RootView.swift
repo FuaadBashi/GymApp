@@ -56,7 +56,7 @@ struct RootView: View {
                 TrainView(db: db)
             }
             Tab("History", systemImage: "calendar") {
-                HistoryPlaceholder(db: db)
+                HistoryView(db: db)
             }
             Tab("Exercises", systemImage: "dumbbell") {
                 ExercisesView(db: db)
@@ -71,18 +71,5 @@ struct RootView: View {
         .tabViewBottomAccessory(isEnabled: workout.snapshot != nil) {
             MiniPlayer()
         }
-    }
-}
-
-private struct HistoryPlaceholder: View {
-    let db: AppDatabase
-    @State private var finished: Int?
-
-    var body: some View {
-        ContentUnavailableView("History arrives in phase 3", systemImage: "calendar",
-                               description: Text(finished.map { "\($0.formatted()) finished workouts are waiting." } ?? ""))
-            .task {
-                finished = try? await db.reader.read { try Int.fetchOne($0, sql: "SELECT COUNT(*) FROM workout WHERE endedAt IS NOT NULL") }
-            }
     }
 }
