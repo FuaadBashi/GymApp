@@ -119,3 +119,68 @@ struct HistoryTests {
         #expect(items.reduce(0) { $0 + $1.setCount } == hardSets)
     }
 }
+
+struct WorkoutEditingTests {
+    let db = try! AppDatabase.inMemory()
+
+    private func finished() throws -> (workout: String, sets: [String]) {
+        try db.writer.write { db in
+            try TestData.exercise(db, id: "bench")
+            try TestData.exercise(db, id: "row")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(2), exercises: [("bench", [(57.5, 8)])])
+            let w = try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(5),
+                                                 exercises: [("bench", [(55, 8), (55, 8)]), ("row", [(50, 10)])])
+            let sets = try String.fetchAll(db, sql: """
+                SELECT s.id FROM workoutSet s JOIN workoutExercise we ON we.id = s.workoutExerciseId
+                WHERE we.workoutId = ? ORDER BY we.position, s.position
+                """, arguments: [w.id])
+            return (w.id, sets)
+        }
+    }
+
+    @Test func correctingALoadChangesVolumeAndRecords() throws {
+        let (id, sets) = try finished()
+        let before = try db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
+        #expect(before.records.isEmpty)
+        #expect(before.volumeKg == 55 * 8 * 2 + 500)
+        try db.writer.write { try WorkoutWrites.updateSet($0, setId: sets[0], edit: SetEdit(loadHundredths: 6000, unit: .kg, reps: 8, type: .working)) }
+        let after = try db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
+        #expect(after.volumeKg == 60 * 8 + 55 * 8 + 500)
+        #expect(after.records.map(\.kind) == [.heaviest, .e1RM])
+        #expect(after.workout.endedAt != nil)
+    }
+
+    @Test func addingALoggedSetKeepsItHistory() throws {
+        let (id, _) = try finished()
+        let we = try #require(try db.reader.read { try String.fetchOne($0, sql: "SELECT id FROM workoutExercise WHERE workoutId = ? AND exerciseId = 'row'", arguments: [id]) })
+        let set = try db.writer.write { try WorkoutWrites.addLoggedSet($0, workoutExerciseId: we, settings: AppSettings()) }
+        let workout = try #require(try db.reader.read { try WorkoutRecord.fetchOne($0, key: id) })
+        #expect(set.completedAt == workout.endedAt && set.loadHundredths == 5000)
+        #expect(try db.reader.read { try SummaryQueries.summary($0, workoutId: id) }.setCount == 4)
+    }
+
+    @Test func deletingAnExercisesLastSetRemovesItButTheWorkoutsLastIsRefused() throws {
+        let (id, sets) = try finished()
+        try db.writer.write { try WorkoutWrites.deleteLoggedSet($0, setId: sets[2]) }   // the only row set
+        var s = try db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
+        #expect(s.exercises.map(\.exercise.id) == ["bench"])
+        try db.writer.write { try WorkoutWrites.deleteLoggedSet($0, setId: sets[0]) }
+        s = try db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
+        #expect(s.exercises[0].sets.map(\.position) == [0])
+        #expect(throws: WorkoutError.lastSet) { try db.writer.write { try WorkoutWrites.deleteLoggedSet($0, setId: sets[1]) } }
+    }
+
+    @Test func deletingAWorkoutLeavesTheOthers() throws {
+        let (id, _) = try finished()
+        try db.writer.write { try WorkoutWrites.deleteFinished($0, workoutId: id) }
+        #expect(try db.reader.read { try WorkoutRecord.fetchCount($0) } == 1)
+        #expect(try db.reader.read { try WorkoutSetRecord.fetchCount($0) } == 1)
+    }
+
+    @Test func renamingTrimsAndRejectsEmpty() throws {
+        let (id, _) = try finished()
+        try db.writer.write { try WorkoutWrites.rename($0, workoutId: id, title: "  Heavy day ") }
+        #expect(try db.reader.read { try WorkoutRecord.fetchOne($0, key: id)?.title } == "Heavy day")
+        #expect(throws: WorkoutError.emptyTitle) { try db.writer.write { try WorkoutWrites.rename($0, workoutId: id, title: "  ") } }
+    }
+}

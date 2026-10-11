@@ -9,7 +9,7 @@ nonisolated struct SetEdit: Equatable, Codable, Sendable {
 }
 
 nonisolated enum WorkoutError: Error, Equatable {
-    case alreadyInProgress, notFound, swapAfterLogging, invalidReps
+    case alreadyInProgress, notFound, swapAfterLogging, invalidReps, emptyTitle, lastSet
 }
 
 /// Every workout operation as a database write (docs/specs/02-workout-screen.md, card 2.1).
@@ -191,6 +191,48 @@ nonisolated enum WorkoutWrites {
         guard var item = try WorkoutExerciseRecord.fetchOne(db, key: itemId) else { throw WorkoutError.notFound }
         item.note = note?.isEmpty == false ? note : nil
         try item.update(db)
+    }
+
+    // MARK: Finished workouts (card 3.3). Each keeps endedAt, so the workout stays history.
+
+    static func rename(_ db: Database, workoutId: String, title: String) throws {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { throw WorkoutError.emptyTitle }
+        try db.execute(sql: "UPDATE workout SET title = ? WHERE id = ?", arguments: [trimmed, workoutId])
+    }
+
+    /// Adds a completed copy of the last set, logged at the workout's end.
+    @discardableResult
+    static func addLoggedSet(_ db: Database, workoutExerciseId: String, settings: AppSettings) throws -> WorkoutSetRecord {
+        guard let we = try WorkoutExerciseRecord.fetchOne(db, key: workoutExerciseId),
+              let workout = try WorkoutRecord.fetchOne(db, key: we.workoutId) else { throw WorkoutError.notFound }
+        var set = try addSet(db, workoutExerciseId: workoutExerciseId, settings: settings)
+        set.completedAt = workout.endedAt ?? workout.startedAt
+        try set.update(db)
+        return set
+    }
+
+    /// Deleting the last set of an exercise removes the exercise; the last set of the whole
+    /// workout is refused, so a workout is only ever deleted on purpose (rulebook §10).
+    static func deleteLoggedSet(_ db: Database, setId: String) throws {
+        guard let set = try WorkoutSetRecord.fetchOne(db, key: setId),
+              let we = try WorkoutExerciseRecord.fetchOne(db, key: set.workoutExerciseId) else { throw WorkoutError.notFound }
+        let total = try Int.fetchOne(db, sql: """
+            SELECT COUNT(*) FROM workoutSet s JOIN workoutExercise we ON we.id = s.workoutExerciseId WHERE we.workoutId = ?
+            """, arguments: [we.workoutId]) ?? 0
+        guard total > 1 else { throw WorkoutError.lastSet }
+        try set.delete(db)
+        let left = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM workoutSet WHERE workoutExerciseId = ?", arguments: [we.id]) ?? 0
+        if left == 0 {
+            try we.delete(db)
+            try renumberExercises(db, workoutId: we.workoutId)
+        } else {
+            try renumberSets(db, workoutExerciseId: we.id)
+        }
+    }
+
+    static func deleteFinished(_ db: Database, workoutId: String) throws {
+        guard try WorkoutRecord.deleteOne(db, key: workoutId) else { throw WorkoutError.notFound }
     }
 
     // MARK: Prefill

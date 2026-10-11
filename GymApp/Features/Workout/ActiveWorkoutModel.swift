@@ -330,6 +330,8 @@ final class ActiveWorkoutModel {
         case .swapAfterLogging: "Sets are already logged for this exercise. Add the new one instead."
         case .invalidReps: "Reps can't be negative."
         case .notFound: "That workout is no longer there."
+        case .emptyTitle: "Give the workout a name."
+        case .lastSet: "That's the workout's only set. Delete the workout instead."
         case nil: error.localizedDescription
         }
     }
