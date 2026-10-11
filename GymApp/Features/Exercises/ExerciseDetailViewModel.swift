@@ -9,6 +9,8 @@ final class ExerciseDetailViewModel {
     private(set) var sessions: [ExerciseSession] = []
     private(set) var notes: [ExerciseNoteRecord] = []
     private(set) var libraryName: String?
+    private(set) var points: [SessionPoint] = []
+    private(set) var records = ExerciseRecords(repRecords: [])
     var lastError: String?
 
     init(db: AppDatabase, exerciseId: String) {
@@ -19,10 +21,15 @@ final class ExerciseDetailViewModel {
     func reload() async {
         let id = exerciseId
         do {
-            (exercise, sessions, notes, libraryName) = try await db.reader.read { db in
+            (exercise, sessions, notes, libraryName, points, records) = try await db.reader.read { db in
                 let exercise = try ExerciseRecord.fetchOne(db, key: id)
                 let library = try exercise?.libraryId.flatMap { try String.fetchOne(db, sql: "SELECT name FROM exercise WHERE id = ?", arguments: [$0]) }
-                return (exercise, try ExerciseQueries.sessions(db, exerciseId: id), try ExerciseQueries.notes(db, exerciseId: id), library)
+                let sessions = try ExerciseQueries.sessions(db, exerciseId: id)
+                let weight = try BodyQueries.weightLookup(db)
+                let mode = exercise?.loadMode ?? .total
+                return (exercise, sessions, try ExerciseQueries.notes(db, exerciseId: id), library,
+                        ExerciseStats.points(sessions, loadMode: mode, bodyWeightKg: weight),
+                        ExerciseStats.records(sessions, loadMode: mode, bodyWeightKg: weight))
             }
         } catch {
             lastError = error.localizedDescription

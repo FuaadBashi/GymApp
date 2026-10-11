@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ExerciseDetailView: View {
     @State private var model: ExerciseDetailViewModel
-    @State private var section = Section.history
+    @State private var section = Section.progress
     @State private var editingSticky = false
     @State private var stickyDraft = ""
     @State private var addingNote = false
@@ -10,7 +10,7 @@ struct ExerciseDetailView: View {
     @State private var editor: EditorMode?
     @State private var metadata: MetadataDraft?
 
-    private enum Section: String, CaseIterable { case history = "History", notes = "Notes", about = "About" }
+    private enum Section: String, CaseIterable { case progress = "Progress", history = "History", notes = "Notes", about = "About" }
     private enum EditorMode: Identifiable {
         case edit(ExerciseRecord), duplicate(ExerciseRecord)
         var id: String { switch self { case .edit(let e): "edit" + e.id; case .duplicate(let e): "dup" + e.id } }
@@ -25,16 +25,18 @@ struct ExerciseDetailView: View {
             if let exercise = model.exercise {
                 VStack(alignment: .leading, spacing: 18) {
                     header(exercise)
-                    ExerciseMediaView(exercise: exercise)
                     stickyNote(exercise)
                     Picker("Section", selection: $section) {
                         ForEach(Section.allCases, id: \.self) { Text($0.rawValue) }
                     }
                     .pickerStyle(.segmented)
                     switch section {
+                    case .progress: ExerciseProgressView(db: model.db, points: model.points, records: model.records, loadMode: exercise.loadMode)
                     case .history: history(exercise)
                     case .notes: notesList
-                    case .about: about(exercise)
+                    case .about:
+                        ExerciseMediaView(exercise: exercise)
+                        about(exercise)
                     }
                 }
                 .padding()
@@ -109,7 +111,6 @@ struct ExerciseDetailView: View {
 
     @ViewBuilder
     private func history(_ e: ExerciseRecord) -> some View {
-        Text("Charts and records arrive in phase 3.").font(.caption).foregroundStyle(.secondary)
         Text("\(model.sessions.count) sessions").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
         LazyVStack(alignment: .leading, spacing: 10) {
             ForEach(model.sessions) { session in

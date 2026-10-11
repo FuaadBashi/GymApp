@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 3.4.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+**Next card: 3.5.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
 
 **Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
 The post-phase-2 additions are implemented and tested locally, with initial media
@@ -54,7 +54,7 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 3.1 History queries
 - [x] 3.2 History tab
 - [x] 3.3 Workout detail and editing
-- [ ] 3.4 Exercise progress and records
+- [x] 3.4 Exercise progress and records
 - [ ] 3.5 Progress tab
 - [ ] 3.6 Phase close
 
@@ -76,6 +76,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **3.4**: ExerciseStats (points per session, records: heaviest, best e1RM, best session volume, rep records per load; ties keep the earliest date; bodyweightPlus/repsOnly volume only) and ExerciseProgressView (metric and range pickers, Swift Charts line, records linking to WorkoutDetailView). The exercise page now opens on Progress; the demonstration media moved into About so the chart is above the fold. Range defaults to All (long histories have gaps longer than a year). Real export: bench best e1RM equals an independent Epley over raw SQL rows. Simulator: Cable Lat Pulldown chart 2022–2026, heaviest 86 kg × 4 (18 Mar 2025), best e1RM 106.1 kg (7 Jun 2025), 27 rep records. Lines are straight segments; a monotone curve overshot between distant sessions.
 - **3.3**: Workout detail: summary tiles, records, every exercise and set with e1RM; Edit mode edits title, effort, note, set load/reps/unit/type, adds and deletes sets, deletes the workout after confirmation. New writes rename (emptyTitle), addLoggedSet (completed at endedAt), deleteLoggedSet (last set of an exercise removes it; last set of the workout refused with lastSet), deleteFinished. Figures reload from SummaryQueries after each change. Simulator: 2FBD 2 on 11 Oct, 20→22.5 kg on a 2-rep squat set moved volume 2,385→2,390 kg (reverted). The spec said 'a 2024 workout'; the newest one was used since the view is the same for any date.
 - **3.2**: History tab replaces the placeholder: MonthCalendar (week start per settings, dots coloured per program day, grey for ad hoc), 'This week: n of goal', weeks newest first with workout/volume totals, rows with duration, sets, volume and exercise names. Reloads when a workout finishes. Simulator with the real import: October 2026 dots on 1, 5, 7 and 11 Oct; list starts with 2FBD 2 on 11 Oct; scrolling through 2026 smooth. Screenshot docs/screenshots/history.png. WorkoutDetailView is a stub until 3.3.
 - **3.1**: HistoryQueries: items (one pass over all completed sets), weeks grouped by settings week start, workoutDays for the calendar, sessionsThisWeek against the active goal. Volume and set count are shared with SummaryQueries (volumeKg(lines:bodyWeightKg:), hardSetCount) so rows and summaries cannot disagree. BodyQueries.weightLookup loads weights once for bulk queries. Real export: 468 workouts listed, set total equals the SQL count.
