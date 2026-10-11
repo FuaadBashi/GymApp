@@ -3,6 +3,9 @@
 Build order agreed 11 October 2026. Each phase ends with something usable and a list of what
 "done" means. JEFIT stays in use alongside until phase 5.
 
+Phases 0–2 are specified card by card in [specs/](specs/), and progress is tracked in
+[HANDOFF.md](HANDOFF.md). Phases 3–5 are outlined and get full specs when phase 2 closes.
+
 The prototype (workout screen seeded from two JEFIT days, rest alerts, survives being killed,
 summary) is done and serves as reference. Its models carry forward; its storage does not.
 
@@ -14,15 +17,18 @@ Everything else reads from this.
   exercises, workouts, sets, notes and body entries. Rulebook invariants are enforced as
   CHECK constraints where they can be.
 - Bundle the open exercise library: 876 exercises with muscles, equipment, push/pull and
-  mechanic. Add body region (upper, lower, core) and, for the exercises you use, movement
-  family.
+  mechanic, and a body region (upper, lower, core) for each.
 - In-app JEFIT import (JEFIT_EXPORT.md) covering all workouts, sets, notes, body entries and
-  programs. JEFIT exercises are matched to the library by name and hand-checked; unmatched
-  ones become custom exercises.
+  programs. Your JEFIT exercises keep their names and take their classification (equipment,
+  load mode, muscles, movement pattern) from the checked-in exercise map (decisions #28–#29).
 
-**Done when:** the import reports 492 workouts and 2,552 exercise entries, and every skipped
-row has a reason. Spot checks against JEFIT's history screen match: 27 Dec 2024 and the last
-three sessions. Rerunning the import changes nothing.
+**Done when:**
+- The import reports 468 workouts, 2,541 exercise entries and 7,751 sets, matching
+  `tools/reference_import.py`.
+- The other 24 workouts are reported with their reasons: 20 are empty in JEFIT and 4 are
+  cardio only. Every other skipped row has a reason too.
+- Spot checks match JEFIT's history screen: 27 Dec 2024 and the last three sessions.
+- Rerunning the import changes nothing.
 
 ## Phase 1: Programs and the exercise library
 

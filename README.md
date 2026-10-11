@@ -8,8 +8,9 @@ phone; nothing is sent anywhere.
 **What exists today:** a prototype of the workout screen running on real data. It has two
 full-body days seeded from my JEFIT export, last-time values, per-exercise notes, a rest timer
 that alerts with the phone locked, and a workout that survives the app being killed
-mid-rest. The project builds with GRDB and a test target, and all 199 JEFIT exercises are
-classified for import. **What doesn't yet:** the database, the in-app import, programs,
+mid-rest. The project builds with GRDB and a test target. All 199 JEFIT exercises are
+classified for import, and a Python reference importer fixes the expected result: 468
+workouts and 7,751 sets. **What doesn't yet:** the database, the in-app import, programs,
 history and analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for
 each phase.
 
@@ -19,14 +20,15 @@ Start with [the training rulebook](docs/TRAINING_RULEBOOK.md): every number the 
 defined there. [The decisions](docs/DECISIONS.md) explain the constraints, and
 [the JEFIT export notes](docs/JEFIT_EXPORT.md) cover the import format and its traps. In code,
 [`TrainingMath`](GymApp/Domain/TrainingMath.swift) implements the rulebook and
-[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered.
+[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered. Phases 0–2 are planned
+card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds the live status.
 
 ## Status
 
 | Phase | Focus | State |
 |---|---|---|
 | – | Workout-screen prototype on JEFIT data | done |
-| 0 | Database, full JEFIT import, exercise library | **next**; exercise classification done |
+| 0 | Database, full JEFIT import, exercise library | **next**; data, reference importer and spec ready |
 | 1 | Programs and the exercise library | not started |
 | 2 | Workout screen | not started |
 | 3 | History and analytics | not started |
@@ -101,9 +103,9 @@ GymApp/App/          entry point, app delegate, theme
 GymApp/Domain/       Load, SetType, TrainingMath (the rulebook in code)
 GymApp/Services/     rest-timer notifications
 GymApp/Prototype/    the workout-screen prototype, replaced phase by phase
-GymApp/Resources/    data bundled with the app (JEFIT exercise map)
-GymAppTests/         unit tests (Swift Testing)
-tools/               JEFIT parsing, exercise classification, prototype seed
+GymApp/Resources/    data bundled with the app: exercise library, JEFIT exercise map
+GymAppTests/         unit tests (Swift Testing) and import fixtures
+tools/               JEFIT parsing, exercise classification, library build, reference importer
 third_party/         free-exercise-db, public domain
-docs/                brief, decisions, roadmap, rulebook, export notes
+docs/                brief, decisions, roadmap, rulebook, export notes, specs, handoff
 ```

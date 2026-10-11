@@ -74,10 +74,10 @@ progress shows as a mini-player above the tab bar on every tab.
 ### Exercises: the library
 
 - **876 exercises** from the open database, plus your own. Each has primary and secondary
-  muscles, equipment, push/pull and compound/isolation, plus the movement family used by
+  muscles, equipment, push/pull and compound/isolation, plus the movement pattern used by
   plateau swap.
 - **Browse and filter** by muscle, equipment, push/pull and "done before"; search by name.
-- **Create and edit custom exercises:** name, equipment, muscles, movement family, per-hand
+- **Create and edit custom exercises:** name, equipment, muscles, movement pattern, per-hand
   or total load, and what it tracks (weight × reps, reps, time, assisted).
 - **Exercise page:** About (muscles, instructions), History (every session), Charts,
   Records and Notes.
@@ -152,7 +152,7 @@ chest press or seated chest press.
   now** (snoozes it) or **dismiss**.
 - Swapping edits the program; history is untouched. The movement's history shows both
   exercises side by side.
-- It needs every exercise tagged with a *movement family*. The open dataset has no such
+- It needs every exercise tagged with a *movement pattern*. The open dataset has no such
   field, so your exercises are tagged by hand first.
 
 ### Also planned

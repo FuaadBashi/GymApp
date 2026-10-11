@@ -18,14 +18,20 @@ incompatible numbers is worse than no chart.
 
 ## §2 What a logged load means
 
-| Equipment | The number you log | Load used in calculations |
-|---|---|---|
-| Barbell | Total on the bar, including the bar | As logged |
-| Machine, cable, Smith | The stack or display figure | As logged. Each machine is its own exercise and never compared with another |
-| Dumbbells, two at once | One dumbbell (per hand) | As logged; volume counts both: × 2 |
-| Unilateral (one-arm row, single-leg) | One side; reps are per side | As logged; volume counts both sides: × 2 |
-| Bodyweight, moving the whole body (pull-up, dip, chin-up) | Added weight, or assistance as a negative | Body weight + logged figure. Body weight is the latest entry on or before the workout date |
-| Bodyweight, partial (push-up, sit-up, plank) | Nothing, or added weight only | Reps (or time) only, excluded from volume |
+Every exercise has a **load mode** that says what its logged number means. The mode is fixed
+once the exercise has history, because changing it would change what past sets mean.
+
+| Load mode | Typical exercises | The number you log | Load used in calculations | Volume |
+|---|---|---|---|---|
+| `total` | Barbell (including the bar), machine, cable, Smith, plate | The whole load | As logged | × 1 |
+| `perHand` | Two dumbbells at once | One dumbbell | As logged | × 2 |
+| `perSide` | One-arm row, single-leg press | One side; reps are per side | As logged | × 2 |
+| `bodyweightPlus` | Pull-up, dip, chin-up, assisted machines | Added weight, or assistance as a negative | Body weight + logged figure, never below 0. Body weight is the latest entry on or before the workout date | × 1 |
+| `repsOnly` | Push-up, knee raise, plank | Nothing | None | Excluded |
+
+Each machine is its own exercise and is never compared with another. A held plate on a
+partial-bodyweight movement (weighted crunch, back extension) is `total`: the plate is the
+only load that changes.
 
 With no body-weight entry, whole-body exercises fall back to reps only. The app says so
 rather than inventing a figure.
@@ -37,6 +43,10 @@ rather than inventing a figure.
 | Working (default) | Yes | 1 | Yes |
 | Warm-up | No | 0 | No |
 | Drop set (a working set plus its drops) | Every segment counts | 1 for the whole drop set | Only the first segment |
+
+A drop set is stored as its first segment (a working or failed row) followed by one `drop` row
+per further segment. That is how "1 for the whole drop set" and "only the first segment" are
+computed: `drop` rows add volume and nothing else.
 | Failed or partial | Reps actually done | 1 | Reps actually done |
 
 A superset is a grouping of exercises, not a set type, and changes no calculation.
@@ -49,8 +59,9 @@ A superset is a grouping of exercises, not a set type, and changes no calculatio
 
 ## §5 Personal records
 
-Per exercise, working sets only. All are computed from history on read, so correcting a set
-can create or remove a PR.
+Per exercise, from working and failed sets (never warm-ups or `drop` segments), and never for
+`bodyweightPlus` or `repsOnly` exercises. All are computed from history on read, so
+correcting a set can create or remove a PR.
 
 - **Heaviest load** at any reps.
 - **Best estimated 1RM** (§4).
@@ -73,6 +84,10 @@ When an exercise opens in a workout, "last time" is its most recent logged sessi
 1. In the **same routine day** (default), or in **any workout**, per Settings.
 2. If the same routine day has no history for it, fall back to any workout and label it so.
 
+"Same routine day" includes the days it was copied from. A day built with *Copy from…*
+remembers its source (`copiedFromDayId`), so a new "Full Body 1" copied from JEFIT's "1FBD 1"
+picks up that day's history instead of starting blank.
+
 ## §8 Plateau swap
 
 **Progress score.** For one session of one exercise, the score is the best estimated 1RM
@@ -90,7 +105,7 @@ all of these hold:
 A single extra rep counts as progress. Comparing against the previous window, not the
 all-time best, means returning from a break does not flag everything at once.
 
-**Candidates.** Exercises in the same movement family that share a primary muscle and are not
+**Candidates.** Exercises with the same movement pattern that share a primary muscle and are not
 archived or marked "avoid". If gym availability is tagged, they must also be available. Ranked
 by never or longest since done, then most history. At most three, each with the reason.
 
@@ -104,11 +119,12 @@ automatically.
 The explanation always reads like: *"Best set in the last 3 weeks (3 sessions): 60 kg × 10.
 Best in the 3 weeks before: 60 kg × 10."*
 
-**Movement family.** A tag on each exercise naming the movement it trains, fine enough that
-swaps are genuinely equivalent. Examples:
+**Movement pattern.** A tag on each exercise (`movementPattern`) naming the movement it
+trains, fine enough that swaps are genuinely equivalent. The full list is in
+`specs/00-foundation.md`, card 0.1. Examples:
 
 - Flat horizontal press: barbell bench, dumbbell bench, machine chest press, seated chest press.
-- Incline press is a separate family.
+- Incline press is a separate pattern (`inclinePush`).
 - Horizontal pull: seated cable row, machine row, dumbbell one-arm row.
 - Squat pattern: barbell squat, hack squat, leg press.
 - Knee flexion: prone leg curl, seated leg curl.
