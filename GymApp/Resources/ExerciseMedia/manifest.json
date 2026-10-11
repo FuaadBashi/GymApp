@@ -16,5 +16,59 @@
     "download": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Squat_-_exercise_demonstration_video.webm",
     "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
     "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "barbell-deadlift",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Deadlift_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Deadlift_-_exercise_demonstration_video.webm",
+    "sha256": "d7870f6d8abfde8d7daf2c97252738e89617a03eda7f9a4c4adbf7996e6c9c1f",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "barbell-row",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bent-over_row_-_exercise_demonstration_video.webm",
+    "sha256": "f6b90f2f72e9020dcc261fadb09725913fa31719a8614de26fab372826987f62",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "barbell-incline",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Incline_press_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Incline_press_-_exercise_demonstration_video.webm",
+    "sha256": "6e2265685feab055c9661dfe0db392d95d3c028bedf30f5ef88f043203ec49f4",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "barbell-shoulder",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Shoulder_press_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Shoulder_press_-_exercise_demonstration_video.webm",
+    "sha256": "c0ffde36fca4e9702460ffe35ce2dea50f4c0a5ad9ef426d134466a45d0e3b7a",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "pull-up",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Pull-ups_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pull-ups_-_exercise_demonstration_video.webm",
+    "sha256": "1ddf02c690c6da9d27c9ca50453d2df212d777bb402203af116b70bf27a2227d",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "hanging-leg-raise",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Leg_raises_-_exercise_demonstration_video.webm",
+    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Leg_raises_-_exercise_demonstration_video.webm",
+    "sha256": "4e7ae3d82625ed785c595fbbf6b62b1a37318874512f9edb80a0be2da2f8594b",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
   }
 ]

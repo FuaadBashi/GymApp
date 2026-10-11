@@ -4,6 +4,88 @@ import Testing
 @testable import GymApp
 
 struct RecoveryTests {
+    @Test func aFullPrimaryRollsBackAndKeepsTheWorkoutAndLastBackup() throws {
+        let (app, recovery, folder) = try fixture()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let workout = try app.writer.write { try WorkoutWrites.start($0, dayId: nil, settings: AppSettings(), now: .now) }
+        let copies = try recovery.snapshots()
+        try app.writer.writeWithoutTransaction { db in
+            let pages = try #require(try Int.fetchOne(db, sql: "PRAGMA page_count"))
+            _ = try Int.fetchOne(db, sql: "PRAGMA max_page_count = \(pages)")
+        }
+        do {
+            try app.writer.write { try WorkoutWrites.setNoteAndEffort($0, workoutId: workout.id, note: String(repeating: "x", count: 2_000_000), effort: 7) }
+            Issue.record("The bounded database should reject a write that needs more pages")
+        } catch let error as DatabaseError { #expect(error.resultCode == .SQLITE_FULL) }
+        #expect(try app.reader.read { try WorkoutQueries.inProgress($0)?.id } == workout.id)
+        #expect(try app.reader.read { try WorkoutRecord.fetchOne($0, key: workout.id)?.note } == nil)
+        #expect(try recovery.snapshots() == copies)
+    }
+    @Test func fullBackupStorageDoesNotUndoACommittedWorkoutOrReplaceGoodCopies() throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let good = try RecoveryStore(folder: folder.appending(path: "Recovery"))
+        let queue = try DatabaseQueue(path: folder.appending(path: "live.sqlite").path)
+        let app = try AppDatabase(queue)
+        _ = try app.reader.read { try good.capture($0) }
+        let before = try good.snapshots()
+        let full = try RecoveryStore(folder: good.folder) { point in
+            if point == .snapshotValidated { throw POSIXError(.ENOSPC) }
+        }
+        queue.writeWithoutTransaction { $0.add(transactionObserver: full, extent: .databaseLifetime) }
+        let workout = try app.writer.write { try WorkoutWrites.start($0, dayId: nil, settings: AppSettings(), now: .now) }
+        #expect(try app.reader.read { try WorkoutQueries.inProgress($0)?.id } == workout.id)
+        #expect(try full.snapshots() == before)
+        #expect(full.status.error != nil)
+        #expect(try FileManager.default.contentsOfDirectory(at: good.folder, includingPropertiesForKeys: nil).allSatisfy { $0.pathExtension != "partial" })
+        _ = try app.reader.read { try good.capture($0) }
+        #expect(try RecoveryStore.inspect(try #require(good.snapshots().first)).unfinished == 1)
+    }
+    @Test func interruptedCopiesStayHiddenAndAnUnavailableDestinationRecoversOnRetry() throws {
+        let (app, recovery, folder) = try fixture()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let previous = try recovery.snapshots()
+        try Data("interrupted bytes".utf8).write(to: recovery.folder.appending(path: ".recovery-interrupted.partial"))
+        #expect(try RecoveryStore(folder: recovery.folder).snapshots() == previous)
+        #expect(!FileManager.default.fileExists(atPath: recovery.folder.appending(path: ".recovery-interrupted.partial").path))
+        let external = folder.appending(path: "External")
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        try recovery.chooseExternalFolder(external)
+        try FileManager.default.removeItem(at: external)
+        _ = try app.writer.write { try WorkoutWrites.start($0, dayId: nil, settings: AppSettings(), now: .now) }
+        #expect(recovery.status.externalPending)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        try recovery.retryExternal()
+        #expect(!recovery.status.externalPending && recovery.status.error == nil)
+        let copy = external.appending(path: try #require(recovery.snapshots().first).lastPathComponent)
+        #expect(try RecoveryStore.inspect(copy).unfinished == 1)
+    }
+    @Test func interruptedRestoreLeavesThePrimaryAndPendingCandidateAvailable() throws {
+        let (app, recovery, folder) = try fixture()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let backup = try #require(recovery.snapshots().first)
+        _ = try app.writer.write { try TestData.exercise($0, id: "keep", name: "Kept") }
+        _ = try recovery.stageRestore(backup)
+        let interrupted = try RecoveryStore(folder: recovery.folder) { point in
+            if point == .restoreValidated { throw POSIXError(.ENOSPC) }
+        }
+        let live = folder.appending(path: "live.sqlite")
+        #expect(throws: (any Error).self) { try interrupted.applyPendingRestore(to: live) }
+        #expect(try app.reader.read { try ExerciseRecord.fetchOne($0, key: "keep") != nil })
+        #expect(FileManager.default.fileExists(atPath: recovery.folder.appending(path: "pending-restore.sqlite").path))
+    }
+    @Test func aCompletedSnapshotLeavesNoStagingFilesBehind() throws {
+        // WAL, like the app's own database: its backup starts out as a WAL file.
+        let folder = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let recovery = try RecoveryStore(folder: folder.appending(path: "Recovery"))
+        let pool = try DatabasePool(path: folder.appending(path: "live.sqlite").path)
+        defer { try? pool.close(); try? FileManager.default.removeItem(at: folder) }
+        let app = try AppDatabase(pool, recovery: recovery)
+        _ = try app.writer.write { try WorkoutWrites.start($0, dayId: nil, settings: AppSettings(), now: .now) }
+        _ = try app.reader.read { try recovery.capture($0) }
+        let names = try FileManager.default.contentsOfDirectory(atPath: recovery.folder.path)
+        #expect(names.allSatisfy { !$0.contains(".partial") }, "left behind: \(names)")
+    }
     @Test func aDamagedPrimaryCanBeRecoveredWithoutErasingIt() throws {
         let (app, recovery, folder) = try fixture()
         defer { try? FileManager.default.removeItem(at: folder) }

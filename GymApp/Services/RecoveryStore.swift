@@ -26,16 +26,28 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
         }
     }
     let folder: URL
+    enum Checkpoint: Sendable { case snapshotValidated, externalValidated, restoreValidated }
+    private let check: @Sendable (Checkpoint) throws -> Void
     private let lock = NSRecursiveLock()
     private var changed = false
     private var statusValue = Status()
     private let fm = FileManager.default
 
-    init(folder: URL) throws {
+    init(folder: URL, check: @escaping @Sendable (Checkpoint) throws -> Void = { _ in }) throws {
         self.folder = folder
+        self.check = check
         try fm.createDirectory(at: folder, withIntermediateDirectories: true)
         if let data = try? Data(contentsOf: folder.appending(path: "status.json")),
            let value = try? JSONDecoder().decode(Status.self, from: data) { statusValue = value }
+        // A terminated copy is unpublished. Reclaim only our private staging files.
+        for url in try fm.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil) {
+            let name = url.lastPathComponent
+            let staged = [".recovery-", ".safety-", ".restore-", ".validated-restore-"].contains { name.hasPrefix($0) }
+            let partial = [".partial", ".partial-wal", ".partial-shm", ".partial-journal"].contains { name.hasSuffix($0) }
+            if staged && partial {
+                do { try fm.removeItem(at: url) } catch { record(error) }
+            }
+        }
     }
     var status: Status { lock.withLock { statusValue } }
     func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool { true }
@@ -84,9 +96,12 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
                 }
                 try target.close()
                 _ = try Self.inspect(partial)
+                try check(.snapshotValidated)
                 try fm.moveItem(at: partial, to: final)
+                removeSidecars(of: partial)
             } catch {
                 try? fm.removeItem(at: partial)
+                removeSidecars(of: partial)
                 throw error
             }
             statusValue.localAt = .now
@@ -97,6 +112,12 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
             do { try copyOutside(final) } catch { statusValue.error = error.localizedDescription; saveStatus() }
             if !safety { try prune() }
             return final
+        }
+    }
+    /// Opening the staging copy can leave SQLite sidecars that outlive the rename.
+    private func removeSidecars(of url: URL) {
+        for suffix in ["-wal", "-shm", "-journal"] {
+            try? fm.removeItem(at: URL(filePath: url.path + suffix))
         }
     }
     func snapshots() throws -> [URL] {
@@ -138,13 +159,19 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
         let destination = try URL(resolvingBookmarkData: bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
         let accessed = destination.startAccessingSecurityScopedResource()
         defer { if accessed { destination.stopAccessingSecurityScopedResource() } }
-        if stale { throw Failure.missingFolder }
+        if stale {
+            var isDirectory: ObjCBool = false
+            guard fm.fileExists(atPath: destination.path, isDirectory: &isDirectory), isDirectory.boolValue else { throw Failure.missingFolder }
+            let refreshed = try destination.bookmarkData(options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
+            try refreshed.write(to: folder.appending(path: "destination.bookmark"), options: .atomic)
+        }
         let final = destination.appending(path: source.lastPathComponent)
         let partial = destination.appending(path: ".\(UUID().uuidString).partial")
         do {
             try fm.copyItem(at: source, to: partial)
             guard SHA256.hash(data: try Data(contentsOf: source)) == SHA256.hash(data: try Data(contentsOf: partial)) else { throw Failure.invalidBackup }
             _ = try Self.inspect(partial)
+            try check(.externalValidated)
             if fm.fileExists(atPath: final.path) {
                 guard SHA256.hash(data: try Data(contentsOf: final)) == SHA256.hash(data: try Data(contentsOf: source)) else { throw Failure.invalidBackup }
                 try fm.removeItem(at: partial)
@@ -159,7 +186,7 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
     func retryExternal() throws {
         try lock.withLock {
             guard let latest = try snapshots().first else { return }
-            do { try copyOutside(latest) } catch { record(error); throw error }
+            do { try copyOutside(latest) } catch { statusValue.externalPending = true; record(error); throw error }
         }
     }
     func export(_ source: URL) throws -> URL {
@@ -214,6 +241,7 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
         try source.backup(to: target)
         try target.close(); try source.close()
         _ = try Self.inspect(staged)
+        try check(.restoreValidated)
         let drafts = MetadataDraft.folder
         let hasDrafts = fm.fileExists(atPath: drafts.path)
         if hasDrafts { try fm.copyItem(at: drafts, to: archive.appending(path: "Drafts")) }
