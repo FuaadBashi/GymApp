@@ -84,8 +84,10 @@ phase 4; phase 4 can then cover remaining import/export work.
 
 ## Phase 3: History and analytics
 
-May be cut down (decision #36): deep analysis could move to a separate offline tool that
-reads the export, leaving the app with history and the basic per-exercise figures.
+**Done 12 October 2026, lean** (decision #36, [spec](specs/03-history-analytics.md)). The
+consistency heat strip and the measurements table were left out; deeper analysis belongs to
+a separate offline tool reading the export. Bench press, squat and deadlift figures match
+an independent calculation from the export exactly.
 
 - History tab: calendar, week grouping, count against goal, every workout since 2022.
 - Workout detail, editable, with every figure recomputing.

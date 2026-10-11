@@ -74,3 +74,29 @@ struct ExerciseStatsTests {
         #expect(abs((r.bestE1RM?.valueKg ?? 0) - (expected ?? -1)) < 0.0001)
     }
 }
+
+/// Card 3.6: the app's exercise figures against tools/check_phase3.py, computed straight from
+/// the export.
+struct Phase3ExportTests {
+    struct Expected: Decodable {
+        struct Figures: Decodable { let name: String; let sessions: Int; let heaviestKg: Double; let bestE1RMKg: Double; let bestSessionVolumeKg: Double }
+        let exercises: [String: Figures]
+    }
+
+    @Test(.enabled(if: Fixtures.hasRealExport))
+    func exercisePagesMatchTheExport() async throws {
+        let url = URL(filePath: #filePath).deletingLastPathComponent().appending(path: "Fixtures/phase3_expected.json")
+        let expected = try JSONDecoder().decode(Expected.self, from: Data(contentsOf: url))
+        let db = try AppDatabase.inMemory()
+        try await db.writer.write { try LibrarySeeder.seed(in: $0, now: .now) }
+        _ = try await ImportService.importJEFIT(fileAt: Fixtures.realExport, into: db)
+        for (id, want) in expected.exercises {
+            let sessions = try await db.reader.read { try ExerciseQueries.sessions($0, exerciseId: id) }
+            let r = ExerciseStats.records(sessions, loadMode: .total) { _ in nil }
+            #expect(Set(sessions.map(\.workout.id)).count == want.sessions, "\(want.name) sessions")
+            #expect(abs((r.heaviest?.valueKg ?? 0) - want.heaviestKg) < 0.01, "\(want.name) heaviest")
+            #expect(abs((r.bestE1RM?.valueKg ?? 0) - want.bestE1RMKg) < 0.01, "\(want.name) e1RM")
+            #expect(abs((r.bestVolume?.valueKg ?? 0) - want.bestSessionVolumeKg) < 0.01, "\(want.name) volume")
+        }
+    }
+}

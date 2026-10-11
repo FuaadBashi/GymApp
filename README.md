@@ -5,29 +5,35 @@ of JEFIT (exercises and how they're categorised, programs, set logging, the cale
 analytics) and drops the social feed, points, upsells and account. Everything lives on the
 phone; nothing is sent anywhere.
 
-**What exists today:** the app's SQLite database (GRDB), holding an 876-exercise library
-and four years of my JEFIT history. The history comes in through an in-app import: 468
-workouts and 7,751 sets, matching a Python reference importer row for row, and safe to run
-twice. On top of it: an Exercises tab (search, filters, history per exercise, notes, custom
-exercises), programs for any split with a rolling rotation, a day editor that copies JEFIT
-days across with their history, an exercise picker filtered to the day's focus, and
-"Suggest a day", which fills a day from exercises I've actually done. Workouts now log
-straight to the database, with list and focus modes, prefill from the day's history,
-immediate set saves, resume after relaunch, rest alerts, a mini-player, swaps, added
-exercises, a plate calculator and a summary with volume, records and muscles trained.
-The prototype has been removed. A full Full Body 1 simulator session is verified.
-The Live Activity target and countdown are implemented and visible on the simulator lock screen.
-The rest alert fires at expiry; the activity changes to “Rest over” when iOS refreshes
-its stale state, and clears on return (decision #37). Verified on the simulator.
-**Phase 2 is complete.** History and Progress await the phase-3 spec.
-The post-phase-2 additions now include checked recovery copies, backup-folder selection
-and restore, autosaved set/session-exercise notes, effort labels (max rep and MR −1/−2/−3),
-deload/injury/form annotations and warm-up selection. Offline stills and videos initially
-cover barbell bench press and back squat; other variants explicitly show missing media.
-Choose an independent folder in Settings → Backups & recovery to enable external copies.
-[The roadmap](docs/ROADMAP.md) has the order and what "done" means for each phase.
+**What exists today:** a complete training log on an SQLite database (GRDB), holding an
+876-exercise library and four years of my JEFIT history (468 workouts, 7,751 sets, imported
+in-app and matching a Python reference importer row for row).
 
-<img src="docs/screenshots/train.png" width="300" alt="Train tab: Full Body 3 next up, with last-time sets per exercise">
+- **Train:** programs for any split with a rolling rotation; a day editor that copies JEFIT
+  days with their history; an exercise picker filtered to the day's focus; "Suggest a day".
+- **Workout:** list and focus modes, prefill from the day's last session, every set saved
+  immediately, resume after the app is killed, rest alerts and a lock-screen countdown, a
+  mini-player, swaps, a plate calculator, and a summary with volume, records and muscles.
+- **History:** a month calendar and every workout since 2022 by week; each workout opens to
+  its sets and figures and can be corrected, with every figure recomputing.
+- **Exercises:** search and filters, a progress chart (estimated 1RM, heaviest, volume),
+  records with dates, history, notes and offline demonstrations for eight lifts.
+- **Progress:** 12 weeks of volume, sessions and time; sets per muscle on a body map; recent
+  records; body weight.
+- **Backups:** verified local recovery copies after every change, copies to a folder of my
+  choosing, and checked restores.
+
+Exercise figures are checked against an independent calculation from the raw export
+(`tools/check_phase3.py`). [The roadmap](docs/ROADMAP.md) has the order and what "done"
+means for each phase.
+
+<p>
+<img src="docs/screenshots/workout-list.png" width="200" alt="Workout in list mode">
+<img src="docs/screenshots/history.png" width="200" alt="History tab with month calendar">
+<img src="docs/screenshots/exercise-progress.png" width="200" alt="Exercise progress chart and records">
+<img src="docs/screenshots/progress.png" width="200" alt="Progress tab with muscle map">
+</p>
+
 
 ## Review guide
 
@@ -35,7 +41,7 @@ Start with [the training rulebook](docs/TRAINING_RULEBOOK.md): every number the 
 defined there. [The decisions](docs/DECISIONS.md) explain the constraints, and
 [the JEFIT export notes](docs/JEFIT_EXPORT.md) cover the import format and its traps. In code,
 [`TrainingMath`](GymApp/Domain/TrainingMath.swift) implements the rulebook and
-[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered. Phases 0–2 are planned
+[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered. Phases 0–3 are planned
 card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds the live status.
 
 ## Status
@@ -46,8 +52,8 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 0 | Database, full JEFIT import, exercise library | done |
 | 1 | Programs and the exercise library | done |
 | 2 | Workout screen | done |
-| 3 | History and analytics | not started (deep analysis may move to a separate tool, decision #36) |
-| 4 | Import, export and backups | not started |
+| 3 | History and analytics (lean) | done |
+| 4 | Import, export and backups | **next** (backup and restore already done) |
 | 5 | On the phone | not started |
 
 ## The constraints this repo is shaped around

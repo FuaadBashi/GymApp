@@ -1,0 +1,29 @@
+{
+ "exercises": {
+  "jefit:1:2": {
+   "name": "Barbell Bench Press",
+   "sessions": 77,
+   "heaviestKg": 77.5,
+   "bestE1RMKg": 93.33,
+   "bestSessionVolumeKg": 2692.5
+  },
+  "jefit:1:12": {
+   "name": "Barbell Squat",
+   "sessions": 63,
+   "heaviestKg": 105.0,
+   "bestE1RMKg": 123.5,
+   "bestSessionVolumeKg": 2690.0
+  },
+  "jefit:1:93": {
+   "name": "Barbell Deadlift",
+   "sessions": 87,
+   "heaviestKg": 137.5,
+   "bestE1RMKg": 170.0,
+   "bestSessionVolumeKg": 4025.0
+  }
+ },
+ "jefitRecords": {
+  "compared": 175,
+  "matched": 147
+ }
+}

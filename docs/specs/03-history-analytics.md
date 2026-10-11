@@ -1,5 +1,7 @@
 # Phase 3: History and analytics (lean)
 
+**Closed 12 October 2026.** All six cards done; see HANDOFF.md for notes.
+
 **Outcome:** every finished workout since 2022 can be browsed, opened and corrected; each
 exercise shows its progress and records; a Progress tab summarises recent training.
 
