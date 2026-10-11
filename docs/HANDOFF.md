@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 1.9.**
+**Next card: 1.10.**
 
 ## Cards
 
@@ -28,7 +28,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 1.6 Train tab and programs
 - [x] 1.7 Day editor
 - [x] 1.8 Exercise picker
-- [ ] 1.9 Suggest a day
+- [x] 1.9 Suggest a day
 - [ ] 1.10 Phase close
 
 ### Phase 2: Workout screen ([spec](specs/02-workout-screen.md))
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **1.9**: Suggest a day: DaySuggester slots and ranking, swap menu, add selected.
 - **1.8**: Exercise picker: focus toggle, multi-select in tap order, In this day rows, New exercise.
 - **1.7**: Day editor: rename, focus menu, item list (edit sheet, reorder, delete), Add exercises / Suggest a day, and Copy from another day (nested menu by program, confirm before replace). Simulator: copying JEFIT 2FBD 2 into Full Body 2 gave 10 exercises with last-time values from 11 Oct through lineage. Card hit areas use .contentShape(.rect). Picker and suggestions are stubs until 1.8 and 1.9.
 - **1.6**: Train tab (Next up with last-time summaries, other days), Programs list (Active, Programs, Archived; swipe to archive or delete app programs), Program detail (reorder, delete, make active, rename, add day), New program split picker. Routing uses TrainRoute through one NavigationStack path. TrainViewModel.card() is shared with Program detail. Simulator: a new Full Body (3 days) shows Next up Full Body 1, never done; the JEFIT programs are under Archived. Rows inside List use .buttonStyle(.plain) to avoid accent-tinted text.
