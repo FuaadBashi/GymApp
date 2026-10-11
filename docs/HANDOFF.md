@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 1.1.**
+**Next card: 1.2.**
 
 ## Cards
 
@@ -20,7 +20,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 0.7 Phase close
 
 ### Phase 1: Programs and the exercise library ([spec](specs/01-programs-library.md))
-- [ ] 1.1 App shell, theme and settings
+- [x] 1.1 App shell, theme and settings
 - [ ] 1.2 Queries and writes for exercises and programs
 - [ ] 1.3 Exercises tab
 - [ ] 1.4 Exercise detail page
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **1.1**: RootView with five tabs (History shows the count of finished workouts waiting); Theme.swift with volt accent, PrimaryButtonStyle, SecondaryButtonStyle and Chip; AppSettings in the setting table; SettingsView saves on every change (verified: defaultSets survives relaunch) and now owns the JEFIT import. The prototype opens full screen from Settings with a Close button; the DEBUG -importJEFIT launch argument moved to RootView. 46 tests.
 - **0.7**: Phase 0 closed. Full suite green (43 tests). From a clean simulator install: import gives 468 workouts and 7,751 sets; a second import inserts only the import-run row; the prototype still runs. For phase 1: run anything that writes in the background through a test off the main actor (specs/README conventions). On a re-import, skip counts for cardio logs are lower, because already-imported workouts are skipped whole. That is expected.
 - **0.6**: Database opens at launch (AppStartup) and seeds the library; HomeView menu imports from Files; DEBUG -importJEFIT <path> imports at launch. Simulator: 468 workouts and 7,751 sets imported; a second run inserts only the import-run row. That second run first failed with UNIQUE program.externalId: a protocol cast in the importer returns nil off the main actor (main-actor-isolated conformance), and only the background path hit it. Fixed with key paths; added a test that imports twice through ImportService off the main actor, and checked that test fails on the old code. Rule added to specs/README conventions. 43 tests.
 - **0.5**: Importer mirrors reference_import.py step by step; rounding is half-to-even to match Python's round(). run() takes optional fileName/fileSHA256 for the import-run row. ImportReport is Hashable (ImportRunRecord needs it). Real export imports in 0.45 s and matches every count, skip reason, spot-checked workout and exercise best. 42 tests.

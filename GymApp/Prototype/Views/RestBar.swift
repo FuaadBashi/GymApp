@@ -32,8 +32,8 @@ struct RestBar: View {
             .background(alignment: .leading) {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        Theme.rest.opacity(0.45)
-                        Theme.rest.frame(width: geo.size.width * fraction)
+                        Theme.accent.opacity(0.45)
+                        Theme.accent.frame(width: geo.size.width * fraction)
                     }
                 }
             }

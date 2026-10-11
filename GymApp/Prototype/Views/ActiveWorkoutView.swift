@@ -104,8 +104,8 @@ struct ActiveWorkoutView: View {
 
     private func segmentColor(_ exercise: ExerciseInWorkout, current: Bool) -> Color {
         if current { return .accentColor }
-        if exercise.isComplete { return Theme.logged.opacity(0.8) }
-        if !exercise.loggedSets.isEmpty { return Theme.logged.opacity(0.35) }
+        if exercise.isComplete { return Theme.accent.opacity(0.8) }
+        if !exercise.loggedSets.isEmpty { return Theme.accent.opacity(0.35) }
         return Color(white: 0.25)
     }
 
@@ -141,7 +141,7 @@ struct ActiveWorkoutView: View {
                         Text("Finish workout").font(.headline).frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(Theme.logged)
+                    .tint(Theme.accent)
                 }
             }
             .controlSize(.large)
@@ -181,7 +181,7 @@ private struct ExerciseList: View {
                 Button { select(index) } label: {
                     HStack {
                         Image(systemName: exercise.isComplete ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(exercise.isComplete ? Theme.logged : Color.secondary)
+                            .foregroundStyle(exercise.isComplete ? Theme.accent : Color.secondary)
                         Text(exercise.name).foregroundStyle(.primary)
                         Spacer()
                         Text("\(exercise.loggedSets.count)/\(exercise.sets.count)")

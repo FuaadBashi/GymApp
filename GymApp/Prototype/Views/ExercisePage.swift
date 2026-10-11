@@ -131,7 +131,7 @@ struct ExercisePage: View {
             Button { withAnimation { store.toggleLogged(exercise: exerciseIndex, set: index) } } label: {
                 Image(systemName: set.isLogged ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(set.isLogged ? Theme.logged : Color.secondary)
+                    .foregroundStyle(set.isLogged ? Theme.accent : Color.secondary)
                     .frame(width: 44, height: 44)
             }
             .accessibilityLabel(set.isLogged ? "Un-log set \(index + 1)" : "Log set \(index + 1)")
@@ -167,7 +167,7 @@ struct ExercisePage: View {
         let now = equipment == .assisted ? set.load.kg : TrainingMath.e1RM(kg: set.load.kg, reps: set.reps)
         let then = equipment == .assisted ? last.kg : TrainingMath.e1RM(kg: last.kg, reps: last.reps)
         if now > then + 0.01 {
-            Image(systemName: "arrow.up").foregroundStyle(Theme.logged)
+            Image(systemName: "arrow.up").foregroundStyle(Theme.accent)
         } else if now < then - 0.01 {
             Image(systemName: "arrow.down").foregroundStyle(.orange)
         } else {

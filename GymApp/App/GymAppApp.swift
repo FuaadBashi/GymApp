@@ -4,7 +4,6 @@ import UserNotifications
 @main
 struct GymAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @State private var store = WorkoutStore()
     @State private var database = AppStartup.openDatabase()
 
     var body: some Scene {
@@ -12,13 +11,13 @@ struct GymAppApp: App {
             Group {
                 switch database {
                 case .success(let db):
-                    HomeView()
-                        .environment(store)
+                    RootView(db: db)
                         .environment(\.appDatabase, db)
                 case .failure(let error):
                     DatabaseErrorView(error: error)
                 }
             }
+            .tint(Theme.accent)
             .preferredColorScheme(.dark)
         }
     }
@@ -41,12 +40,4 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     ) async -> UNNotificationPresentationOptions {
         [.banner, .sound]
     }
-}
-
-enum Theme {
-    static let rest = Color(red: 0.29, green: 0.68, blue: 0.42)
-    static let logged = Color(red: 0.36, green: 0.82, blue: 0.47)
-    static let note = Color(red: 0.98, green: 0.83, blue: 0.38)
-    static let card = Color(white: 0.11)
-    static let row = Color(white: 0.16)
 }
