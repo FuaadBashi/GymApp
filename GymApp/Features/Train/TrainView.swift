@@ -98,6 +98,7 @@ private struct NextUpCard: View {
                         }
                     }
                 }
+                .contentShape(.rect)
             }
             .buttonStyle(.plain)
             Button("Start \(card.detail.day.name)") {}
@@ -131,5 +132,6 @@ private struct CompactDayCard: View {
         }
         .padding()
         .background(Theme.card, in: .rect(cornerRadius: 16))
+        .contentShape(.rect)
     }
 }
