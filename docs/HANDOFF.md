@@ -58,8 +58,12 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 3.5 Progress tab
 - [x] 3.6 Phase close
 
-### Phases 4–5 ([outline](specs/03-05-outline.md))
-Specified when phase 3 closes.
+### Phase 4: Import, export and backups ([spec](specs/04-export.md))
+- [ ] 4.1 CSV export of every set
+- [ ] 4.2 Export format and round trip
+
+### Phase 5 ([outline](specs/03-05-outline.md))
+Specified when phase 4 closes.
 
 ## Requested after phase 2
 
