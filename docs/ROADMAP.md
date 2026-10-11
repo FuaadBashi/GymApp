@@ -11,6 +11,9 @@ summary) is done and serves as reference. Its models carry forward; its storage 
 
 ## Phase 0: Foundation
 
+**Done 11 October 2026.** The full real export imports in under a second and matches the
+reference on every count, skip reason and spot check.
+
 Everything else reads from this.
 
 - SQLite database through GRDB (decision #8), with tables for exercises, programs, days, day

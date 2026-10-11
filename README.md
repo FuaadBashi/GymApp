@@ -5,13 +5,13 @@ of JEFIT (exercises and how they're categorised, programs, set logging, the cale
 analytics) and drops the social feed, points, upsells and account. Everything lives on the
 phone; nothing is sent anywhere.
 
-**What exists today:** a prototype of the workout screen running on real data. It has two
-full-body days seeded from my JEFIT export, last-time values, per-exercise notes, a rest timer
-that alerts with the phone locked, and a workout that survives the app being killed
-mid-rest. The project builds with GRDB and a test target. All 199 JEFIT exercises are
-classified for import, and a Python reference importer fixes the expected result: 468
-workouts and 7,751 sets. **What doesn't yet:** the database, the in-app import, programs,
-history and analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for
+**What exists today:** the app's SQLite database (GRDB), holding an 876-exercise library
+and four years of my JEFIT history. The history comes in through an in-app import: 468
+workouts and 7,751 sets, matching a Python reference importer row for row, and safe to run
+twice. A prototype of the workout screen still runs on top. It has last-time values,
+per-exercise notes, a rest timer that alerts with the phone locked, and a workout that
+survives the app being killed mid-rest. **What doesn't yet:** programs, the real workout
+screen, history and analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for
 each phase.
 
 ## Review guide
@@ -28,8 +28,8 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | Phase | Focus | State |
 |---|---|---|
 | – | Workout-screen prototype on JEFIT data | done |
-| 0 | Database, full JEFIT import, exercise library | **next**; data, reference importer and spec ready |
-| 1 | Programs and the exercise library | not started |
+| 0 | Database, full JEFIT import, exercise library | done |
+| 1 | Programs and the exercise library | **next** |
 | 2 | Workout screen | not started |
 | 3 | History and analytics | not started |
 | 4 | Import, export and backups | not started |
@@ -100,7 +100,10 @@ xcodebuild test -project GymApp.xcodeproj -scheme GymApp \
 
 ```
 GymApp/App/          entry point, app delegate, theme
-GymApp/Domain/       Load, SetType, TrainingMath (the rulebook in code)
+GymApp/Domain/       Load, SetType, exercise types, TrainingMath (the rulebook in code)
+GymApp/Database/     schema, records, AppDatabase
+GymApp/Import/       JEFIT reader, importer, import screen
+GymApp/Library/      bundled library and exercise-map loading
 GymApp/Services/     rest-timer notifications
 GymApp/Prototype/    the workout-screen prototype, replaced phase by phase
 GymApp/Resources/    data bundled with the app: exercise library, JEFIT exercise map
