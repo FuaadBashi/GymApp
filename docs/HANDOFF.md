@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 3.5.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+**Next card: 3.6.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
 
 **Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
 The post-phase-2 additions are implemented and tested locally, with initial media
@@ -55,7 +55,7 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 3.2 History tab
 - [x] 3.3 Workout detail and editing
 - [x] 3.4 Exercise progress and records
-- [ ] 3.5 Progress tab
+- [x] 3.5 Progress tab
 - [ ] 3.6 Phase close
 
 ### Phases 4–5 ([outline](specs/03-05-outline.md))
@@ -76,6 +76,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **3.5**: Progress tab: 12-week bars (volume, sessions, time, each vs last week), muscles this/last week on a front/back body map plus a list with the 10–20 band, last 20 records (beating every earlier session, judged per workout), body-weight chart and Add weight (one per day). ProgressQueries builds on HistoryQueries/SummaryQueries. Body map artwork: react-body-highlighter 2.0.5 (MIT, (c) 2020 GV79), converted by tools/build_body_map.py into Resources/BodyMap/body_map.json with licence and BODY_MAP_PROVENANCE.md (named so it doesn't collide with the media PROVENANCE.md in the flat bundle). A test enforces every Muscle maps to a region. DEBUG launch argument -tab <0–4> opens a tab, for simulator checks. Simulator verified with the real import.
 - **3.4**: ExerciseStats (points per session, records: heaviest, best e1RM, best session volume, rep records per load; ties keep the earliest date; bodyweightPlus/repsOnly volume only) and ExerciseProgressView (metric and range pickers, Swift Charts line, records linking to WorkoutDetailView). The exercise page now opens on Progress; the demonstration media moved into About so the chart is above the fold. Range defaults to All (long histories have gaps longer than a year). Real export: bench best e1RM equals an independent Epley over raw SQL rows. Simulator: Cable Lat Pulldown chart 2022–2026, heaviest 86 kg × 4 (18 Mar 2025), best e1RM 106.1 kg (7 Jun 2025), 27 rep records. Lines are straight segments; a monotone curve overshot between distant sessions.
 - **3.3**: Workout detail: summary tiles, records, every exercise and set with e1RM; Edit mode edits title, effort, note, set load/reps/unit/type, adds and deletes sets, deletes the workout after confirmation. New writes rename (emptyTitle), addLoggedSet (completed at endedAt), deleteLoggedSet (last set of an exercise removes it; last set of the workout refused with lastSet), deleteFinished. Figures reload from SummaryQueries after each change. Simulator: 2FBD 2 on 11 Oct, 20→22.5 kg on a 2-rep squat set moved volume 2,385→2,390 kg (reverted). The spec said 'a 2024 workout'; the newest one was used since the view is the same for any date.
 - **3.2**: History tab replaces the placeholder: MonthCalendar (week start per settings, dots coloured per program day, grey for ad hoc), 'This week: n of goal', weeks newest first with workout/volume totals, rows with duration, sets, volume and exercise names. Reloads when a workout finishes. Simulator with the real import: October 2026 dots on 1, 5, 7 and 11 Oct; list starts with 2FBD 2 on 11 Oct; scrolling through 2026 smooth. Screenshot docs/screenshots/history.png. WorkoutDetailView is a stub until 3.3.
@@ -116,6 +117,9 @@ card should know.
 - **0.1**: Domain enums in ExerciseTypes.swift; TrainingMath now takes LoadMode and skips drop segments in records; PastSet moved to Domain. The prototype maps ProtoEquipment to a LoadMode. 17 tests.
 
 ## Open questions
+
+- **Body map regions (3.5):** the MIT artwork has no separate lats/middle back region (both shade 'upper-back') and no outer-hip region (abductors shade the glutes, which hold gluteus medius). Its source names for the inner-thigh regions are swapped; both are mapped to adductors. Revisit if more precise artwork is wanted.
+- **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 
 Questions a card raised that the spec did not answer. Do not guess; record them here and
 stop.
