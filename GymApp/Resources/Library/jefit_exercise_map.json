@@ -1,0 +1,4364 @@
+{
+ "source": "jefit-export-2026-10-11.csv",
+ "exercises": [
+  {
+   "jefitId": "1:86",
+   "name": "Cable Lat Pulldown (Wide Grip)",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 95
+  },
+  {
+   "jefitId": "1:93",
+   "name": "Barbell Deadlift",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Deadlift",
+   "jefitLogCount": 87
+  },
+  {
+   "jefitId": "1:175",
+   "name": "Smith Machine Incline Bench Press",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Smith_Machine_Incline_Bench_Press",
+   "jefitLogCount": 83
+  },
+  {
+   "jefitId": "1:130",
+   "name": "Machine Leg Extension",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "kneeExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 81
+  },
+  {
+   "jefitId": "1:2",
+   "name": "Barbell Bench Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 79
+  },
+  {
+   "jefitId": "1:3",
+   "name": "Barbell Bent-Over Row",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Bent_Over_Barbell_Row",
+   "jefitLogCount": 77
+  },
+  {
+   "jefitId": "1:12",
+   "name": "Barbell Squat",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Squat",
+   "jefitLogCount": 63
+  },
+  {
+   "jefitId": "1:160",
+   "name": "Machine Leg Curl (Prone)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "kneeFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 58
+  },
+  {
+   "jefitId": "1:135",
+   "name": "Smith Machine Squat",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Smith_Machine_Squat",
+   "jefitLogCount": 56
+  },
+  {
+   "jefitId": "1:32",
+   "name": "Dumbbell Lateral Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 56
+  },
+  {
+   "jefitId": "1:26",
+   "name": "Dumbbell Bench Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Dumbbell_Bench_Press",
+   "jefitLogCount": 49
+  },
+  {
+   "jefitId": "1:48",
+   "name": "Dumbbell Seated Shoulder Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 49
+  },
+  {
+   "jefitId": "1:149",
+   "name": "Cable Tricep Pushdown (V-Bar)",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 42
+  },
+  {
+   "jefitId": "1:1261",
+   "name": "Machine Assisted Dip",
+   "equipment": "machine",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [
+    "chest",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "dip",
+   "importWeights": "keep",
+   "negateOnImport": true,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 41
+  },
+  {
+   "jefitId": "1:1262",
+   "name": "Machine Assisted Pull-Up",
+   "equipment": "machine",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": true,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 41
+  },
+  {
+   "jefitId": "1:447",
+   "name": "Smith Machine Shoulder Press",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 40
+  },
+  {
+   "jefitId": "1:132",
+   "name": "Machine Leg Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 39
+  },
+  {
+   "jefitId": "1:46",
+   "name": "Machine Shoulder Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 36
+  },
+  {
+   "jefitId": "1:874",
+   "name": "Cable Rope Face Pull",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 35
+  },
+  {
+   "jefitId": "1:8",
+   "name": "Barbell Incline Bench Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 34
+  },
+  {
+   "jefitId": "1:106",
+   "name": "Dumbbell Incline Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Incline_Dumbbell_Curl",
+   "jefitLogCount": 33
+  },
+  {
+   "jefitId": "1:56",
+   "name": "Machine Ab Crunch",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Ab_Crunch_Machine",
+   "jefitLogCount": 33
+  },
+  {
+   "jefitId": "1:770",
+   "name": "Machine Lateral Shoulder Raise",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 32
+  },
+  {
+   "jefitId": "1:21",
+   "name": "Cable Seated Row",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 31
+  },
+  {
+   "jefitId": "1:851",
+   "name": "Leverage Chest Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Leverage_Chest_Press",
+   "jefitLogCount": 31
+  },
+  {
+   "jefitId": "1:90",
+   "name": "Dumbbell One-Arm Row",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:One-Arm_Dumbbell_Row",
+   "jefitLogCount": 31
+  },
+  {
+   "jefitId": "1:109",
+   "name": "Dumbbell One-Arm Preacher Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:One_Arm_Dumbbell_Preacher_Curl",
+   "jefitLogCount": 30
+  },
+  {
+   "jefitId": "1:375",
+   "name": "Dumbbell Pullover",
+   "equipment": "dumbbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "chest",
+    "triceps"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "pullover",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "one dumbbell held in both hands",
+   "libraryId": null,
+   "jefitLogCount": 29
+  },
+  {
+   "jefitId": "1:116",
+   "name": "Dumbbell Alternating Bicep Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 28
+  },
+  {
+   "jefitId": "1:178",
+   "name": "Machine Incline Chest Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 27
+  },
+  {
+   "jefitId": "1:163",
+   "name": "Machine Bench Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Machine_Bench_Press",
+   "jefitLogCount": 26
+  },
+  {
+   "jefitId": "1:1256",
+   "name": "Machine Single-Leg Extension",
+   "equipment": "machine",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "kneeExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 25
+  },
+  {
+   "jefitId": "1:45",
+   "name": "Machine Fly",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "chestFly",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 25
+  },
+  {
+   "jefitId": "1:199",
+   "name": "Barbell Romanian Deadlift",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 24
+  },
+  {
+   "jefitId": "1:1204",
+   "name": "Smith Machine Front Squat",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 23
+  },
+  {
+   "jefitId": "1:820",
+   "name": "Leverage Machine Iso Row",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 23
+  },
+  {
+   "jefitId": "1:187",
+   "name": "Cable V Bar Pulldown",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 22
+  },
+  {
+   "jefitId": "1:114",
+   "name": "Dumbbell Alternating Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 21
+  },
+  {
+   "jefitId": "1:140",
+   "name": "Calf Press On Leg Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 21
+  },
+  {
+   "jefitId": "1:31",
+   "name": "Dumbbell Incline Bench Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 21
+  },
+  {
+   "jefitId": "1:807",
+   "name": "Barbell Row",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 21
+  },
+  {
+   "jefitId": "1:10",
+   "name": "Barbell Shoulder Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Shoulder_Press",
+   "jefitLogCount": 20
+  },
+  {
+   "jefitId": "1:42",
+   "name": "Dumbbell Shoulder Shrug",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "traps"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "shrug",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 20
+  },
+  {
+   "jefitId": "1:95",
+   "name": "EZ Bar Curl",
+   "equipment": "ezBar",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:EZ-Bar_Curl",
+   "jefitLogCount": 20
+  },
+  {
+   "jefitId": "1:113",
+   "name": "Barbell Preacher Curl",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 19
+  },
+  {
+   "jefitId": "1:1334",
+   "name": "Cable One-Arm Tricep Pushdown",
+   "equipment": "cable",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 18
+  },
+  {
+   "jefitId": "1:248",
+   "name": "Smith Machine Bench Press (Close Grip)",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Smith_Machine_Close-Grip_Bench_Press",
+   "jefitLogCount": 18
+  },
+  {
+   "jefitId": "1:155",
+   "name": "Cable Rope Overhead Tricep Extension",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 17
+  },
+  {
+   "jefitId": "1:700",
+   "name": "Machine Seated Row",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 17
+  },
+  {
+   "jefitId": "1:78",
+   "name": "Decline Crunch",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Decline_Crunch",
+   "jefitLogCount": 17
+  },
+  {
+   "jefitId": "1:102",
+   "name": "Cable Bicep Curl",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 16
+  },
+  {
+   "jefitId": "1:19",
+   "name": "Cable Lateral Raise",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 16
+  },
+  {
+   "jefitId": "1:804",
+   "name": "Dumbbell Incline Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 16
+  },
+  {
+   "jefitId": "1:250",
+   "name": "Cable Tricep Pushdown",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 15
+  },
+  {
+   "jefitId": "1:83",
+   "name": "Pull-Up",
+   "equipment": "bodyweight",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "set rows carry no weight; logged as bodyweight",
+   "libraryId": null,
+   "jefitLogCount": 15
+  },
+  {
+   "jefitId": "1:11",
+   "name": "Barbell Shrug",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "traps"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "shrug",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Shrug",
+   "jefitLogCount": 14
+  },
+  {
+   "jefitId": "1:112",
+   "name": "Barbell Curl",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Curl",
+   "jefitLogCount": 14
+  },
+  {
+   "jefitId": "1:159",
+   "name": "Cable Tricep Pushdown (Rope)",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 14
+  },
+  {
+   "jefitId": "1:876",
+   "name": "Leverage Shoulder Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Leverage_Shoulder_Press",
+   "jefitLogCount": 14
+  },
+  {
+   "jefitId": "1:1029",
+   "name": "Dumbbell Seated Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 13
+  },
+  {
+   "jefitId": "1:1200",
+   "name": "Machine Single-Leg Curl",
+   "equipment": "machine",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "kneeFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 13
+  },
+  {
+   "jefitId": "1:221",
+   "name": "EZ Bar Tricep Extension",
+   "equipment": "ezBar",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 13
+  },
+  {
+   "jefitId": "1:100",
+   "name": "Dumbbell Seated Bicep Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 12
+  },
+  {
+   "jefitId": "1:1018",
+   "name": "Dumbbell One-Arm Preacher Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 12
+  },
+  {
+   "jefitId": "1:1263",
+   "name": "Machine Assisted Chin-Up",
+   "equipment": "machine",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": true,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 11
+  },
+  {
+   "jefitId": "1:161",
+   "name": "Machine Seated Leg Curl",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "kneeFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 11
+  },
+  {
+   "jefitId": "1:25",
+   "name": "Dumbbell Arnold Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Arnold_Dumbbell_Press",
+   "jefitLogCount": 11
+  },
+  {
+   "jefitId": "1:711",
+   "name": "Dumbbell Decline Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 11
+  },
+  {
+   "jefitId": "1:1010",
+   "name": "Dumbbell Alternating Seated Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:1127",
+   "name": "Cable One-Arm Lateral Raise",
+   "equipment": "cable",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:1147",
+   "name": "Dumbbell Seated Press (Palms In)",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:1266",
+   "name": "Machine Vertical Row (Close Grip)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:137",
+   "name": "Barbell Front Squat",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Front_Barbell_Squat",
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:190",
+   "name": "Smith Machine Good Morning",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:853",
+   "name": "Leverage Incline Chest Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Leverage_Incline_Chest_Press",
+   "jefitLogCount": 10
+  },
+  {
+   "jefitId": "1:1273",
+   "name": "Parallel Bar Leg Raise",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 9
+  },
+  {
+   "jefitId": "1:1152",
+   "name": "Dumbbell Alternating Press (Palms In)",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:1246",
+   "name": "Machine Lat Pulldown (Reverse Grip)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:1259",
+   "name": "Machine Back Extension",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lower back"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "backExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:47",
+   "name": "Push-Up",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:701",
+   "name": "Cable Standing Row",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:755",
+   "name": "Barbell Military Press (Seated)",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Seated_Barbell_Military_Press",
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:88",
+   "name": "Dumbbell Bent-Over Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 8
+  },
+  {
+   "jefitId": "1:1268",
+   "name": "Machine Lat Pulldown",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:1330",
+   "name": "Dumbbell Rear Delt Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:145",
+   "name": "Machine Calf Raise",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:24",
+   "name": "Dip",
+   "equipment": "bodyweight",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [
+    "chest",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "dip",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "weights are JEFIT's 10 kg default or a one-off body weight, not added load",
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:50",
+   "name": "Smith Machine Shrug",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "traps"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "shrug",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:675",
+   "name": "Bench Weighted Decline Crunch",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "weights vary 5-10 kg: a held plate",
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "1:92",
+   "name": "Back Hyperextension",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lower back"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "backExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "weights vary 2.5-10 kg: a held plate",
+   "libraryId": null,
+   "jefitLogCount": 7
+  },
+  {
+   "jefitId": "0:5",
+   "name": "Lui raise",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "Lu raise with a plate, 5 kg every set",
+   "libraryId": null,
+   "jefitLogCount": 6
+  },
+  {
+   "jefitId": "1:1074",
+   "name": "EZ Bar Curl (Reverse Grip)",
+   "equipment": "ezBar",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 6
+  },
+  {
+   "jefitId": "1:247",
+   "name": "Dumbbell Tricep Extension",
+   "equipment": "dumbbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "overhead extension with one dumbbell",
+   "libraryId": null,
+   "jefitLogCount": 6
+  },
+  {
+   "jefitId": "1:271",
+   "name": "Preacher Curl Machine",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 6
+  },
+  {
+   "jefitId": "1:690",
+   "name": "Hanging Knee Raise",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 6
+  },
+  {
+   "jefitId": "1:1011",
+   "name": "Dumbbell Seated Alternating Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:1050",
+   "name": "Cable Rope Seated Row",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:1274",
+   "name": "Machine Iso Lateral High Row",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:174",
+   "name": "Smith Machine Bench Press",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Smith_Machine_Bench_Press",
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:253",
+   "name": "Machine Tricep Extension",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:322",
+   "name": "Walking",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [],
+   "secondaryMuscles": [],
+   "force": null,
+   "mechanic": null,
+   "category": "cardio",
+   "bodyRegion": "cardio",
+   "movementPattern": "cardio",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": true,
+   "libraryId": null,
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:459",
+   "name": "Machine Dip",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [
+    "chest",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "dip",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "seated dip machine: the stack is the load",
+   "libraryId": "lib:Dip_Machine",
+   "jefitLogCount": 5
+  },
+  {
+   "jefitId": "1:1031",
+   "name": "Cable Incline Bicep Curl",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:127",
+   "name": "Hack Squat",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Hack_Squat",
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:131",
+   "name": "Dumbbell Squat",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Dumbbell_Squat",
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:146",
+   "name": "Dumbbell Seated Side Lateral Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:39",
+   "name": "Dumbbell Decline Bench Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Decline_Dumbbell_Bench_Press",
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:4",
+   "name": "Barbell Bench Press (Close Grip)",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Close-Grip_Barbell_Bench_Press",
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:474",
+   "name": "Dumbbell Bench Squat",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:497",
+   "name": "Weight Plate Squat",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:789",
+   "name": "Cable Crunch Kneeling Rotation",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:79",
+   "name": "Cable Kneeling Crunch",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:91",
+   "name": "Smith Machine Bent-Over Row",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Smith_Machine_Bent_Over_Row",
+   "jefitLogCount": 4
+  },
+  {
+   "jefitId": "1:104",
+   "name": "Cable Reverse Curl",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Reverse_Cable_Curl",
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1043",
+   "name": "Dumbbell Palm in Bent-Over Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1045",
+   "name": "Dumbbell Reverse Grip Incline Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:107",
+   "name": "Dumbbell Concentration Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:108",
+   "name": "Dumbbell Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:119",
+   "name": "Barbell Wrist Curl (Palms Up)",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "forearms"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "grip",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1276",
+   "name": "Machine One-Arm Pulldown",
+   "equipment": "machine",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1278",
+   "name": "Cable Bent-Over Lateral Pulley",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1309",
+   "name": "Machine Leg Press (Wide Stance)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1322",
+   "name": "Dumbbell Seated Front Raise (Hammer)",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "frontRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1351",
+   "name": "Barbell Landmine Double Arm Row",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:1381",
+   "name": "Kettlebell Farmer's Carry",
+   "equipment": "kettlebell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "forearms"
+   ],
+   "secondaryMuscles": [
+    "traps"
+   ],
+   "force": "static",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "carry",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "a kettlebell in each hand",
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:14",
+   "name": "Cable Cross-Over",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "chestFly",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:143",
+   "name": "Barbell Standing Calf Raise",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Standing_Barbell_Calf_Raise",
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:154",
+   "name": "Dumbbell Tricep Kickback",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Tricep_Dumbbell_Kickback",
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:321",
+   "name": "Treadmill Running",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [],
+   "secondaryMuscles": [],
+   "force": null,
+   "mechanic": null,
+   "category": "cardio",
+   "bodyRegion": "cardio",
+   "movementPattern": "cardio",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": true,
+   "libraryId": "lib:Running_Treadmill",
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:422",
+   "name": "Exercise Band Lateral Raise",
+   "equipment": "band",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:486",
+   "name": "Machine Leg Press (Narrow Stance)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:878",
+   "name": "Machine Reverse Fly",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "1:886",
+   "name": "Leverage Machine Shrug",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "traps"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "shrug",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 3
+  },
+  {
+   "jefitId": "0:2",
+   "name": "banded rows",
+   "equipment": "band",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "0:4",
+   "name": "grips strengthens",
+   "equipment": "other",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "forearms"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "grip",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1040",
+   "name": "Dumbbell Incline Bench Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1059",
+   "name": "Cable Lower Chest Raise",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "chestFly",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1061",
+   "name": "Dumbbell Deep Push-Up",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "push-up on dumbbell handles",
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1140",
+   "name": "Dumbbell Seated Front Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "frontRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:115",
+   "name": "Dumbbell Alternating Incline Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1164",
+   "name": "Cable Tricep Kickback",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1241",
+   "name": "Dumbbell Seated Calf Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1270",
+   "name": "Machine Inner Chest Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "chestFly",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:1299",
+   "name": "EZ Bar Close Grip Preacher Curl",
+   "equipment": "ezBar",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:136",
+   "name": "Dumbbell Lunge",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "lunge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:142",
+   "name": "Dumbbell Calf Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Calf_Raise_On_A_Dumbbell",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:158",
+   "name": "Dumbbell Seated Triceps Press",
+   "equipment": "dumbbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "one dumbbell held in both hands",
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:169",
+   "name": "Dumbbell One-Arm Bench Press",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:One_Arm_Dumbbell_Bench_Press",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:22",
+   "name": "Cable Shrug",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "traps"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "shrug",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:223",
+   "name": "EZ Bar Decline Close Grip Skull Crusher",
+   "equipment": "ezBar",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:236",
+   "name": "Dumbbell Tricep Extension (Supine)",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:264",
+   "name": "Dumbbell Incline Hammer Curl",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:29",
+   "name": "Dumbbell Front Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "frontRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Front_Dumbbell_Raise",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:35",
+   "name": "Dumbbell One-Arm Shoulder Press",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Dumbbell_One-Arm_Shoulder_Press",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:386",
+   "name": "Barbell Hip Thrust",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "glutes"
+   ],
+   "secondaryMuscles": [
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hipThrust",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Hip_Thrust",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:460",
+   "name": "Barbell JM Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:467",
+   "name": "Barbell Deep Squat",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:52",
+   "name": "T Bar Row",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:65",
+   "name": "Decline Reverse Crunch",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Decline_Reverse_Crunch",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:652",
+   "name": "Dumbbell Pullover on Stability Ball",
+   "equipment": "dumbbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "chest",
+    "triceps"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "pullover",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "one dumbbell held in both hands",
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:653",
+   "name": "Dumbbell Posterior Fly on Stability Ball",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:852",
+   "name": "Leverage Decline Chest Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Leverage_Decline_Chest_Press",
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "1:954",
+   "name": "Barbell Stiff-Leg Deadlift",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 2
+  },
+  {
+   "jefitId": "0:6",
+   "name": "Side neck extensions",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "neck"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "neck",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1070",
+   "name": "Smith Machine Incline Bench Press (Reverse Grip)",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders",
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "inclinePush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1166",
+   "name": "Dumbbell Close Grip Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Close-Grip_Dumbbell_Press",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1180",
+   "name": "Smith Machine Reverse Bench Press (Close Grip)",
+   "equipment": "smith",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "triceps",
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1236",
+   "name": "Single-Leg Calf Raise",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1248",
+   "name": "Machine Reverse Lat Pulldown (Close Grip)",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1253",
+   "name": "Machine Single-Leg Press",
+   "equipment": "machine",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1254",
+   "name": "Machine Calf Press",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "calves"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "calfRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:1264",
+   "name": "Machine Assisted Pull-Up (Hammer Grip)",
+   "equipment": "machine",
+   "loadMode": "bodyweightPlus",
+   "primaryMuscles": [
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPull",
+   "importWeights": "keep",
+   "negateOnImport": true,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:128",
+   "name": "Barbell Lunge",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "lunge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Lunge",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:216",
+   "name": "Machine Hip Abduction",
+   "equipment": "machine",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "abductors"
+   ],
+   "secondaryMuscles": [
+    "glutes"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hipAbduction",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:225",
+   "name": "Cable One-Arm Tricep Pushdown (Reverse Grip)",
+   "equipment": "cable",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "triceps"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "tricepsExtension",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:257",
+   "name": "Cable Rope Hammer Curl",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "biceps"
+   ],
+   "secondaryMuscles": [
+    "forearms"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "bicepsCurl",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:312",
+   "name": "Indoor Cycling",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [],
+   "secondaryMuscles": [],
+   "force": null,
+   "mechanic": null,
+   "category": "cardio",
+   "bodyRegion": "cardio",
+   "movementPattern": "cardio",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": true,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:335",
+   "name": "Parallel Bar Hip Raise",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:348",
+   "name": "Kettlebell Alternating Row",
+   "equipment": "kettlebell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "middle back",
+    "lats"
+   ],
+   "secondaryMuscles": [
+    "biceps",
+    "shoulders"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "horizontalPull",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Alternating_Kettlebell_Row",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:385",
+   "name": "Barbell Glute Bridge",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "glutes"
+   ],
+   "secondaryMuscles": [
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hipThrust",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Barbell_Glute_Bridge",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:393",
+   "name": "Cable Pull Through",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:401",
+   "name": "Barbell Bradford Rocky Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:41",
+   "name": "Dumbbell Fly",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "chest"
+   ],
+   "secondaryMuscles": [
+    "shoulders"
+   ],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "chestFly",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:424",
+   "name": "Weight Plate Neck Extension (Prone)",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "neck"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "neck",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:425",
+   "name": "Weight Plate Neck Flexion (Supine)",
+   "equipment": "plate",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "neck"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "neck",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:43",
+   "name": "Dumbbell Upright Row",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:437",
+   "name": "Dumbbell One-Arm Lateral Raise",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": "push",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "lateralRaise",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:441",
+   "name": "Dumbbell Reverse Fly",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "traps",
+    "middle back"
+   ],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "rearDelt",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:453",
+   "name": "Barbell Military Press",
+   "equipment": "barbell",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:493",
+   "name": "Bodyweight Squat",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "quadriceps"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "hamstrings"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "squat",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Bodyweight_Squat",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:61",
+   "name": "Hanging Leg Raise",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Hanging_Leg_Raise",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:631",
+   "name": "Plank",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "static",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreStability",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Plank",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:766",
+   "name": "Dumbbell Seated One-Arm Shoulder Press",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:80",
+   "name": "Dumbbell Side Bend",
+   "equipment": "dumbbell",
+   "loadMode": "perSide",
+   "primaryMuscles": [
+    "abdominals"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "core",
+   "movementPattern": "coreFlexion",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "one dumbbell, one side at a time",
+   "libraryId": "lib:Dumbbell_Side_Bend",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:867",
+   "name": "Arm Circles",
+   "equipment": "bodyweight",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [],
+   "force": null,
+   "mechanic": null,
+   "category": "stretching",
+   "bodyRegion": "upper",
+   "movementPattern": "other",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Arm_Circles",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:869",
+   "name": "Cable Shoulder Press",
+   "equipment": "cable",
+   "loadMode": "total",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Cable_Shoulder_Press",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "1:884",
+   "name": "Dumbbell Shoulder Press",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "shoulders"
+   ],
+   "secondaryMuscles": [
+    "triceps"
+   ],
+   "force": "push",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "verticalPush",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": "lib:Dumbbell_Shoulder_Press",
+   "jefitLogCount": 1
+  },
+  {
+   "jefitId": "0:1",
+   "name": "Dumbbell Romanian Deadlift",
+   "equipment": "dumbbell",
+   "loadMode": "perHand",
+   "primaryMuscles": [
+    "hamstrings"
+   ],
+   "secondaryMuscles": [
+    "glutes",
+    "lower back"
+   ],
+   "force": "pull",
+   "mechanic": "compound",
+   "category": "strength",
+   "bodyRegion": "lower",
+   "movementPattern": "hinge",
+   "importWeights": "keep",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "note": "custom 'Romanian deadlifts dumbeel'",
+   "libraryId": null,
+   "jefitLogCount": 0
+  },
+  {
+   "jefitId": "0:3",
+   "name": "Grip vice",
+   "equipment": "other",
+   "loadMode": "repsOnly",
+   "primaryMuscles": [
+    "forearms"
+   ],
+   "secondaryMuscles": [],
+   "force": "pull",
+   "mechanic": "isolation",
+   "category": "strength",
+   "bodyRegion": "upper",
+   "movementPattern": "grip",
+   "importWeights": "drop",
+   "negateOnImport": false,
+   "skipOnImport": false,
+   "libraryId": null,
+   "jefitLogCount": 0
+  }
+ ]
+}

@@ -1,0 +1,199 @@
+"""Classify every exercise in a JEFIT export: equipment, load mode, muscles, movement
+pattern, and how its logged weights import. The output is checked in and read by the
+app's importer, so the judgement calls live in one reviewable file, not in Swift.
+
+    python3 -I tools/build_jefit_map.py data/jefit/jefit-export-2026-10-11.csv
+
+Writes GymApp/Resources/Library/jefit_exercise_map.json. Rules are ordered: the first
+pattern that matches an exercise's latest name wins. OVERRIDES then replace individual
+fields for exercises the rules get wrong. Field meanings: docs/specs/00-foundation.md.
+"""
+import argparse, json, os, re, sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+from jefit_parse import parse, table
+
+UPPER = {"chest", "shoulders", "lats", "middle back", "traps", "biceps", "triceps", "forearms", "neck"}
+LOWER = {"quadriceps", "hamstrings", "glutes", "calves", "adductors", "abductors", "lower back"}
+
+# (regex on lowercased latest name, movementPattern, primary, secondary, force, mechanic, category)
+RULES = [
+    (r"treadmill|cycling|^walking", "cardio", [], [], None, None, "cardio"),
+    (r"arm circles", "other", ["shoulders"], [], None, None, "stretching"),
+    (r"neck", "neck", ["neck"], [], "push", "isolation", "strength"),
+    (r"farmer", "carry", ["forearms"], ["traps"], "static", "compound", "strength"),
+    (r"wrist curl|grip vice|grips strength", "grip", ["forearms"], [], "pull", "isolation", "strength"),
+    (r"face pull|rear delt|reverse fly|posterior fly|bent-over lateral|lateral pulley", "rearDelt", ["shoulders"], ["traps", "middle back"], "pull", "isolation", "strength"),
+    (r"shrug", "shrug", ["traps"], [], "pull", "isolation", "strength"),
+    (r"upright row", "lateralRaise", ["shoulders"], ["traps"], "pull", "compound", "strength"),
+    (r"lateral raise|side lateral|lateral shoulder raise|lui raise", "lateralRaise", ["shoulders"], [], "push", "isolation", "strength"),
+    (r"front raise", "frontRaise", ["shoulders"], [], "push", "isolation", "strength"),
+    (r"pullover", "pullover", ["lats"], ["chest", "triceps"], "pull", "isolation", "strength"),
+    (r"vertical row", "horizontalPull", ["middle back", "lats"], ["biceps", "shoulders"], "pull", "compound", "strength"),
+    (r"pulldown|pull-up|pullup|chin-up|chinup|high row", "verticalPull", ["lats"], ["biceps", "middle back"], "pull", "compound", "strength"),
+    (r"\brows?\b", "horizontalPull", ["middle back", "lats"], ["biceps", "shoulders"], "pull", "compound", "strength"),
+    (r"back extension|hyperextension", "backExtension", ["lower back"], ["glutes", "hamstrings"], "pull", "isolation", "strength"),
+    (r"deadlift|good morning|pull through", "hinge", ["hamstrings"], ["glutes", "lower back"], "pull", "compound", "strength"),
+    (r"parallel bar hip raise|leg raise|knee raise|crunch|sit-up|reverse crunch", "coreFlexion", ["abdominals"], [], "pull", "isolation", "strength"),
+    (r"side bend", "coreFlexion", ["abdominals"], [], "pull", "isolation", "strength"),
+    (r"plank", "coreStability", ["abdominals"], [], "static", "isolation", "strength"),
+    (r"hip thrust|glute bridge", "hipThrust", ["glutes"], ["hamstrings"], "push", "compound", "strength"),
+    (r"hip abduction", "hipAbduction", ["abductors"], ["glutes"], "push", "isolation", "strength"),
+    (r"calf", "calfRaise", ["calves"], [], "push", "isolation", "strength"),
+    (r"leg extension", "kneeExtension", ["quadriceps"], [], "push", "isolation", "strength"),
+    (r"leg curl", "kneeFlexion", ["hamstrings"], [], "pull", "isolation", "strength"),
+    (r"lunge|split squat", "lunge", ["quadriceps"], ["glutes", "hamstrings"], "push", "compound", "strength"),
+    (r"leg press|squat|hack", "squat", ["quadriceps"], ["glutes", "hamstrings"], "push", "compound", "strength"),
+    (r"skull crusher|tricep|triceps|pushdown|kickback|jm press", "tricepsExtension", ["triceps"], [], "push", "isolation", "strength"),
+    (r"curl", "bicepsCurl", ["biceps"], ["forearms"], "pull", "isolation", "strength"),
+    (r"fly|cross-over|crossover|inner chest press|chest raise", "chestFly", ["chest"], ["shoulders"], "push", "isolation", "strength"),
+    (r"incline.*(press|bench)", "inclinePush", ["chest"], ["shoulders", "triceps"], "push", "compound", "strength"),
+    (r"shoulder press|military|arnold|bradford|seated press|alternating press", "verticalPush", ["shoulders"], ["triceps"], "push", "compound", "strength"),
+    (r"bench press|chest press|close grip press|decline press|push-up", "horizontalPush", ["chest"], ["triceps", "shoulders"], "push", "compound", "strength"),
+    (r"\bdip\b", "dip", ["triceps"], ["chest", "shoulders"], "push", "compound", "strength"),
+]
+
+EQUIPMENT = [
+    (r"^smith machine", "smith"),
+    (r"^ez bar", "ezBar"),
+    (r"^(barbell|t bar)", "barbell"),
+    (r"^dumbbell", "dumbbell"),
+    (r"^kettlebell", "kettlebell"),
+    (r"^cable", "cable"),
+    (r"^weight plate", "plate"),
+    (r"^(exercise band|banded)", "band"),
+    (r"^(machine|leverage|lever)|\bmachine\b|hack squat|calf press", "machine"),
+]
+UNILATERAL = r"one-arm|one arm|single-arm|single arm|single-leg|one-leg"
+
+# Exercises the rules misjudge. Keyed by JEFIT id "belongSys:eid"; fields replace the rule's.
+OVERRIDES = {
+    "1:375": {"loadMode": "total", "why": "one dumbbell held in both hands"},
+    "1:652": {"loadMode": "total", "why": "one dumbbell held in both hands"},
+    "1:247": {"loadMode": "total", "why": "overhead extension with one dumbbell"},
+    "1:158": {"loadMode": "total", "why": "one dumbbell held in both hands"},
+    "1:80": {"loadMode": "perSide", "why": "one dumbbell, one side at a time"},
+    "1:348": {"loadMode": "perSide"},
+    "1:1381": {"loadMode": "perHand", "why": "a kettlebell in each hand"},
+    "1:83": {"equipment": "bodyweight", "loadMode": "bodyweightPlus", "importWeights": "drop",
+             "why": "set rows carry no weight; logged as bodyweight"},
+    "1:24": {"equipment": "bodyweight", "loadMode": "bodyweightPlus", "importWeights": "drop",
+             "why": "weights are JEFIT's 10 kg default or a one-off body weight, not added load"},
+    "1:459": {"loadMode": "total", "why": "seated dip machine: the stack is the load"},
+    "1:675": {"equipment": "plate", "loadMode": "total", "why": "weights vary 5-10 kg: a held plate"},
+    "1:92": {"equipment": "plate", "loadMode": "total", "why": "weights vary 2.5-10 kg: a held plate"},
+    "1:1259": {"loadMode": "total"},
+    "1:1270": {"movementPattern": "chestFly"},
+    "1:14": {"movementPattern": "chestFly"},
+    "0:1": {"equipment": "dumbbell", "loadMode": "perHand", "movementPattern": "hinge",
+            "name": "Dumbbell Romanian Deadlift", "why": "custom 'Romanian deadlifts dumbeel'"},
+    "0:2": {"equipment": "band", "loadMode": "repsOnly", "importWeights": "drop"},
+    "0:3": {"equipment": "other", "loadMode": "repsOnly", "importWeights": "drop"},
+    "0:4": {"equipment": "other", "loadMode": "repsOnly", "importWeights": "drop"},
+    "0:5": {"equipment": "plate", "loadMode": "total", "movementPattern": "lateralRaise",
+            "why": "Lu raise with a plate, 5 kg every set"},
+    "0:6": {"equipment": "plate", "loadMode": "total"},
+    "1:1061": {"equipment": "bodyweight", "loadMode": "repsOnly", "why": "push-up on dumbbell handles"},
+    "1:1236": {"equipment": "bodyweight", "loadMode": "repsOnly", "importWeights": "drop"},
+}
+
+BODYWEIGHT_REPS_ONLY = r"push-up|knee raise|leg raise|hip raise|decline crunch|reverse crunch|plank|bodyweight squat|arm circles|side neck"
+
+
+def latest_names(logs, custom):
+    names, counts, last = {}, {}, {}
+    for l in sorted(logs, key=lambda l: l["mydate"]):
+        k = f'{l["belongSys"]}:{l["eid"]}'
+        names[k] = l["ename"].strip()
+        counts[k] = counts.get(k, 0) + 1
+        last[k] = l["mydate"]
+    for c in custom:  # custom exercises with no logs still exist in the user's library
+        k = f'0:{c["_id"]}'
+        names.setdefault(k, c["name"].strip())
+        counts.setdefault(k, 0)
+    return names, counts, last
+
+
+def classify(key, name):
+    n = name.lower()
+    for rx, pattern, prim, sec, force, mech, cat in RULES:
+        if re.search(rx, n):
+            break
+    else:
+        pattern, prim, sec, force, mech, cat = "other", [], [], None, None, "strength"
+    equipment = next((e for rx, e in EQUIPMENT if re.search(rx, n)), "bodyweight")
+    if cat == "cardio":
+        load_mode = "repsOnly"
+    elif "assisted" in n:
+        load_mode = "bodyweightPlus"
+    elif equipment == "bodyweight":
+        load_mode = "repsOnly" if re.search(BODYWEIGHT_REPS_ONLY, n) else "bodyweightPlus"
+    elif equipment == "dumbbell":
+        load_mode = "perSide" if re.search(UNILATERAL, n) else "perHand"
+    elif re.search(UNILATERAL, n):
+        load_mode = "perSide"
+    else:
+        load_mode = "total"
+    regions = {"upper" if m in UPPER else "lower" if m in LOWER else "core" for m in prim}
+    if cat == "cardio":
+        region = "cardio"
+    elif len(regions) == 1:
+        region = regions.pop()
+    elif regions:
+        region = "fullBody"
+    else:
+        region = "upper"
+    entry = {
+        "jefitId": key, "name": name, "equipment": equipment, "loadMode": load_mode,
+        "primaryMuscles": prim, "secondaryMuscles": sec, "force": force, "mechanic": mech,
+        "category": cat, "bodyRegion": region, "movementPattern": pattern,
+        "importWeights": None,
+        "negateOnImport": "assisted" in n,
+        "skipOnImport": cat == "cardio",
+    }
+    over = {k: v for k, v in OVERRIDES.get(key, {}).items() if k != "why"}
+    entry.update(over)
+    if entry["importWeights"] is None:
+        # A reps-only exercise has no load to keep; JEFIT's numbers there are its 10 kg default.
+        entry["importWeights"] = "drop" if entry["loadMode"] == "repsOnly" else "keep"
+    if "why" in OVERRIDES.get(key, {}):
+        entry["note"] = OVERRIDES[key]["why"]
+    return entry
+
+
+def norm(name):
+    s = re.sub(r"[^a-z0-9 ]", " ", name.lower())
+    s = s.replace("leverage", "lever").replace("ez bar", "ez bar")
+    return " ".join(sorted(set(s.split()) - {"the", "a", "on", "with"}))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("export")
+    ap.add_argument("--library", default=os.path.join(os.path.dirname(__file__), "..", "third_party", "free-exercise-db", "exercises.json"))
+    ap.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "..", "GymApp", "Resources", "Library", "jefit_exercise_map.json"))
+    a = ap.parse_args()
+
+    s = parse(a.export)
+    logs = table(s, "EXERCISE LOGS", "ename")
+    custom = table(s, "CUSTOM EXERCISES", "unilateral")
+    names, counts, last = latest_names(logs, custom)
+    library = {norm(x["name"]): x["id"] for x in json.load(open(a.library))}
+
+    entries = []
+    for key in sorted(names, key=lambda k: (-counts[k], k)):
+        e = classify(key, names[key])
+        e["libraryId"] = f'lib:{library[norm(e["name"])]}' if norm(e["name"]) in library else None
+        e["jefitLogCount"] = counts[key]
+        entries.append(e)
+
+    os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    with open(a.out, "w") as f:
+        json.dump({"source": os.path.basename(a.export), "exercises": entries}, f, indent=1, ensure_ascii=False)
+    print(f"wrote {os.path.relpath(a.out)}: {len(entries)} exercises, "
+          f"{sum(1 for e in entries if e['libraryId'])} matched to the library, "
+          f"{sum(1 for e in entries if e['skipOnImport'])} skipped (cardio)")
+
+
+if __name__ == "__main__":
+    main()
