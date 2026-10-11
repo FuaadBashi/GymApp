@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 2.1.**
+**Next card: 2.2.**
 
 ## Cards
 
@@ -32,7 +32,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 1.10 Phase close
 
 ### Phase 2: Workout screen ([spec](specs/02-workout-screen.md))
-- [ ] 2.1 Workout engine
+- [x] 2.1 Workout engine
 - [ ] 2.2 Active workout model and resume
 - [ ] 2.3 Workout screen, list mode
 - [ ] 2.4 Focus mode
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **2.1**: Workout engine: WorkoutQueries (inProgress, snapshot with lineage-aware previous) and WorkoutWrites (start with prefill, log/unlog/update/add/delete set, add/swap/remove/move exercise, rest adjust, finish keeps only logged sets and drops empty workouts, discard, note/effort). 14 engine tests. finish clamps endedAt to >= startedAt for the CHECK constraint.
 - **1.10**: Phase 1 closed. Clean install + import, new Full Body (3 days, active), FB1 ← 1FBD 1 (6 exercises, last 7 Oct), FB2 ← 2FBD 2, FB3 from Suggest a day (9 slots filled, none overlapping FB1/FB2); FB3 is next up. Screenshot in docs/screenshots/train.png. For phase 2: Train's Start button is still a stub pointing at the prototype; DayDetail and TrainViewModel.card give the day's items and last-time sets; ProgramQueries.lineage must be used for last-time lookups. Decision #36: phase 3 analytics may move to a separate offline tool, so keep the phase 4 export complete.
 - **1.9**: Suggest a day: DaySuggester slots and ranking, swap menu, add selected.
 - **1.8**: Exercise picker: focus toggle, multi-select in tap order, In this day rows, New exercise.
