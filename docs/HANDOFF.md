@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 4.2.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+**Next card: 5.1.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
 
 **Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
 The post-phase-2 additions are implemented and tested locally, with initial media
@@ -60,7 +60,7 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 
 ### Phase 4: Import, export and backups ([spec](specs/04-export.md))
 - [x] 4.1 CSV export of every set
-- [ ] 4.2 Export format and round trip
+- [x] 4.2 Export format and round trip
 
 ### Phase 5 ([outline](specs/03-05-outline.md))
 Specified when phase 4 closes.
@@ -80,6 +80,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **4.2**: docs/EXPORT_FORMAT.md documents the CSV columns and the .sqlite backup's tables, units, load modes and set types, which rows count as history, and a starting SQL query, for the separate analysis tool. BackupRoundTripTests: the real import backed up with RecoveryStore, staged and applied onto a fresh install, has identical counts in all 11 tables (7,751 sets) and identical ExerciseStats points and records for bench, squat and deadlift. Phase 4 closed; README and ROADMAP updated. 149 tests pass.
 - **4.1**: CSVExport: one row per completed set of finished workouts; Strong's 12 columns first, then unit, set type, reps in reserve, labels, session exercise note, load mode, equipment, primary muscles, effort, workout and exercise ids. Weights as entered with their unit (rulebook §1); decimals always use a dot. RFC 4180 quoting, CRLF, UTF-8 without BOM. Settings → Data → Export sets as CSV shares it (BackupShareSheet made internal for reuse). Real export: 7,751 rows. The share sheet tap could not be driven on the simulator (the file picker swallowed taps); the file write is covered by a test.
 - **3.6**: Phase 3 closed. tools/check_phase3.py computes, from the raw export with the importer's rules, sessions, heaviest, best e1RM and best session volume for bench press (77 sessions, 77.5 kg, 93.33, 2,692.5), squat (63, 105, 123.5, 2,690) and deadlift (87, 137.5, 170, 4,025); Phase3ExportTests asserts the app's ExerciseStats match exactly (they do). JEFIT EXERCISE RECORDS: 147 of 175 comparable records match the logs' best Epley within 1 kg (JEFIT_EXPORT.md expected about 155 of 195; reported, not fixed). Screenshots: history, workout-detail, exercise-progress, progress. README, ROADMAP and spec updated. 143 tests pass.
 - **3.5**: Progress tab: 12-week bars (volume, sessions, time, each vs last week), muscles this/last week on a front/back body map plus a list with the 10–20 band, last 20 records (beating every earlier session, judged per workout), body-weight chart and Add weight (one per day). ProgressQueries builds on HistoryQueries/SummaryQueries. Body map artwork: react-body-highlighter 2.0.5 (MIT, (c) 2020 GV79), converted by tools/build_body_map.py into Resources/BodyMap/body_map.json with licence and BODY_MAP_PROVENANCE.md (named so it doesn't collide with the media PROVENANCE.md in the flat bundle). A test enforces every Muscle maps to a region. DEBUG launch argument -tab <0–4> opens a tab, for simulator checks. Simulator verified with the real import.

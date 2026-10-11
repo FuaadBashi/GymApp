@@ -208,3 +208,41 @@ struct RecoveryTests {
     }
 
 }
+
+/// Card 4.2: a backup of the real history restores onto a fresh install with identical rows
+/// and identical exercise figures.
+struct BackupRoundTripTests {
+    @Test(.enabled(if: Fixtures.hasRealExport))
+    func aBackupRestoresWithIdenticalCountsAndFigures() async throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let recovery = try RecoveryStore(folder: folder.appending(path: "Recovery"))
+        let original = try AppDatabase(DatabaseQueue(path: folder.appending(path: "phone.sqlite").path), recovery: recovery)
+        try await original.writer.write { try LibrarySeeder.seed(in: $0, now: .now) }
+        _ = try await ImportService.importJEFIT(fileAt: Fixtures.realExport, into: original)
+        let backup = try await original.reader.read { try recovery.capture($0) }
+
+        // A fresh install elsewhere: its own recovery folder and an empty database file.
+        let fresh = folder.appending(path: "fresh")
+        let freshRecovery = try RecoveryStore(folder: fresh.appending(path: "Recovery"))
+        _ = try freshRecovery.stageRestore(backup)
+        let live = fresh.appending(path: "gymapp.sqlite")
+        try freshRecovery.applyPendingRestore(to: live)
+        let restored = try AppDatabase(DatabaseQueue(path: live.path))
+
+        let tables = ["exercise", "program", "programDay", "dayExercise", "workout", "workoutExercise", "workoutSet",
+                      "exerciseNote", "bodyEntry", "setting", "importRun"]
+        for table in tables {
+            let a = try await original.reader.read { try Int.fetchOne($0, sql: "SELECT COUNT(*) FROM \(table)") }
+            let b = try await restored.reader.read { try Int.fetchOne($0, sql: "SELECT COUNT(*) FROM \(table)") }
+            #expect(a == b, "\(table)")
+        }
+        #expect(try await restored.reader.read { try Int.fetchOne($0, sql: "SELECT COUNT(*) FROM workoutSet") } == 7751)
+        for id in ["jefit:1:2", "jefit:1:12", "jefit:1:93"] {
+            let a = try await original.reader.read { try ExerciseQueries.sessions($0, exerciseId: id) }
+            let b = try await restored.reader.read { try ExerciseQueries.sessions($0, exerciseId: id) }
+            #expect(ExerciseStats.records(a, loadMode: .total) { _ in nil } == ExerciseStats.records(b, loadMode: .total) { _ in nil }, "\(id)")
+            #expect(ExerciseStats.points(a, loadMode: .total) { _ in nil } == ExerciseStats.points(b, loadMode: .total) { _ in nil }, "\(id)")
+        }
+    }
+}

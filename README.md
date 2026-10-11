@@ -20,8 +20,9 @@ in-app and matching a Python reference importer row for row).
   records with dates, history, notes and offline demonstrations for eight lifts.
 - **Progress:** 12 weeks of volume, sessions and time; sets per muscle on a body map; recent
   records; body weight.
-- **Backups:** verified local recovery copies after every change, copies to a folder of my
-  choosing, and checked restores.
+- **Backups and export:** verified local recovery copies after every change, copies to a
+  folder of my choosing, checked restores, and a Strong-compatible CSV of every set.
+  [The export format](docs/EXPORT_FORMAT.md) is documented for tools built on the data.
 
 Exercise figures are checked against an independent calculation from the raw export
 (`tools/check_phase3.py`). [The roadmap](docs/ROADMAP.md) has the order and what "done"
@@ -53,8 +54,8 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 1 | Programs and the exercise library | done |
 | 2 | Workout screen | done |
 | 3 | History and analytics (lean) | done |
-| 4 | Import, export and backups | **next** (backup and restore already done) |
-| 5 | On the phone | not started |
+| 4 | Import, export and backups | done |
+| 5 | On the phone | **next** |
 
 ## The constraints this repo is shaped around
 

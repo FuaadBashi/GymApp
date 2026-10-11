@@ -100,6 +100,12 @@ export, and JEFIT's records match where JEFIT_EXPORT.md trap 6 says they should.
 
 ## Phase 4: Import, export and backups
 
+**Done 12 October 2026** ([spec](specs/04-export.md)). Backups and restore came early with
+the post-phase-2 additions; this phase added the CSV export, [the export format](EXPORT_FORMAT.md)
+for the analysis tool, and a round-trip test: the real history backed up and restored onto a
+fresh install has identical rows and identical exercise figures. Choosing the outside folder
+and checking iCloud Drive need the phone (phase 5).
+
 - Full backup export and restore (the current data is backed up before any restore).
 - CSV export of every set.
 - Automatic backup after every workout to a folder you choose; keep the last 30 plus one per
