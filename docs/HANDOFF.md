@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 2.3.**
+**Next card: 2.8.**
 
 ## Cards
 
@@ -34,11 +34,11 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 ### Phase 2: Workout screen ([spec](specs/02-workout-screen.md))
 - [x] 2.1 Workout engine
 - [x] 2.2 Active workout model and resume
-- [ ] 2.3 Workout screen, list mode
-- [ ] 2.4 Focus mode
-- [ ] 2.5 Bottom bar and rest
-- [ ] 2.6 Start, mini-player and navigation
-- [ ] 2.7 Swap, add, history and plate calculator
+- [x] 2.3 Workout screen, list mode
+- [x] 2.4 Focus mode
+- [x] 2.5 Bottom bar and rest
+- [x] 2.6 Start, mini-player and navigation
+- [x] 2.7 Swap, add, history and plate calculator
 - [ ] 2.8 Summary
 - [ ] 2.9 Lock-screen countdown (Live Activity)
 - [ ] 2.10 Remove the prototype and close the phase
@@ -51,6 +51,11 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **2.7**: Swap (WorkoutExercisePicker with Same movement chip, Also change it in <day>), add exercise, ExerciseHistorySheet (the full detail view in a medium/large sheet), PlateMath + PlateMathTests, PlateCalculatorView, platesKg/platesLb settings. Collection[safe:] moved to WorkoutView.swift. ExerciseFilter gained movementPattern.
+- **2.6**: Start/Resume on Train, Empty workout in the + menu, fullScreenCover in RootView, MiniPlayer via tabViewBottomAccessory(isEnabled:). That API needs iOS 26.1, so the deployment target is now 26.1 (phone is on 26.6). Simulator: mini-player shows rest countdown; kill + relaunch mid-rest resumed with the countdown still right (0:43 → 0:33 ten seconds later).
+- **2.5**: WorkoutBottomBar + RestRing (TimelineView 0.25 s from restEndsAt). Simulator: logged a set, −15 s ×3, sent home; SpringBoard delivered rest-timer at 20:00:37 with body 'Next: Machine Leg Press, set 2 — 59 kg × 10'. No stale bar on return.
+- **2.4**: FocusView: big steppers, Set N of M, Done list with comparisons and unlog, Up next strip, horizontal swipe between exercises. Same selection as the list.
+- **2.3**: Workout list: ExerciseCard (collapsed summary / expanded set table with Today line, sticky note, context menu for set type, delete), SetRow (W/D labels, F badge, ↑/↓/= via SetComparison), SetEditor (steppers with repeat, tap-to-type, unit toggle keeps the number). Built together with 2.4–2.7 because WorkoutView references all of them; one commit.
 - **2.2**: ActiveWorkoutModel (Features/Workout): one instance made in RootView (it needs the opened database) and passed with .environment(model); resumeIfNeeded in RootView .task. Every op = write, reload, sync the rest alert through RestScheduling (RestNotifier conforms; already lived in Services). Selection advances set → next item with planned sets, wrapping. SetFormat.long gives the notification text. Simulator kill-and-relaunch check deferred to 2.6, when Start exists; covered by a resume unit test.
 - **2.1**: Workout engine: WorkoutQueries (inProgress, snapshot with lineage-aware previous) and WorkoutWrites (start with prefill, log/unlog/update/add/delete set, add/swap/remove/move exercise, rest adjust, finish keeps only logged sets and drops empty workouts, discard, note/effort). 14 engine tests. finish clamps endedAt to >= startedAt for the CHECK constraint.
 - **1.10**: Phase 1 closed. Clean install + import, new Full Body (3 days, active), FB1 ← 1FBD 1 (6 exercises, last 7 Oct), FB2 ← 2FBD 2, FB3 from Suggest a day (9 slots filled, none overlapping FB1/FB2); FB3 is next up. Screenshot in docs/screenshots/train.png. For phase 2: Train's Start button is still a stub pointing at the prototype; DayDetail and TrainViewModel.card give the day's items and last-time sets; ProgramQueries.lineage must be used for last-time lookups. Decision #36: phase 3 analytics may move to a separate offline tool, so keep the phase 4 export complete.

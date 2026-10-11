@@ -265,9 +265,3 @@ private struct StepperField: View {
         .buttonRepeatBehavior(.enabled)
     }
 }
-
-extension Collection {
-    subscript(safe index: Index) -> Element? {
-        indices.contains(index) ? self[index] : nil
-    }
-}

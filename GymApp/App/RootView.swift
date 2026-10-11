@@ -17,7 +17,11 @@ struct RootView: View {
     }
 
     var body: some View {
-        tabs
+        @Bindable var workout = workout
+        return tabs
+            .fullScreenCover(isPresented: $workout.isPresented) {
+                WorkoutView().environment(workout)
+            }
             .environment(workout)
             .sheet(item: $launchReport) { ImportReportView(report: $0.report, db: db) }
             .task {
@@ -54,6 +58,9 @@ struct RootView: View {
             Tab("Settings", systemImage: "gearshape") {
                 SettingsView(db: db)
             }
+        }
+        .tabViewBottomAccessory(isEnabled: workout.snapshot != nil) {
+            MiniPlayer()
         }
     }
 }

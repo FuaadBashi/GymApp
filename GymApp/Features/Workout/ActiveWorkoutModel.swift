@@ -78,6 +78,12 @@ final class ActiveWorkoutModel {
 
     func clearJustFinished() { justFinishedWorkoutId = nil }
 
+    /// Reload after a change made outside the engine, such as an exercise's sticky note.
+    func refresh() async {
+        guard let id = snapshot?.workout.id else { return }
+        await reload(workoutId: id)
+    }
+
     // MARK: Sets
 
     func log(_ setId: String) async {

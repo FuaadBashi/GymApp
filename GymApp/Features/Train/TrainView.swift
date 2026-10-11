@@ -7,6 +7,7 @@ enum TrainRoute: Hashable {
 }
 
 struct TrainView: View {
+    @Environment(ActiveWorkoutModel.self) private var workout
     @State private var model: TrainViewModel
     @State private var path: [TrainRoute] = []
     @State private var creating = false
@@ -50,7 +51,16 @@ struct TrainView: View {
                     Button("Programs") { path.append(.programs) }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("New program", systemImage: "plus") { creating = true }
+                    Menu {
+                        Button("Empty workout", systemImage: "bolt") {
+                            Task { try? await workout.start(dayId: nil) }
+                        }
+                        .disabled(workout.isActive)
+                        Button("New program", systemImage: "list.bullet.rectangle") { creating = true }
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .accessibilityLabel("New")
                 }
             }
             .navigationDestination(for: TrainRoute.self) { route in
@@ -68,6 +78,7 @@ struct TrainView: View {
             }
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }
+            .onChange(of: workout.isActive) { Task { await model.reload() } }
         }
     }
 }
@@ -75,6 +86,7 @@ struct TrainView: View {
 private struct NextUpCard: View {
     let card: DayCardData
     let open: () -> Void
+    @Environment(ActiveWorkoutModel.self) private var workout
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -101,11 +113,15 @@ private struct NextUpCard: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            Button("Start \(card.detail.day.name)") {}
+            if let active = workout.snapshot?.workout {
+                Button("Resume \(active.title)") { workout.isPresented = true }
+                    .buttonStyle(PrimaryButtonStyle())
+            } else {
+                Button("Start \(card.detail.day.name)") {
+                    Task { try? await workout.start(dayId: card.id) }
+                }
                 .buttonStyle(PrimaryButtonStyle())
-                .disabled(true)
-            Text("Logging moves here in phase 2. Use Settings → Prototype meanwhile.")
-                .font(.caption).foregroundStyle(.secondary)
+            }
         }
         .padding()
         .background(Theme.card, in: .rect(cornerRadius: 20))
