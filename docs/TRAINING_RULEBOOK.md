@@ -1,0 +1,141 @@
+# Training rulebook
+
+The definitions every figure in the app is computed from. Where the code and this document
+disagree, that is a bug report. These rules exist because a polished chart that compares
+incompatible numbers is worse than no chart.
+
+## §1 Units and stored loads
+
+1. A load is stored exactly as entered: an integer count of hundredths in the unit used, plus
+   the unit. 62.5 kg is stored as `6250, kg`; 45 lb as `4500, lb`.
+2. Converted values are computed for display and aggregates and **never stored**. Storing a
+   conversion turns 45 lb into 44.99 lb on the way back.
+3. 1 lb = 0.45359237 kg, exactly.
+4. Aggregates (volume, PR comparisons, plateau checks) convert every load to kg first, then
+   display in the preferred unit.
+5. Each exercise remembers the unit it was last logged in, so lb dumbbells and kg machines can
+   coexist.
+
+## §2 What a logged load means
+
+| Equipment | The number you log | Load used in calculations |
+|---|---|---|
+| Barbell | Total on the bar, including the bar | As logged |
+| Machine, cable, Smith | The stack or display figure | As logged. Each machine is its own exercise and never compared with another |
+| Dumbbells, two at once | One dumbbell (per hand) | As logged; volume counts both: × 2 |
+| Unilateral (one-arm row, single-leg) | One side; reps are per side | As logged; volume counts both sides: × 2 |
+| Bodyweight, moving the whole body (pull-up, dip, chin-up) | Added weight, or assistance as a negative | Body weight + logged figure. Body weight is the latest entry on or before the workout date |
+| Bodyweight, partial (push-up, sit-up, plank) | Nothing, or added weight only | Reps (or time) only, excluded from volume |
+
+With no body-weight entry, whole-body exercises fall back to reps only. The app says so
+rather than inventing a figure.
+
+## §3 Set types
+
+| Type | Volume | Hard set (for muscle counts) | PRs and plateau |
+|---|---|---|---|
+| Working (default) | Yes | 1 | Yes |
+| Warm-up | No | 0 | No |
+| Drop set (a working set plus its drops) | Every segment counts | 1 for the whole drop set | Only the first segment |
+| Failed or partial | Reps actually done | 1 | Reps actually done |
+
+A superset is a grouping of exercises, not a set type, and changes no calculation.
+
+## §4 Estimated 1RM
+
+- Epley: `load × (1 + reps / 30)`. One rep gives the load itself.
+- Shown as a PR only for sets of 1–12 reps; above that the estimate is too loose to present.
+- Plateau checks (§8) use it for 1–20 reps, where consistency matters more than accuracy.
+
+## §5 Personal records
+
+Per exercise, working sets only. All are computed from history on read, so correcting a set
+can create or remove a PR.
+
+- **Heaviest load** at any reps.
+- **Best estimated 1RM** (§4).
+- **Rep PR:** most reps at a given load.
+- **Best session volume.**
+
+## §6 Volume and sets per muscle
+
+- **Volume** = Σ (calculation load × reps) over volume-counting sets (§2, §3), in kg. JEFIT
+  defines volume differently, so the figures will not match.
+- **Hard sets per muscle**: each hard set (§3) counts 1 for each primary muscle and 0.5 for each
+  secondary muscle.
+- **Week**: starts on the day set in Settings (default Sunday). A workout belongs to the local
+  date it started, even if it runs past midnight.
+
+## §7 Last-time values
+
+When an exercise opens in a workout, "last time" is its most recent logged session:
+
+1. In the **same routine day** (default), or in **any workout**, per Settings.
+2. If the same routine day has no history for it, fall back to any workout and label it so.
+
+## §8 Plateau swap
+
+**Progress score.** For one session of one exercise, the score is the best estimated 1RM
+(§4) among its working sets of 1–20 reps. For reps-only exercises, it is the most reps in a
+single set.
+
+**Plateau.** With window *W* (default 3 weeks, settable 2–6), an exercise has plateaued when
+all of these hold:
+
+1. it was done in at least 3 sessions within the last *W* weeks;
+2. it was done at least once in the *W* weeks before that;
+3. the best score in the last *W* weeks is **not higher** than the best score in the *W*
+   weeks before.
+
+A single extra rep counts as progress. Comparing against the previous window, not the
+all-time best, means returning from a break does not flag everything at once.
+
+**Candidates.** Exercises in the same movement family that share a primary muscle and are not
+archived or marked "avoid". If gym availability is tagged, they must also be available. Ranked
+by never or longest since done, then most history. At most three, each with the reason.
+
+**Behaviour.** Shown at the end of the session and on the exercise screen, never applied
+automatically.
+
+- **Swap** replaces the exercise in the routine from the next session.
+- **Keep for now** snoozes the check for *W* weeks.
+- **Dismiss** turns it off for that exercise until re-enabled.
+
+The explanation always reads like: *"Best set in the last 3 weeks (3 sessions): 60 kg × 10.
+Best in the 3 weeks before: 60 kg × 10."*
+
+**Movement family.** A tag on each exercise naming the movement it trains, fine enough that
+swaps are genuinely equivalent. Examples:
+
+- Flat horizontal press: barbell bench, dumbbell bench, machine chest press, seated chest press.
+- Incline press is a separate family.
+- Horizontal pull: seated cable row, machine row, dumbbell one-arm row.
+- Squat pattern: barbell squat, hack squat, leg press.
+- Knee flexion: prone leg curl, seated leg curl.
+
+## §9 Rest timer
+
+- Rest starts when a set is marked done. Its end is stored as an absolute time, so locking
+  the phone or switching apps cannot make it drift.
+- Duration comes from the exercise's rest setting (default 60 s) and can be changed or skipped
+  mid-rest.
+- When rest ends, a local notification with sound and vibration fires whether the app is
+  open, in the background or the phone is locked.
+
+## §10 Templates, history and corrections
+
+- A routine is a template; a finished workout is history. Editing a routine never changes a
+  finished workout.
+- A logged session records the routine's targets at that time, so "hit the target" stays
+  true historically.
+- Renaming an exercise renames it everywhere; it is the same exercise. Moving to different
+  equipment or a different machine is a different exercise.
+- Finished workouts can be edited, since typos happen, and every derived figure follows.
+- Exercises with history are archived, never deleted.
+- A workout with logged sets is deleted only after explicit confirmation. An empty one is
+  discarded silently.
+
+## §11 Estimated session time
+
+The median duration of your last three completed sessions of that routine day. With fewer
+than three, use Σ over sets of (40 s + that exercise's rest).

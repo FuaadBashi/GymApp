@@ -1,0 +1,14 @@
+# Personal data: JEFIT exports, backups, anything with real training history.
+data/
+
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcuserstate
+.DS_Store
+
+# Prototype seed: generated from data/ by tools/make_prototype_seed.py, carries personal notes.
+GymApp/Prototype/PrototypeSeed.json
+
+# Python
+__pycache__/
