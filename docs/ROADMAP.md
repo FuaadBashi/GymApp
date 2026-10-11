@@ -35,6 +35,11 @@ Everything else reads from this.
 
 ## Phase 1: Programs and the exercise library
 
+**Done 11 October 2026.** From a clean install with the JEFIT import, the Full Body program was
+built in the app: Full Body 1 and 2 copied from JEFIT's 1FBD 1 and 2FBD 2 with their history,
+and Full Body 3 filled by "Suggest a day" from exercises not already in the other two days.
+Full Body 3, never done, is next up.
+
 - Exercises tab: browse, filter by muscle, equipment, push/pull and "done before"; search.
 - Create and edit custom exercises.
 - Basic exercise page: About, History list and Notes. Charts come in phase 3.
@@ -60,6 +65,9 @@ FB1.
 is killed mid-rest.
 
 ## Phase 3: History and analytics
+
+May be cut down (decision #36): deep analysis could move to a separate offline tool that
+reads the export, leaving the app with history and the basic per-exercise figures.
 
 - History tab: calendar, week grouping, count against goal, every workout since 2022.
 - Workout detail, editable, with every figure recomputing.

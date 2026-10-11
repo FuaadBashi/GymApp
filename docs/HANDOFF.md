@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 1.10.**
+**Next card: 2.1.**
 
 ## Cards
 
@@ -29,7 +29,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 1.7 Day editor
 - [x] 1.8 Exercise picker
 - [x] 1.9 Suggest a day
-- [ ] 1.10 Phase close
+- [x] 1.10 Phase close
 
 ### Phase 2: Workout screen ([spec](specs/02-workout-screen.md))
 - [ ] 2.1 Workout engine
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **1.10**: Phase 1 closed. Clean install + import, new Full Body (3 days, active), FB1 ← 1FBD 1 (6 exercises, last 7 Oct), FB2 ← 2FBD 2, FB3 from Suggest a day (9 slots filled, none overlapping FB1/FB2); FB3 is next up. Screenshot in docs/screenshots/train.png. For phase 2: Train's Start button is still a stub pointing at the prototype; DayDetail and TrainViewModel.card give the day's items and last-time sets; ProgramQueries.lineage must be used for last-time lookups. Decision #36: phase 3 analytics may move to a separate offline tool, so keep the phase 4 export complete.
 - **1.9**: Suggest a day: DaySuggester slots and ranking, swap menu, add selected.
 - **1.8**: Exercise picker: focus toggle, multi-select in tap order, In this day rows, New exercise.
 - **1.7**: Day editor: rename, focus menu, item list (edit sheet, reorder, delete), Add exercises / Suggest a day, and Copy from another day (nested menu by program, confirm before replace). Simulator: copying JEFIT 2FBD 2 into Full Body 2 gave 10 exercises with last-time values from 11 Oct through lineage. Card hit areas use .contentShape(.rect). Picker and suggestions are stubs until 1.8 and 1.9.

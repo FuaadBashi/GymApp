@@ -8,11 +8,14 @@ phone; nothing is sent anywhere.
 **What exists today:** the app's SQLite database (GRDB), holding an 876-exercise library
 and four years of my JEFIT history. The history comes in through an in-app import: 468
 workouts and 7,751 sets, matching a Python reference importer row for row, and safe to run
-twice. A prototype of the workout screen still runs on top. It has last-time values,
-per-exercise notes, a rest timer that alerts with the phone locked, and a workout that
-survives the app being killed mid-rest. **What doesn't yet:** programs, the real workout
-screen, history and analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for
-each phase.
+twice. On top of it: an Exercises tab (search, filters, history per exercise, notes, custom
+exercises), programs for any split with a rolling rotation, a day editor that copies JEFIT
+days across with their history, an exercise picker filtered to the day's focus, and
+"Suggest a day", which fills a day from exercises I've actually done. The old workout-screen
+prototype still handles logging. **What doesn't yet:** the real workout screen, history and
+analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for each phase.
+
+<img src="docs/screenshots/train.png" width="300" alt="Train tab: Full Body 3 next up, with last-time sets per exercise">
 
 ## Review guide
 
@@ -29,9 +32,9 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 |---|---|---|
 | – | Workout-screen prototype on JEFIT data | done |
 | 0 | Database, full JEFIT import, exercise library | done |
-| 1 | Programs and the exercise library | **next** |
-| 2 | Workout screen | not started |
-| 3 | History and analytics | not started |
+| 1 | Programs and the exercise library | done |
+| 2 | Workout screen | **next** |
+| 3 | History and analytics | not started (deep analysis may move to a separate tool, decision #36) |
 | 4 | Import, export and backups | not started |
 | 5 | On the phone | not started |
 

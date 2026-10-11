@@ -73,6 +73,12 @@ that can change without reworking anything.
 | 34 | Look | **Dark, with a "volt" accent** (`#C7F242`) and black text on it. Muscle tags are coloured by region (upper blue, lower orange, core purple). It is distinct from JEFIT's blue and purple. |
 | 35 | Lock-screen countdown | **A widget extension target, added in Xcode's UI** (card 2.9), because new targets are the riskiest edit to the project file by hand. |
 
+## H. After phase 1 (11 Oct)
+
+| # | Question | Decision |
+|---|---|---|
+| 36 | Where does deep analysis live? | **Possibly outside the app.** Phase 2 follows phase 1 directly. Phase 3's analytics may be skipped in favour of a separate offline, static tool that reads the export and can go further: more detail, and an LLM over the data. The app keeps history and per-exercise figures; the export (phase 4) must carry everything such a tool needs. To be settled before phase 3 is specified. |
+
 ## Open
 
 - Which "Later" features in the product brief move up.
