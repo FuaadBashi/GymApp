@@ -3,7 +3,13 @@ import SwiftUI
 
 struct RootView: View {
     let db: AppDatabase
+    @State private var workout: ActiveWorkoutModel
     @State private var launchReport: LaunchReport?
+
+    init(db: AppDatabase) {
+        self.db = db
+        _workout = State(initialValue: ActiveWorkoutModel(db: db))
+    }
 
     private struct LaunchReport: Identifiable {
         let id = UUID()
@@ -12,8 +18,12 @@ struct RootView: View {
 
     var body: some View {
         tabs
+            .environment(workout)
             .sheet(item: $launchReport) { ImportReportView(report: $0.report, db: db) }
-            .task { await importFromLaunchArgument() }
+            .task {
+                await workout.resumeIfNeeded()
+                await importFromLaunchArgument()
+            }
     }
 
     /// Simulator verification: `-importJEFIT <absolute path>` imports at launch.

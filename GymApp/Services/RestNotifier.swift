@@ -1,9 +1,16 @@
 import Foundation
 import UserNotifications
 
+/// What the workout model needs from notifications, so tests can record instead of schedule.
+protocol RestScheduling {
+    func requestPermission() async
+    func schedule(at date: Date, body: String)
+    func cancel()
+}
+
 /// Rulebook §9: the end of rest is a local notification, so it sounds and vibrates with
 /// the phone locked or another app in front. Local notifications need no paid entitlement.
-struct RestNotifier {
+struct RestNotifier: RestScheduling {
     private let id = "rest-timer"
     private var center: UNUserNotificationCenter { .current() }
 

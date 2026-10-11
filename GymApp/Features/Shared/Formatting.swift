@@ -66,6 +66,19 @@ nonisolated enum SetFormat {
         }
     }
 
+    /// Spelled out with the unit, for notifications: "50 kg × 10", "BW + 10 kg × 8", "12 reps".
+    static func long(_ set: WorkoutSetRecord, loadMode: LoadMode) -> String {
+        let hundredths = set.loadHundredths ?? 0
+        let unit = set.unit.rawValue
+        switch loadMode {
+        case .repsOnly: return "\(set.reps) reps"
+        case .bodyweightPlus:
+            guard hundredths != 0 else { return "BW × \(set.reps)" }
+            return "BW \(hundredths < 0 ? "−" : "+") \(Load.format(Double(abs(hundredths)) / 100)) \(unit) × \(set.reps)"
+        default: return "\(Load.format(Double(hundredths) / 100)) \(unit) × \(set.reps)"
+        }
+    }
+
     static func line(_ sets: [WorkoutSetRecord], loadMode: LoadMode) -> String {
         sets.map { short($0, loadMode: loadMode) }.joined(separator: " · ")
     }
