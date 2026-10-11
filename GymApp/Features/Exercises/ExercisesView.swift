@@ -60,7 +60,7 @@ struct ExerciseFilterBar: View {
                 Chip(title: "Done before", isSelected: filter.onlyDoneBefore) { filter.onlyDoneBefore.toggle() }
                 Chip(title: "Favorites", isSelected: filter.onlyFavorites) { filter.onlyFavorites.toggle() }
                 ForEach([BodyRegion.upper, .lower, .core], id: \.self) { region in
-                    Chip(title: region.rawValue.capitalized, isSelected: filter.regions.contains(region)) {
+                    Chip(title: region.displayName, isSelected: filter.regions.contains(region)) {
                         filter.regions.formSymmetricDifference([region])
                     }
                 }

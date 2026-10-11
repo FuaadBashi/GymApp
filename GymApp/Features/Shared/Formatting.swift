@@ -26,6 +26,18 @@ extension MovementPattern {
     }
 }
 
+extension BodyRegion {
+    var displayName: String {
+        switch self {
+        case .upper: "Upper"
+        case .lower: "Lower"
+        case .core: "Core"
+        case .fullBody: "Full body"
+        case .cardio: "Cardio"
+        }
+    }
+}
+
 extension DayFocus {
     var displayName: String {
         switch self {
