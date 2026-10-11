@@ -5,12 +5,21 @@ import UserNotifications
 struct GymAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = WorkoutStore()
+    @State private var database = AppStartup.openDatabase()
 
     var body: some Scene {
         WindowGroup {
-            HomeView()
-                .environment(store)
-                .preferredColorScheme(.dark)
+            Group {
+                switch database {
+                case .success(let db):
+                    HomeView()
+                        .environment(store)
+                        .environment(\.appDatabase, db)
+                case .failure(let error):
+                    DatabaseErrorView(error: error)
+                }
+            }
+            .preferredColorScheme(.dark)
         }
     }
 }

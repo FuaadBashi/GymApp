@@ -91,6 +91,21 @@ struct JEFITImporterTests {
         #expect(second.inserted.filter { $0.value > 0 }.keys.sorted() == ["importRun"])
     }
 
+    /// The app imports off the main actor; the other tests import on it. This one goes through
+    /// ImportService so isolation bugs (a protocol cast that fails off the main actor did once)
+    /// show up here rather than on the phone.
+    @Test func importingTwiceThroughTheBackgroundServiceChangesNothing() async throws {
+        let db = try AppDatabase.inMemory()
+        try await db.writer.write { try LibrarySeeder.seed(in: $0, now: .now) }
+        _ = try await ImportService.importJEFIT(fileAt: Fixtures.mini, into: db)
+        let before = try counts(db)
+        let second = try await ImportService.importJEFIT(fileAt: Fixtures.mini, into: db)
+        #expect(try counts(db) == before)
+        #expect(second.alreadyPresent["program"] == 1)
+        #expect(second.alreadyPresent["workout"] == 1)
+        #expect(second.inserted.filter { $0.value > 0 }.keys.sorted() == ["importRun"])
+    }
+
     @Test func importingWithoutTheLibraryFails() throws {
         let db = try AppDatabase.inMemory()
         let export = try JEFITExport(data: Data(contentsOf: Fixtures.mini))

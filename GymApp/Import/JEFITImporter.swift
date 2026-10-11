@@ -80,11 +80,13 @@ nonisolated enum JEFITImporter {
         mutating func inserted(_ table: String) { report.inserted[table, default: 0] += 1 }
         mutating func present(_ table: String) { report.alreadyPresent[table, default: 0] += 1 }
 
-        func existing<R: FetchableRecord & TableRecord>(_ type: R.Type) throws -> [String: R] {
-            let rows = try R.filter(Column("externalId") != nil).fetchAll(db)
+        /// Rows already imported, by externalId. A key path, not a protocol cast: in this
+        /// main-actor-by-default module a cast to a protocol conformance silently fails off the
+        /// main actor, which is where the app runs imports.
+        func existing<R: FetchableRecord & TableRecord>(_ key: KeyPath<R, String?>) throws -> [String: R] {
             var byExternal: [String: R] = [:]
-            for row in rows {
-                if let ext = (row as? any ExternallyIdentified)?.externalId { byExternal[ext] = row }
+            for row in try R.filter(Column("externalId") != nil).fetchAll(db) {
+                if let ext = row[keyPath: key] { byExternal[ext] = row }
             }
             return byExternal
         }
@@ -125,7 +127,7 @@ nonisolated enum JEFITImporter {
         // MARK: 2–4. Programs, days, day exercises
 
         mutating func programs() throws {
-            let existing = try existing(ProgramRecord.self)
+            let existing = try existing(\ProgramRecord.externalId)
             for row in export.rows("ROUTINES", withColumn: "difficulty") {
                 let ext = "jefit:routine:\(row["_id"] ?? "")"
                 if let found = existing[ext] {
@@ -143,7 +145,7 @@ nonisolated enum JEFITImporter {
         }
 
         mutating func days() throws {
-            let existing = try existing(ProgramDayRecord.self)
+            let existing = try existing(\ProgramDayRecord.externalId)
             let rows = export.rows("ROUTINES", withColumn: "dayIndex")
             let byPackage = Dictionary(grouping: rows) { $0["package"] ?? "" }
             for (package, dayRows) in byPackage {
@@ -169,7 +171,7 @@ nonisolated enum JEFITImporter {
         }
 
         mutating func dayExercises() throws {
-            let existing = try existing(DayExerciseRecord.self)
+            let existing = try existing(\DayExerciseRecord.externalId)
             var kept: [[String: String]] = []
             for row in export.rows("ROUTINES", withColumn: "exercisename") {
                 guard let entry = mapByKey["\(row["belongSys"] ?? ""):\(row["exercise_id"] ?? "")"] else {
@@ -452,11 +454,6 @@ nonisolated enum JEFITImporter {
         }
     }
 }
-
-nonisolated protocol ExternallyIdentified { var externalId: String? { get } }
-extension ProgramRecord: ExternallyIdentified {}
-extension ProgramDayRecord: ExternallyIdentified {}
-extension DayExerciseRecord: ExternallyIdentified {}
 
 nonisolated private func trimmed(_ value: String?) -> String {
     (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines)

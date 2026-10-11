@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 0.6.**
+**Next card: 0.7.**
 
 ## Cards
 
@@ -16,7 +16,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 0.3 Library and exercise-map files
 - [x] 0.4 JEFIT CSV reader
 - [x] 0.5 JEFIT importer
-- [ ] 0.6 Wire the database into the app, and an import screen
+- [x] 0.6 Wire the database into the app, and an import screen
 - [ ] 0.7 Phase close
 
 ### Phase 1: Programs and the exercise library ([spec](specs/01-programs-library.md))
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **0.6**: Database opens at launch (AppStartup) and seeds the library; HomeView menu imports from Files; DEBUG -importJEFIT <path> imports at launch. Simulator: 468 workouts and 7,751 sets imported; a second run inserts only the import-run row. That second run first failed with UNIQUE program.externalId: a protocol cast in the importer returns nil off the main actor (main-actor-isolated conformance), and only the background path hit it. Fixed with key paths; added a test that imports twice through ImportService off the main actor, and checked that test fails on the old code. Rule added to specs/README conventions. 43 tests.
 - **0.5**: Importer mirrors reference_import.py step by step; rounding is half-to-even to match Python's round(). run() takes optional fileName/fileSHA256 for the import-run row. ImportReport is Hashable (ImportRunRecord needs it). Real export imports in 0.45 s and matches every count, skip reason, spot-checked workout and exercise best. 42 tests.
 - **0.4**: Byte-level RFC 4180 tokeniser over the whole file, then section/block walk. GymAppTests/Fixtures.swift holds fixture paths, including the real export and hasRealExport. The real-export test ran (not skipped): every documented row count matches. 37 tests.
 - **0.3**: Shared fields are a protocol (ExerciseDefinition) with two concrete Decodable structs; BundledExercises loads either file and names it on failure. LibrarySeeder uses insert(onConflict: .ignore). 32 tests.

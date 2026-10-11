@@ -56,6 +56,11 @@ Progress is tracked in [../HANDOFF.md](../HANDOFF.md).
   `nonisolated`. Otherwise the compiler rejects its `Codable` or `FetchableRecord`
   conformance in that closure. The pattern is in 00-foundation.md, card 0.2, and has been
   checked to compile.
+- **No dynamic casts to protocols in `nonisolated` code** (`x as? any SomeProtocol`). A
+  conformance declared in this module is main-actor-isolated, and off the main actor the cast
+  quietly returns nil. Card 0.6 found this in the importer: re-imports duplicated rows on the
+  simulator while every main-thread test passed. Use generics, key paths or concrete types.
+  Any code the app runs in the background gets one test that runs it in the background too.
 - **Tests use Swift Testing** (`import Testing`, `@Test`, `#expect`), not XCTest. Name tests as
   sentences stating the claim: `@Test func assistedLoadsAreStoredNegative()`.
 - **Fixtures** live in `GymAppTests/Fixtures/`. Read them with a path built from `#filePath`:

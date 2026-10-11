@@ -1,8 +1,19 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct HomeView: View {
     @Environment(WorkoutStore.self) private var store
+    @Environment(\.appDatabase) private var database
     @State private var showingWorkout = false
+    @State private var choosingFile = false
+    @State private var importing = false
+    @State private var importResult: PresentedReport?
+    @State private var importError: String?
+
+    private struct PresentedReport: Identifiable {
+        let id = UUID()
+        let report: ImportReport
+    }
 
     var body: some View {
         NavigationStack {
@@ -33,11 +44,61 @@ struct HomeView: View {
             }
             .background(Color.black)
             .navigationTitle("Train")
+            .toolbar {
+                Menu {
+                    Button("Import JEFIT export…", systemImage: "square.and.arrow.down") { choosingFile = true }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
         }
+        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.commaSeparatedText, .plainText, .data]) { result in
+            switch result {
+            case .success(let url): runImport(url)
+            case .failure(let error): importError = error.localizedDescription
+            }
+        }
+        .overlay {
+            if importing {
+                ProgressView("Importing…").padding(24).background(.regularMaterial, in: .rect(cornerRadius: 16))
+            }
+        }
+        .sheet(item: $importResult) { presented in
+            if let database { ImportReportView(report: presented.report, db: database) }
+        }
+        .alert("Import failed", isPresented: Binding(get: { importError != nil }, set: { if !$0 { importError = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(importError ?? "")
+        }
+        .task { importFromLaunchArgument() }
         .fullScreenCover(isPresented: $showingWorkout) {
             ActiveWorkoutView { showingWorkout = false }
                 .environment(store)
         }
+    }
+
+    private func runImport(_ url: URL) {
+        guard let database else { return }
+        importing = true
+        Task {
+            defer { importing = false }
+            do {
+                importResult = PresentedReport(report: try await ImportService.importJEFIT(fileAt: url, into: database))
+            } catch {
+                importError = error.localizedDescription
+            }
+        }
+    }
+
+    /// Simulator verification: `-importJEFIT <absolute path>` imports at launch.
+    private func importFromLaunchArgument() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        if let flag = args.firstIndex(of: "-importJEFIT"), flag + 1 < args.count {
+            runImport(URL(filePath: args[flag + 1]))
+        }
+        #endif
     }
 
     private func start(_ day: RoutineDay) {
