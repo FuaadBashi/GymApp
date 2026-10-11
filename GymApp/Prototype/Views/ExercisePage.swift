@@ -51,7 +51,7 @@ struct ExercisePage: View {
                     .foregroundStyle(.secondary)
                 Spacer()
                 if let set = exercise.sets[safe: exercise.selected],
-                   let e1rm = TrainingMath.displayableE1RM(kg: set.load.kg, reps: set.reps, equipment: exercise.equipment) {
+                   let e1rm = TrainingMath.displayableE1RM(kg: set.load.kg, reps: set.reps, loadMode: exercise.equipment.loadMode) {
                     VStack(alignment: .trailing, spacing: 0) {
                         Text("Est. 1RM").font(.caption2).foregroundStyle(.secondary)
                         Text(Load.format((e1rm * 10).rounded() / 10)).font(.headline.monospacedDigit())

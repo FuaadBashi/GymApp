@@ -6,8 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 0.1.** Phase 0 has not started. The groundwork it relies on is in place and
-committed:
+**Next card: 0.2.**
 
 - the library and JEFIT exercise-map JSON files;
 - the reference importer and its expected values;
@@ -17,7 +16,7 @@ committed:
 ## Cards
 
 ### Phase 0: Foundation ([spec](specs/00-foundation.md))
-- [ ] 0.1 Domain types, and TrainingMath on load modes
+- [x] 0.1 Domain types, and TrainingMath on load modes
 - [ ] 0.2 Database schema, records and AppDatabase
 - [ ] 0.3 Library and exercise-map files
 - [ ] 0.4 JEFIT CSV reader
@@ -57,7 +56,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
-- *(none yet)*
+- **0.1**: Domain enums in ExerciseTypes.swift; TrainingMath now takes LoadMode and skips drop segments in records; PastSet moved to Domain. The prototype maps ProtoEquipment to a LoadMode. 17 tests.
 
 ## Open questions
 

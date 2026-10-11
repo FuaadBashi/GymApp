@@ -41,14 +41,14 @@ struct SummaryView: View {
 
     private var volume: Double {
         session.exercises.reduce(0) {
-            $0 + TrainingMath.volumeKg($1.loggedSets.map(\.asPastSet), equipment: $1.equipment, bodyWeightKg: store.bodyWeightKg)
+            $0 + TrainingMath.volumeKg($1.loggedSets.map(\.asPastSet), loadMode: $1.equipment.loadMode, bodyWeightKg: store.bodyWeightKg)
         }
     }
 
     /// Last time's sets for the same exercises, so the comparison is like for like.
     private var lastVolume: Double? {
         let parts = session.exercises.compactMap { ex in
-            ex.lastTime.map { TrainingMath.volumeKg($0.sets, equipment: ex.equipment, bodyWeightKg: store.bodyWeightKg) }
+            ex.lastTime.map { TrainingMath.volumeKg($0.sets, loadMode: ex.equipment.loadMode, bodyWeightKg: store.bodyWeightKg) }
         }
         return parts.isEmpty ? nil : parts.reduce(0, +)
     }
@@ -64,8 +64,8 @@ struct SummaryView: View {
             let before = store.history(for: ex.exerciseId)
                 .filter { $0.date < session.startedAt }
                 .flatMap(\.sets)
-            let prior = TrainingMath.bests(before, equipment: ex.equipment)
-            let today = TrainingMath.bests(ex.loggedSets.map(\.asPastSet), equipment: ex.equipment)
+            let prior = TrainingMath.bests(before, loadMode: ex.equipment.loadMode)
+            let today = TrainingMath.bests(ex.loggedSets.map(\.asPastSet), loadMode: ex.equipment.loadMode)
             var found: [Record] = []
             if let now = today.heaviestKg, let was = prior.heaviestKg, now > was {
                 found.append(Record(exercise: ex.name, kind: "Heaviest", now: now, before: was))
@@ -127,7 +127,7 @@ struct SummaryView: View {
                     Text(set.type == .warmUp ? "W" : "\(index + 1)").frame(width: 24, alignment: .leading)
                     Text("\(set.load.formatted) \(set.load.unit.rawValue) × \(set.reps)")
                     Spacer()
-                    if let e1rm = TrainingMath.displayableE1RM(kg: set.load.kg, reps: set.reps, equipment: ex.equipment) {
+                    if let e1rm = TrainingMath.displayableE1RM(kg: set.load.kg, reps: set.reps, loadMode: ex.equipment.loadMode) {
                         Text("1RM \(Load.format((e1rm * 10).rounded() / 10))").foregroundStyle(.secondary)
                     }
                 }

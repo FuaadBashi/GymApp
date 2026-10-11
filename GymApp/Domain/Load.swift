@@ -2,13 +2,13 @@ import Foundation
 
 /// Rulebook §1: loads are stored exactly as entered, as hundredths of the unit they were
 /// entered in. Converting on the way in would turn 45 lb into 44.99 lb on the way back.
-enum WeightUnit: String, Codable, CaseIterable {
+nonisolated enum WeightUnit: String, Codable, CaseIterable {
     case kg, lb
 
     static let kgPerLb = 0.45359237
 }
 
-struct Load: Codable, Hashable {
+nonisolated struct Load: Codable, Hashable {
     var hundredths: Int
     var unit: WeightUnit
 

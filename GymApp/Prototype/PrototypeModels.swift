@@ -6,8 +6,13 @@ enum ProtoEquipment: String, Codable {
     /// One stepper tap, in kg. JEFIT history shows dumbbells moving in 2 kg steps.
     var stepKg: Double { self == .dumbbell ? 2 : 2.5 }
 
-    /// Rulebook §2: a dumbbell load is per hand (or per side), so volume counts it twice.
-    var volumeMultiplier: Double { self == .dumbbell ? 2 : 1 }
+    var loadMode: LoadMode {
+        switch self {
+        case .dumbbell: .perHand
+        case .assisted: .bodyweightPlus
+        default: .total
+        }
+    }
 
     var label: String {
         switch self {
@@ -19,12 +24,6 @@ enum ProtoEquipment: String, Codable {
         case .other: "Other"
         }
     }
-}
-
-struct PastSet: Codable, Hashable {
-    var kg: Double
-    var reps: Int
-    var type: SetType
 }
 
 struct HistoryEntry: Codable, Hashable {
