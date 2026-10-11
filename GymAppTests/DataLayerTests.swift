@@ -160,6 +160,14 @@ struct DataLayerTests {
         #expect(throws: ExerciseError.loadModeLockedByHistory) { try db.writer.write { try ExerciseWrites.update($0, exercise: changed) } }
     }
 
+    @Test func aStickyNoteIsTrimmedAndAnEmptyOneIsCleared() throws {
+        try db.writer.write { _ = try TestData.exercise($0, id: "x") }
+        try db.writer.write { try ExerciseWrites.setStickyNote($0, id: "x", text: "  Seat 4  ") }
+        #expect(try db.reader.read { try ExerciseRecord.fetchOne($0, key: "x") }?.stickyNote == "Seat 4")
+        try db.writer.write { try ExerciseWrites.setStickyNote($0, id: "x", text: "   ") }
+        #expect(try db.reader.read { try ExerciseRecord.fetchOne($0, key: "x") }?.stickyNote == nil)
+    }
+
     // MARK: Real export
 
     @Test(.enabled(if: Fixtures.hasRealExport))
