@@ -12,4 +12,16 @@ nonisolated enum BodyQueries {
               let hundredths = entry.weightHundredths else { return nil }
         return Load(hundredths: hundredths, unit: entry.weightUnit).kg
     }
+
+    /// Every recorded weight at once, for bulk queries over the whole history: the result
+    /// answers `weightKg(onOrBefore:)` for any date without another query.
+    static func weightLookup(_ db: Database) throws -> @Sendable (Date) -> Double? {
+        let entries: [(day: String, kg: Double)] = try BodyEntryRecord
+            .filter(Column("weightHundredths") != nil).order(Column("date")).fetchAll(db)
+            .compactMap { e in e.weightHundredths.map { (e.date, Load(hundredths: $0, unit: e.weightUnit).kg) } }
+        return { date in
+            let day = DayString.from(date)
+            return entries.last { $0.day <= day }?.kg
+        }
+    }
 }

@@ -72,7 +72,7 @@ nonisolated enum SummaryQueries {
 
         return WorkoutSummary(workout: workout, duration: (workout.endedAt ?? .now).timeIntervalSince(workout.startedAt),
                               volumeKg: volume, previousVolumeKg: previousVolume,
-                              setCount: lines.flatMap(\.sets).filter { $0.type != .warmUp && $0.type != .drop }.count,
+                              setCount: hardSetCount(lines),
                               records: records, muscles: muscles(lines), exercises: lines)
     }
 
@@ -103,9 +103,18 @@ nonisolated enum SummaryQueries {
     }
 
     private static func volumeKg(_ db: Database, workout: WorkoutRecord, lines: [WorkoutSummary.ExerciseLine]) throws -> Double {
-        let bodyWeight = try BodyQueries.weightKg(db, onOrBefore: workout.startedAt)
-        return lines.reduce(0) { total, line in
-            total + TrainingMath.volumeKg(SetFormat.pastSets(line.sets), loadMode: line.exercise.loadMode, bodyWeightKg: bodyWeight)
+        volumeKg(lines, bodyWeightKg: try BodyQueries.weightKg(db, onOrBefore: workout.startedAt))
+    }
+
+    /// Shared with the history list, so a row and its summary can never disagree.
+    static func volumeKg(_ lines: [WorkoutSummary.ExerciseLine], bodyWeightKg: Double?) -> Double {
+        lines.reduce(0) { total, line in
+            total + TrainingMath.volumeKg(SetFormat.pastSets(line.sets), loadMode: line.exercise.loadMode, bodyWeightKg: bodyWeightKg)
         }
+    }
+
+    /// Completed sets that count as sets: warm-ups and drop rows don't (rulebook §3).
+    static func hardSetCount(_ lines: [WorkoutSummary.ExerciseLine]) -> Int {
+        lines.flatMap(\.sets).filter { $0.type != .warmUp && $0.type != .drop }.count
     }
 }
