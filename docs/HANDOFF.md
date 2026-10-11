@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 1.6.**
+**Next card: 1.7.**
 
 ## Cards
 
@@ -25,7 +25,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 1.3 Exercises tab
 - [x] 1.4 Exercise detail page
 - [x] 1.5 Create and edit exercises
-- [ ] 1.6 Train tab and programs
+- [x] 1.6 Train tab and programs
 - [ ] 1.7 Day editor
 - [ ] 1.8 Exercise picker
 - [ ] 1.9 Suggest a day
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **1.6**: Train tab (Next up with last-time summaries, other days), Programs list (Active, Programs, Archived; swipe to archive or delete app programs), Program detail (reorder, delete, make active, rename, add day), New program split picker. Routing uses TrainRoute through one NavigationStack path. TrainViewModel.card() is shared with Program detail. Simulator: a new Full Body (3 days) shows Next up Full Body 1, never done; the JEFIT programs are under Archived. Rows inside List use .buttonStyle(.plain) to avoid accent-tinted text.
 - **1.5**: Exercise editor (create, edit, duplicate from library) with muscle multi-select and the derived region shown. The load mode is locked when there is history. Duplicate names are rejected, library names included, shown inline (checked on the simulator with 'barbell squat'). Simulator taps landing mid-typing can save a truncated name: pause before tapping Save when testing.
 - **1.4**: Exercise detail page: header, sticky note (edit sheet), History/Notes/About. Simulator: Barbell Bench Press shows 79 sessions, newest 7 Oct 2026 20×10 · 50×10 · 40×10, warm-ups marked W. Sticky-note save covered by a unit test. Noticed: JEFIT's Barbell Bench Press has no libraryId in the map, so 'Barbell Bench Press - Medium Grip' from the library still lists beside it; linking top exercises to library entries in build_jefit_map.py OVERRIDES would remove such duplicates (see Known issues).
 - **1.3**: Exercises tab with search (200 ms debounce), filter chips (ExerciseFilterBar, reused by the picker in 1.8) and rows showing last done plus the session's best set. Features/Shared/Formatting.swift holds display names, MuscleTags and SetFormat (BW−45×6, ×20 for reps only). Detail and editor are stubs until 1.4 and 1.5. Simulator: newest-first order; 'squat' lists Barbell Squat once.

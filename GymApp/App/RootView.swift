@@ -30,7 +30,7 @@ struct RootView: View {
     private var tabs: some View {
         TabView {
             Tab("Train", systemImage: "figure.strengthtraining.traditional") {
-                TrainPlaceholder()
+                TrainView(db: db)
             }
             Tab("History", systemImage: "calendar") {
                 HistoryPlaceholder(db: db)
@@ -46,11 +46,6 @@ struct RootView: View {
             }
         }
     }
-}
-
-// Replaced by cards 1.3 and 1.6.
-private struct TrainPlaceholder: View {
-    var body: some View { ContentUnavailableView("Programs arrive in card 1.6", systemImage: "figure.strengthtraining.traditional") }
 }
 
 private struct HistoryPlaceholder: View {
