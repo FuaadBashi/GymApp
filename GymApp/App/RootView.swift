@@ -17,10 +17,19 @@ struct RootView: View {
     }
 
     var body: some View {
-        @Bindable var workout = workout
-        return tabs
-            .fullScreenCover(isPresented: $workout.isPresented) {
-                WorkoutView().environment(workout)
+        tabs
+            .fullScreenCover(isPresented: Binding(
+                get: { workout.isPresented || workout.justFinishedWorkoutId != nil },
+                set: { if !$0 { workout.isPresented = false; workout.clearJustFinished() } }
+            )) {
+                Group {
+                    if let finished = workout.justFinishedWorkoutId {
+                        SummaryView(workoutId: finished) { workout.clearJustFinished() }
+                    } else {
+                        WorkoutView()
+                    }
+                }
+                .environment(workout)
             }
             .environment(workout)
             .sheet(item: $launchReport) { ImportReportView(report: $0.report, db: db) }

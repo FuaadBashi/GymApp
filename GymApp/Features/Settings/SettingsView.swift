@@ -37,7 +37,6 @@ struct SettingsView: View {
     @State private var choosingFile = false
     @State private var importing = false
     @State private var report: PresentedReport?
-    @State private var showingPrototype = false
 
     private struct PresentedReport: Identifiable {
         let id = UUID()
@@ -93,9 +92,6 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                Section("Prototype") {
-                    Button("Prototype workout (seed data)", systemImage: "hammer") { showingPrototype = true }
-                }
             }
             .navigationTitle("Settings")
             .onChange(of: model.settings) { model.save() }
@@ -112,7 +108,6 @@ struct SettingsView: View {
             .sheet(item: $report, onDismiss: { Task { await model.reload() } }) {
                 ImportReportView(report: $0.report, db: model.db)
             }
-            .fullScreenCover(isPresented: $showingPrototype) { PrototypeHost() }
             .alert("Something went wrong", isPresented: Binding(get: { model.lastError != nil }, set: { if !$0 { model.lastError = nil } })) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -131,22 +126,6 @@ struct SettingsView: View {
                 model.lastError = error.localizedDescription
             }
         }
-    }
-}
-
-/// The phase 0 prototype, kept reachable until phase 2 replaces it.
-private struct PrototypeHost: View {
-    @State private var store = WorkoutStore()
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        HomeView()
-            .environment(store)
-            .overlay(alignment: .topLeading) {
-                Button("Close") { dismiss() }
-                    .buttonStyle(.bordered)
-                    .padding(.leading)
-            }
     }
 }
 

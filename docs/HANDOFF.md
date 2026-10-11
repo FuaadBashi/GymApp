@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 2.8.**
+**Next card: 2.9.**
 
 ## Cards
 
@@ -39,7 +39,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 2.5 Bottom bar and rest
 - [x] 2.6 Start, mini-player and navigation
 - [x] 2.7 Swap, add, history and plate calculator
-- [ ] 2.8 Summary
+- [x] 2.8 Summary
 - [ ] 2.9 Lock-screen countdown (Live Activity)
 - [ ] 2.10 Remove the prototype and close the phase
 
@@ -51,6 +51,7 @@ Specified in full after phase 2 closes.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **2.8**: Summary: SummaryQueries (volume with body weight, previous volume from the day lineage, records vs earlier bests, hard sets per muscle), BodyQueries.weightKg, SummaryView (tiles, records, muscles via FlowLayout, exercises, effort 1–10 and note). RootView's cover shows the summary after finish until Done. The prototype was deleted here rather than in 2.10 (its SummaryView.swift clashed by file name): GymApp/Prototype, tools/make_prototype_seed.py, the .gitignore line and the Settings link are gone. Simulator: 3 × 59×10 leg press → volume 1,770 kg, 3 sets, quads 3 / glutes 1.5 / hamstrings 1.5; Done returns to Train with Full Body 1 next up.
 - **2.7**: Swap (WorkoutExercisePicker with Same movement chip, Also change it in <day>), add exercise, ExerciseHistorySheet (the full detail view in a medium/large sheet), PlateMath + PlateMathTests, PlateCalculatorView, platesKg/platesLb settings. Collection[safe:] moved to WorkoutView.swift. ExerciseFilter gained movementPattern.
 - **2.6**: Start/Resume on Train, Empty workout in the + menu, fullScreenCover in RootView, MiniPlayer via tabViewBottomAccessory(isEnabled:). That API needs iOS 26.1, so the deployment target is now 26.1 (phone is on 26.6). Simulator: mini-player shows rest countdown; kill + relaunch mid-rest resumed with the countdown still right (0:43 → 0:33 ten seconds later).
 - **2.5**: WorkoutBottomBar + RestRing (TimelineView 0.25 s from restEndsAt). Simulator: logged a set, −15 s ×3, sent home; SpringBoard delivered rest-timer at 20:00:37 with body 'Next: Machine Leg Press, set 2 — 59 kg × 10'. No stale bar on return.
