@@ -36,7 +36,7 @@ struct RootView: View {
                 HistoryPlaceholder(db: db)
             }
             Tab("Exercises", systemImage: "dumbbell") {
-                ExercisesPlaceholder()
+                ExercisesView(db: db)
             }
             Tab("Progress", systemImage: "chart.xyaxis.line") {
                 ContentUnavailableView("Progress arrives in phase 3", systemImage: "chart.xyaxis.line")
@@ -51,10 +51,6 @@ struct RootView: View {
 // Replaced by cards 1.3 and 1.6.
 private struct TrainPlaceholder: View {
     var body: some View { ContentUnavailableView("Programs arrive in card 1.6", systemImage: "figure.strengthtraining.traditional") }
-}
-
-private struct ExercisesPlaceholder: View {
-    var body: some View { ContentUnavailableView("The library arrives in card 1.3", systemImage: "dumbbell") }
 }
 
 private struct HistoryPlaceholder: View {
