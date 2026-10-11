@@ -9,9 +9,9 @@
 - The prototype is deleted at the end of the phase.
 
 **Read first:** [PRODUCT_BRIEF.md](../PRODUCT_BRIEF.md) ("The workout screen"), decisions
-#23–#24, and rulebook §3, §5–§7, §9 and §10. Look at `GymApp/Prototype/` for behaviour
-already proven there: the rest timer as an absolute end time, ghosted prefilled values and
-↑/↓ comparisons. **Do not copy its storage or its one-exercise-per-page layout.**
+#23–#24, and rulebook §3, §5–§7, §9 and §10. The prototype previously proved the absolute rest end time, ghosted prefilled values and
+↑/↓ comparisons. It was removed in card 2.8; the workout now uses database-backed storage
+and list/focus modes.
 
 ---
 
@@ -501,7 +501,11 @@ extension target".
    Activities on a device; that is checked in phase 5.
 
 **Done when:** on the simulator, the lock screen (Device → Lock) shows the countdown during
-rest, and it disappears when rest ends.
+rest. At expiry while suspended, the local notification fires. When iOS marks the
+content stale, the activity shows “Rest over” with the next set (compact Island: “Ready”;
+minimal: checkmark). The system may delay this visual update; 0:00 during that delay is
+acceptable. It clears when GymApp resumes, or immediately on skip, finish or discard.
+This replaces automatic removal while suspended, as agreed on 11 October 2026.
 
 ---
 

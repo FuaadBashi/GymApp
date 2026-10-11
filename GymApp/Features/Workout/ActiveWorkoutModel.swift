@@ -1,3 +1,5 @@
+import ActivityKit
+import OSLog
 import Foundation
 import GRDB
 import Observation
@@ -17,6 +19,9 @@ final class ActiveWorkoutModel {
     let db: AppDatabase
     private let notifier: RestScheduling
     private var askedPermission = false
+    private var restActivity: Activity<RestActivityAttributes>?
+    private var activityEndTask: Task<Void, Never>?
+    private static let activityLog = Logger(subsystem: "com.fuaadshurie.GymApp", category: "RestActivity")
 
     init(db: AppDatabase, notifier: RestScheduling = RestNotifier()) {
         self.db = db
@@ -31,7 +36,7 @@ final class ActiveWorkoutModel {
     func resumeIfNeeded() async {
         guard snapshot == nil else { return }
         let id = try? await db.reader.read { try WorkoutQueries.inProgress($0)?.id }
-        guard let id else { return }
+        guard let id else { await endRestActivity(); return }
         await reload(workoutId: id)
         selectFirstPlanned()
     }
@@ -57,8 +62,9 @@ final class ActiveWorkoutModel {
 
     func finish() async {
         guard let id = snapshot?.workout.id else { return }
-        let finished = await write { try WorkoutWrites.finish($0, workoutId: id, now: .now) } ?? nil
+        guard let finished = await write({ try WorkoutWrites.finish($0, workoutId: id, now: .now) }) else { return }
         notifier.cancel()
+        await endRestActivity()
         snapshot = nil
         currentItemId = nil
         selectedSetId = nil
@@ -68,8 +74,9 @@ final class ActiveWorkoutModel {
 
     func discard() async {
         guard let id = snapshot?.workout.id else { return }
-        _ = await write { try WorkoutWrites.discard($0, workoutId: id) }
+        guard await write({ try WorkoutWrites.discard($0, workoutId: id) }) != nil else { return }
         notifier.cancel()
+        await endRestActivity()
         snapshot = nil
         currentItemId = nil
         selectedSetId = nil
@@ -243,6 +250,55 @@ final class ActiveWorkoutModel {
             snapshot = nil
         }
         syncNotification()
+        await syncRestActivity()
+    }
+
+    private func endRestActivity() async {
+        activityEndTask?.cancel()
+        activityEndTask = nil
+        restActivity = nil
+        for activity in Activity<RestActivityAttributes>.activities {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
+    }
+
+    private func syncRestActivity() async {
+        guard let snapshot, let end = snapshot.workout.restEndsAt, end > .now else {
+            await endRestActivity()
+            return
+        }
+        let items = snapshot.items
+        let start = items.firstIndex { $0.id == currentItemId } ?? 0
+        let next = (0..<items.count).map { items[(start + $0) % items.count] }
+            .first { !$0.plannedSets.isEmpty }
+        let state = RestActivityAttributes.ContentState(
+            exerciseName: next?.exercise.name ?? "All sets logged",
+            restEndsAt: end,
+            nextSetText: Self.notificationBody(snapshot, from: currentItemId))
+        let content = ActivityContent(state: state, staleDate: end)
+        if restActivity == nil {
+            restActivity = Activity<RestActivityAttributes>.activities.first {
+                $0.attributes.workoutTitle == snapshot.workout.title && $0.activityState == .active
+            }
+        }
+        if let activity = restActivity {
+            await activity.update(content)
+        } else {
+            do {
+                restActivity = try Activity.request(
+                    attributes: RestActivityAttributes(workoutTitle: snapshot.workout.title),
+                    content: content, pushType: nil)
+            } catch {
+                Self.activityLog.error("Rest activity request failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+        activityEndTask?.cancel()
+        activityEndTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(max(0, end.timeIntervalSinceNow)))
+            guard !Task.isCancelled, let self,
+                  self.snapshot?.workout.restEndsAt == end else { return }
+            await self.restDidEnd()
+        }
     }
 
     private func syncNotification() {

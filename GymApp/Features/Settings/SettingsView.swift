@@ -85,6 +85,7 @@ struct SettingsView: View {
                     Text("Same day compares with the last time you did this routine day, falling back to any workout.")
                 }
                 Section("Data") {
+                    NavigationLink("Backups & recovery") { RecoveryView(db: model.db) }
                     Button("Import JEFIT export…", systemImage: "square.and.arrow.down") { choosingFile = true }
                     if let totals = model.totals {
                         Text("\(totals.workouts.formatted()) workouts · \(totals.sets.formatted()) sets · \(totals.exercises.formatted()) of your exercises")

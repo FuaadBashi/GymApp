@@ -1,5 +1,8 @@
 # Phases 3–5: outline
 
+The post-phase-2 additions in [their requirements](post-phase-2-additions.md) come
+before phase 3, including backup/recovery work brought forward from phase 4.
+
 These phases are outlined, not specified. Each gets a full spec, with cards in the format of
 phases 0–2, once the phase before it is closed: by then the data layer and screens they build
 on exist and have been used. **Do not build from this file.**
@@ -50,12 +53,18 @@ does (155 of 195).
 
 ## Phase 4: Import, export and backups
 
+The [post-phase-2 additions](post-phase-2-additions.md) bring durability and backup
+work forward to immediately after phase 2, before phase 3: every edit and unfinished
+session, offline recovery, independent copies, failure handling and verified restores.
+The scope below must be reconciled with that completed work when phase 4 is specified.
+
 - **Full backup:** `writer.backup(to:)` into a dated `.sqlite` file, shared with the share
   sheet.
 - **Restore:** pick a backup, validate it (it opens, it migrates, and the counts read back),
   then back up the current data, then replace it. Show before-and-after counts.
 - **CSV export of every set,** one row per set: date, workout, exercise, set number, type,
-  load, unit, reps, RPE, workout note. Columns are compatible with Strong's export, so other
+  load, unit, reps, RPE, workout note. Extend it with set notes, session-exercise notes and
+  the requested labels when those cards are specified. Columns are compatible with Strong's export, so other
   apps can read it.
 - **Automatic backup after each finished workout** to a folder chosen once with
   `UIDocumentPickerViewController` in folder mode, kept with a security-scoped bookmark.

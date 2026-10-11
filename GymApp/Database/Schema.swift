@@ -8,6 +8,11 @@ nonisolated enum Schema {
         migrator.registerMigration("v1") { db in
             try db.execute(sql: v1)
         }
+        migrator.registerMigration("v2") { db in
+            try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN note TEXT")
+            try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN repsInReserve INTEGER CHECK (repsInReserve BETWEEN 0 AND 3)")
+            try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN annotations TEXT NOT NULL DEFAULT '[]'")
+        }
         return migrator
     }
 

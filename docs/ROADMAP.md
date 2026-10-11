@@ -1,13 +1,12 @@
 # Roadmap
 
-Build order agreed 11 October 2026. Each phase ends with something usable and a list of what
+Build order agreed 11 October 2026, updated to prioritise the additions after phase 2. Each phase ends with something usable and a list of what
 "done" means. JEFIT stays in use alongside until phase 5.
 
 Phases 0–2 are specified card by card in [specs/](specs/), and progress is tracked in
 [HANDOFF.md](HANDOFF.md). Phases 3–5 are outlined and get full specs when phase 2 closes.
 
-The prototype (workout screen seeded from two JEFIT days, rest alerts, survives being killed,
-summary) is done and serves as reference. Its models carry forward; its storage does not.
+The prototype was removed in card 2.8; the workout screens now use the database.
 
 ## Phase 0: Foundation
 
@@ -55,6 +54,14 @@ FB1.
 
 ## Phase 2: Workout screen
 
+- [x] **Phase 2 complete — 11 October 2026.**
+
+Session flow and final review verified. Full Body 1
+finished on the simulator with 13 sets and 3,808 kg. The Live Activity extension was added in Xcode (decision #35) and its locked countdown
+is verified. The rest alert fires at expiry; the activity shows “Rest over” on the system’s stale
+refresh and clears on return (decision #37). Verified while locked; the simulator delayed
+the visual refresh by about a minute, which is accepted.
+
 - The list of exercise cards, with the focus toggle.
 - Mini-player above the tab bar for a workout in progress.
 - Rest bar; lock-screen and Dynamic Island countdown, verified on a free account.
@@ -63,6 +70,17 @@ FB1.
 
 **Done when:** a full session can be logged without touching JEFIT, including after the app
 is killed mid-rest.
+
+## Additions after phase 2
+
+[Requirements](specs/post-phase-2-additions.md): exact-exercise stills with on-demand
+movement demonstrations, set and session-exercise notes, richer set labels, and layered
+recovery of all edits online or offline. These are implemented before phase 3, with initial
+media coverage for barbell bench press and back squat. Expand curated exact-variant media
+coverage separately; other exercises honestly show missing media. External backups need
+the owner to choose a folder. Device/cloud-provider failure checks remain outstanding.
+Their cards are in [02a-additions.md](specs/02a-additions.md). Bring the required backup and recovery work forward from
+phase 4; phase 4 can then cover remaining import/export work.
 
 ## Phase 3: History and analytics
 

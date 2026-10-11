@@ -102,4 +102,70 @@ struct ActiveWorkoutModelTests {
         #expect(model.justFinishedWorkoutId == id)
         #expect(notifier.scheduled == nil)
     }
+    @Test func failedFinishKeepsTheWorkoutOpenAndItsSetsIntact() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.log(bench.sets[0].id)
+        let before = try #require(model.snapshot)
+        try await db.writer.write { db in
+            try db.execute(sql: """
+                CREATE TRIGGER reject_finish BEFORE UPDATE OF endedAt ON workout
+                WHEN NEW.endedAt IS NOT NULL
+                BEGIN SELECT RAISE(ABORT, 'finish write failed'); END
+                """)
+        }
+        await model.finish()
+        #expect(model.snapshot == before)
+        #expect(model.isPresented)
+        #expect(model.justFinishedWorkoutId == nil)
+        #expect(model.lastError != nil)
+        let persisted = try await db.reader.read {
+            try WorkoutQueries.snapshot($0, workoutId: before.workout.id, settings: try AppSettings.load($0))
+        }
+        #expect(persisted == before)
+        #expect(notifier.scheduled != nil)
+        await model.skipRest()
+    }
+
+    @Test func failedDiscardKeepsTheWorkoutOpen() async throws {
+        let model = try await model()
+        let before = try #require(model.snapshot)
+        try await db.writer.write { db in
+            try db.execute(sql: """
+                CREATE TRIGGER reject_discard BEFORE DELETE ON workout
+                BEGIN SELECT RAISE(ABORT, 'discard write failed'); END
+                """)
+        }
+        await model.discard()
+        #expect(model.snapshot == before)
+        #expect(model.isPresented)
+        #expect(model.lastError != nil)
+        let id = try await db.reader.read { try WorkoutQueries.inProgress($0)?.id }
+        #expect(id == before.workout.id)
+    }
+
+    @Test func restExpiresWhileTheWorkoutScreenIsMinimised() async throws {
+        let model = try await model()
+        let set = try #require(model.snapshot?.items.first?.sets.first)
+        await model.log(set.id)
+        model.isPresented = false
+        await model.adjustRest(by: -89.8)
+        try await Task.sleep(for: .milliseconds(400))
+        #expect(model.snapshot?.workout.restEndsAt == nil)
+        #expect(notifier.scheduled == nil)
+    }
+
+    @Test func extendingRestCancelsItsEarlierExpiry() async throws {
+        let model = try await model()
+        let set = try #require(model.snapshot?.items.first?.sets.first)
+        await model.log(set.id)
+        await model.adjustRest(by: -89.8)
+        await model.adjustRest(by: 30)
+        let end = try #require(model.snapshot?.workout.restEndsAt)
+        try await Task.sleep(for: .milliseconds(400))
+        #expect(model.snapshot?.workout.restEndsAt == end)
+        await model.skipRest()
+        #expect(model.snapshot?.workout.restEndsAt == nil)
+    }
+
 }

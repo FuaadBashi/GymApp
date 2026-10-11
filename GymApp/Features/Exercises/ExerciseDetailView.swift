@@ -8,6 +8,7 @@ struct ExerciseDetailView: View {
     @State private var addingNote = false
     @State private var noteDraft = ""
     @State private var editor: EditorMode?
+    @State private var metadata: MetadataDraft?
 
     private enum Section: String, CaseIterable { case history = "History", notes = "Notes", about = "About" }
     private enum EditorMode: Identifiable {
@@ -24,6 +25,7 @@ struct ExerciseDetailView: View {
             if let exercise = model.exercise {
                 VStack(alignment: .leading, spacing: 18) {
                     header(exercise)
+                    ExerciseMediaView(exercise: exercise)
                     stickyNote(exercise)
                     Picker("Section", selection: $section) {
                         ForEach(Section.allCases, id: \.self) { Text($0.rawValue) }
@@ -63,8 +65,8 @@ struct ExerciseDetailView: View {
             case .duplicate(let e): ExerciseEditorView(db: model.db, editing: nil, template: e)
             }
         }
-        .sheet(isPresented: $editingSticky) {
-            NoteEditor(title: "Sticky note", text: $stickyDraft) { model.saveStickyNote(stickyDraft) }
+        .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
+            if let metadata { WorkoutMetadataEditor(db: model.db, title: "Notes & labels", draft: metadata) { await model.reload() } }
         }
         .sheet(isPresented: $addingNote) {
             NoteEditor(title: "New note", text: $noteDraft) { model.addNote(noteDraft) }
@@ -89,7 +91,7 @@ struct ExerciseDetailView: View {
     private func stickyNote(_ e: ExerciseRecord) -> some View {
         Button {
             stickyDraft = e.stickyNote ?? ""
-            editingSticky = true
+            metadata = MetadataDraft(kind: .sticky, id: e.id, note: e.stickyNote ?? "")
         } label: {
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: "note.text").foregroundStyle(Theme.note)
@@ -122,6 +124,18 @@ struct ExerciseDetailView: View {
                         }
                     }
                     Text(SetFormat.line(session.sets, loadMode: e.loadMode)).font(.subheadline.monospacedDigit())
+                    Button("Edit session exercise note") {
+                        metadata = MetadataDraft(kind: .exercise, id: session.workoutExercise.id, note: session.workoutExercise.note ?? "")
+                    }.font(.caption)
+                    if let note = session.workoutExercise.note { Text(note).font(.caption).foregroundStyle(Theme.note) }
+                    ForEach(session.sets) { set in
+                        Button {
+                            metadata = MetadataDraft(kind: .set, id: set.id, note: set.note ?? "", reserve: set.repsInReserve, annotations: set.annotations)
+                        } label: {
+                            Text("Set \(set.position + 1) notes & labels" + (set.metadataText.isEmpty ? "" : ": " + set.metadataText))
+                                .font(.caption).foregroundStyle(Theme.note)
+                        }
+                    }
                 }
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)

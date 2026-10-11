@@ -1,0 +1,20 @@
+[
+  {
+    "name": "barbell-bench",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Bench_press_-_exercise_demonstration_video.webm",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/d/df/Bench_press_-_exercise_demonstration_video.webm",
+    "sha256": "4b843d33d7b439884ed64d722edc6c7c46a3430060d4e2059f42b103e9187be7",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  },
+  {
+    "name": "barbell-squat",
+    "author": "FitnessScape",
+    "license": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Squat_-_exercise_demonstration_video.webm",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Squat_-_exercise_demonstration_video.webm",
+    "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
+    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+  }
+]

@@ -9,6 +9,9 @@ struct SummaryView: View {
     @State private var summary: WorkoutSummary?
     @State private var effort: Int?
     @State private var note = ""
+    @State private var loaded = false
+    @State private var pending: Task<Void, Never>?
+    @State private var saveError: String?
 
     var body: some View {
         NavigationStack {
@@ -20,11 +23,15 @@ struct SummaryView: View {
                 ToolbarItem(placement: .confirmationAction) { Button("Done", action: save) }
             }
         }
+        .onChange(of: note) { autosave() }
+        .onChange(of: effort) { autosave() }
+        .interactiveDismissDisabled(saveError != nil)
         .task {
             let id = workoutId
             summary = try? await model.db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
             effort = summary?.workout.effort
             note = summary?.workout.note ?? ""
+            loaded = true
         }
     }
 
@@ -79,6 +86,10 @@ struct SummaryView: View {
                 ForEach(s.exercises) { line in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(line.exercise.name).font(.headline)
+                        if let note = line.note { Text(note).font(.caption).foregroundStyle(Theme.note) }
+                        ForEach(line.sets.filter { !$0.metadataText.isEmpty }) { set in
+                            Text("Set \(set.position + 1): " + set.metadataText).font(.caption).foregroundStyle(Theme.note)
+                        }
                         Text(SetFormat.line(line.sets, loadMode: line.exercise.loadMode))
                             .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
                         if let best = line.sets.compactMap({ TrainingMath.displayableE1RM(kg: SetFormat.kg($0), reps: $0.reps, loadMode: line.exercise.loadMode) }).max() {
@@ -89,6 +100,7 @@ struct SummaryView: View {
                 }
             }
 
+            if let saveError { Text(saveError).font(.caption).foregroundStyle(.orange) }
             section("How did it feel?") {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
@@ -127,12 +139,23 @@ struct SummaryView: View {
         .background(Theme.card, in: .rect(cornerRadius: 16))
     }
 
-    private func save() {
-        let id = workoutId, effort = effort, note = note
-        Task {
-            try? await model.db.writer.write { try WorkoutWrites.setNoteAndEffort($0, workoutId: id, note: note, effort: effort) }
-            onDone()
+    private func autosave() {
+        guard loaded else { return }
+        let draft = MetadataDraft(kind: .summary, id: workoutId, note: note, effort: effort)
+        do { try draft.persist() } catch { saveError = error.localizedDescription; return }
+        let previous = pending
+        pending = Task {
+            await previous?.value
+            do {
+                try await model.db.writer.write { try draft.apply($0) }
+                try draft.clearIfCurrent()
+                saveError = nil
+            } catch { saveError = "Note kept as a recovery draft: " + error.localizedDescription }
         }
+    }
+    private func save() {
+        autosave()
+        Task { await pending?.value; if saveError == nil { onDone() } }
     }
 }
 

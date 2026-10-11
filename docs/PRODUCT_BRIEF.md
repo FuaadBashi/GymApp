@@ -135,8 +135,9 @@ progress shows as a mini-player above the tab bar on every tab.
 - **A theme of its own:** dark, with a single accent colour that is not JEFIT's blue.
 - **Easy to read:** large rounded numbers, big tap targets, muscle tags coloured by body
   region, proper charts and light haptics.
-- **Cut from JEFIT:** the large exercise animation (a small image at most), the AI sparkle,
-  share, and Kcal & HR until there is a watch.
+- **Exercise media after phase 2:** an exact-exercise still with an on-demand movement
+  demonstration (hover where supported, a touch action on iPhone), available offline.
+- **Cut from JEFIT:** the AI sparkle, share, and Kcal & HR until there is a watch.
 
 ## Your spin
 
@@ -154,6 +155,14 @@ chest press or seated chest press.
   exercises side by side.
 - It needs every exercise tagged with a *movement pattern*. The open dataset has no such
   field, so your exercises are tagged by hand first.
+
+### Additions after phase 2
+
+Exact-exercise stills and demonstrations; notes on individual sets and workout exercises;
+set labels deload, max rep, MR - 1, MR - 2, MR - 3, injury, form and warm; and layered
+workout recovery for all edits online or offline. Full requirements and open semantics
+are in [post-phase-2 additions](specs/post-phase-2-additions.md). Backup coverage includes
+unfinished workouts and notes, with local recovery and independently verified external copies.
 
 ### Also planned
 

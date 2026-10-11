@@ -10,6 +10,7 @@ struct ExerciseCard: View {
     @Environment(ActiveWorkoutModel.self) private var model
     @State private var editingNote = false
     @State private var noteDraft = ""
+    @State private var metadata: MetadataDraft?
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
@@ -23,13 +24,10 @@ struct ExerciseCard: View {
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
         }
-        .sheet(isPresented: $editingNote) {
-            NoteEditor(title: "Note for \(item.exercise.name)", text: $noteDraft) {
-                let id = item.exercise.id, text = noteDraft
-                Task {
-                    try? await model.db.writer.write { try ExerciseWrites.setStickyNote($0, id: id, text: text) }
-                    await model.refresh()
-                }
+        .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
+            if let metadata {
+                WorkoutMetadataEditor(db: model.db, title: metadata.kind == .set ? "Set notes & labels" : "Exercise note",
+                                      draft: metadata) { await model.refresh() }
             }
         }
     }
@@ -76,7 +74,10 @@ struct ExerciseCard: View {
                 if [.barbell, .ezBar, .smith].contains(item.exercise.equipment) {
                     Button("Plate calculator", systemImage: "circle.grid.2x1") { onAction(.plates) }
                 }
-                Button(item.exercise.stickyNote == nil ? "Add note" : "Edit note", systemImage: "note.text") { editNote() }
+                Button("Session exercise note", systemImage: "note.text") {
+                    metadata = MetadataDraft(kind: .exercise, id: item.id, note: item.workoutExercise.note ?? "")
+                }
+                Button(item.exercise.stickyNote == nil ? "Add sticky note" : "Edit sticky note", systemImage: "note.text") { editNote() }
                 Divider()
                 Button("Remove", systemImage: "trash", role: .destructive) {
                     Task { await model.removeExercise(item.id) }
@@ -97,6 +98,13 @@ struct ExerciseCard: View {
             .buttonStyle(.plain)
         }
 
+        ExerciseMediaView(exercise: item.exercise)
+        Button {
+            metadata = MetadataDraft(kind: .exercise, id: item.id, note: item.workoutExercise.note ?? "")
+        } label: {
+            Label(item.workoutExercise.note ?? "Add a note for this workout", systemImage: "note.text")
+                .font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
+        }
         Text(todayLine).font(.caption.weight(.medium)).foregroundStyle(.secondary)
 
         VStack(spacing: 4) {
@@ -109,16 +117,36 @@ struct ExerciseCard: View {
                        onSelect: { model.select(setId: set.id) },
                        onToggle: { Task { set.completedAt == nil ? await model.log(set.id) : await model.unlog(set.id) } })
                     .contextMenu {
+                        Button("Notes & labels…", systemImage: "note.text") {
+                            metadata = MetadataDraft(kind: .set, id: set.id, note: set.note ?? "",
+                                                     reserve: set.repsInReserve, annotations: set.annotations)
+                        }
                         ForEach(SetType.allCases, id: \.self) { type in
                             Button(type.label) {
-                                Task { await model.update(set.id, edit: SetEdit(loadHundredths: set.loadHundredths, unit: set.unit, reps: set.reps, type: type)) }
+                                Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: set.loadHundredths, unit: set.unit, reps: set.reps, type: type)) }
                             }
                         }
                         Button("Delete set", systemImage: "trash", role: .destructive) { Task { await model.deleteSet(set.id) } }
                     }
+                if !set.metadataText.isEmpty {
+                    Text(set.metadataText).font(.caption).foregroundStyle(Theme.note)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 10)
+                }
                 if model.selectedSetId == set.id {
+                    HStack {
+                        Menu("Set type: " + set.type.label) {
+                            ForEach(SetType.allCases, id: \.self) { type in
+                                Button(type.label) { Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: set.loadHundredths, unit: set.unit, reps: set.reps, type: type)) } }
+                            }
+                        }
+                        Spacer()
+                        Button("Notes & labels") {
+                            metadata = MetadataDraft(kind: .set, id: set.id, note: set.note ?? "", reserve: set.repsInReserve, annotations: set.annotations)
+                        }
+                    }.font(.caption)
+
                     SetEditor(set: set, exercise: item.exercise) { edit in
-                        Task { await model.update(set.id, edit: edit) }
+                        Task { await model.updateDurably(set.id, edit: edit) }
                     }
                     .padding(.vertical, 4)
                 }
@@ -164,8 +192,7 @@ struct ExerciseCard: View {
     }
 
     private func editNote() {
-        noteDraft = item.exercise.stickyNote ?? ""
-        editingNote = true
+        metadata = MetadataDraft(kind: .sticky, id: item.exercise.id, note: item.exercise.stickyNote ?? "")
     }
 }
 

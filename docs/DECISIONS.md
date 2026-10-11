@@ -58,7 +58,7 @@ that can change without reworking anything.
 | 24 | Workout in progress | **A mini-player above the tab bar**, in place of a JEFIT-style resume banner. |
 | 25 | Navigation | **Five tabs:** Train, History, Exercises, Progress, Settings. |
 | 26 | Export and import | **Export** a full backup (the database file) and a CSV of every set. **Import** a backup, which backs up the current data first, or a JEFIT export. |
-| 27 | Build order | Foundation → programs and library → workout screen → history and analytics → import/export → on the phone. Details in [ROADMAP.md](ROADMAP.md). |
+| 27 | Build order | Foundation → programs and library → workout screen → exact-exercise media, notes/set labels and workout backup/recovery → history and analytics → remaining import/export → on the phone. The additions are prioritised immediately after phase 2, before phase 3. Details in [ROADMAP.md](ROADMAP.md). |
 
 ## G. Implementation (11 Oct, before phase 0)
 
@@ -78,6 +78,8 @@ that can change without reworking anything.
 | # | Question | Decision |
 |---|---|---|
 | 36 | Where does deep analysis live? | **Possibly outside the app.** Phase 2 follows phase 1 directly. Phase 3's analytics may be skipped in favour of a separate offline, static tool that reads the export and can go further: more detail, and an LLM over the data. The app keeps history and per-exercise figures; the export (phase 4) must carry everything such a tool needs. To be settled before phase 3 is specified. |
+
+| 37 | Rest activity at expiry | **Show “Rest over” and the next set while suspended; clear on return.** The rest alert still fires at the deadline. Use ActivityKit’s `staleDate` and `context.isStale` to switch the lock-screen and Island presentation without keeping the app running. iOS controls the stale-state refresh and may briefly retain 0:00 (about one minute observed on the simulator); the notification is the deadline signal. Automatic removal while suspended is no longer required (11 Oct). JEFIT documents a lock-screen timer, but its exact expiry presentation is not publicly specified. |
 
 ## Open
 

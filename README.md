@@ -11,9 +11,21 @@ workouts and 7,751 sets, matching a Python reference importer row for row, and s
 twice. On top of it: an Exercises tab (search, filters, history per exercise, notes, custom
 exercises), programs for any split with a rolling rotation, a day editor that copies JEFIT
 days across with their history, an exercise picker filtered to the day's focus, and
-"Suggest a day", which fills a day from exercises I've actually done. The old workout-screen
-prototype still handles logging. **What doesn't yet:** the real workout screen, history and
-analytics. [The roadmap](docs/ROADMAP.md) has the order and what "done" means for each phase.
+"Suggest a day", which fills a day from exercises I've actually done. Workouts now log
+straight to the database, with list and focus modes, prefill from the day's history,
+immediate set saves, resume after relaunch, rest alerts, a mini-player, swaps, added
+exercises, a plate calculator and a summary with volume, records and muscles trained.
+The prototype has been removed. A full Full Body 1 simulator session is verified.
+The Live Activity target and countdown are implemented and visible on the simulator lock screen.
+The rest alert fires at expiry; the activity changes to “Rest over” when iOS refreshes
+its stale state, and clears on return (decision #37). Verified on the simulator.
+**Phase 2 is complete.** History and Progress await the phase-3 spec.
+The post-phase-2 additions now include checked recovery copies, backup-folder selection
+and restore, autosaved set/session-exercise notes, effort labels (max rep and MR −1/−2/−3),
+deload/injury/form annotations and warm-up selection. Offline stills and videos initially
+cover barbell bench press and back squat; other variants explicitly show missing media.
+Choose an independent folder in Settings → Backups & recovery to enable external copies.
+[The roadmap](docs/ROADMAP.md) has the order and what "done" means for each phase.
 
 <img src="docs/screenshots/train.png" width="300" alt="Train tab: Full Body 3 next up, with last-time sets per exercise">
 
@@ -33,7 +45,7 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | – | Workout-screen prototype on JEFIT data | done |
 | 0 | Database, full JEFIT import, exercise library | done |
 | 1 | Programs and the exercise library | done |
-| 2 | Workout screen | **next** |
+| 2 | Workout screen | done |
 | 3 | History and analytics | not started (deep analysis may move to a separate tool, decision #36) |
 | 4 | Import, export and backups | not started |
 | 5 | On the phone | not started |
@@ -84,13 +96,8 @@ xcodebuild -project GymApp.xcodeproj -scheme GymApp \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' build
 ```
 
-The prototype reads `GymApp/Prototype/PrototypeSeed.json`, which is generated from a personal
-JEFIT export and kept out of the repository. Without it, the app opens and says what is
-missing. To build one from your own export:
-
-```bash
-python3 tools/make_prototype_seed.py path/to/jefit-export.csv --days "Day 1" "Day 2"
-```
+The app seeds its bundled exercise library on first launch. Import a personal JEFIT
+CSV from Settings, or create a program and exercises in the app.
 
 ## Tests
 
@@ -108,7 +115,8 @@ GymApp/Database/     schema, records, AppDatabase
 GymApp/Import/       JEFIT reader, importer, import screen
 GymApp/Library/      bundled library and exercise-map loading
 GymApp/Services/     rest-timer notifications
-GymApp/Prototype/    the workout-screen prototype, replaced phase by phase
+GymApp/Data/         queries and writes for exercises, programs, workouts and summaries
+GymApp/Features/     settings, exercise library, programs and workout screens
 GymApp/Resources/    data bundled with the app: exercise library, JEFIT exercise map
 GymAppTests/         unit tests (Swift Testing) and import fixtures
 tools/               JEFIT parsing, exercise classification, library build, reference importer

@@ -6,7 +6,12 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 2.9.**
+**Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
+The post-phase-2 additions are implemented and tested locally, with initial media
+coverage for barbell bench press and back squat; see [02a-additions.md](specs/02a-additions.md).
+Choose an independent backup folder on the actual phone. Phase 3 awaits a full spec and has not started.
+The user authorised committing all pending work on 11 October; phase-2 closure and
+the additions are recorded together in Git. No phase-3 implementation was started here.
 
 ## Cards
 
@@ -40,17 +45,35 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 - [x] 2.6 Start, mini-player and navigation
 - [x] 2.7 Swap, add, history and plate calculator
 - [x] 2.8 Summary
-- [ ] 2.9 Lock-screen countdown (Live Activity)
-- [ ] 2.10 Remove the prototype and close the phase
+- [x] 2.9 Lock-screen countdown (Live Activity)
+- [x] 2.10 Remove the prototype and close the phase
 
 ### Phases 3–5 ([outline](specs/03-05-outline.md))
-Specified in full after phase 2 closes.
+Specified after the post-phase-2 additions; these additions take priority before phase 3.
+
+## Requested after phase 2
+
+Recorded in [post-phase-2 additions](specs/post-phase-2-additions.md): exact-exercise
+stills and demonstrations; set and session-exercise notes; deload, max rep, MR - 1/2/3,
+injury, form and warm labels; layered local and independent backup/recovery of all edits,
+including unfinished workouts offline. Implemented under [02a-additions.md](specs/02a-additions.md).
+Max rep = zero reps left; MR −1/−2/−3 = one/two/three reps left in the tank, confirmed
+by the user. Backup/recovery moved forward from phase 4. Media coverage expansion and
+physical-device/cloud-provider failure checks remain open.
 
 ## Session notes
 
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **A1–A3 additions (11 Oct)**: Added FULL synchronous primary writes, verified portable SQLite snapshots after changed commits, retention (30 latest plus monthly), external-folder bookmarks/hash/read-back validation, pending/retry status, share/export copies, validated staged restore and safety archives including damaged primary/WAL and displaced drafts. Startup can recover from a selected backup without deleting broken primary data. Atomic drafts replay unfinished number/type/metadata/summary edits on launch; a newer draft cannot be erased by an older save. Migration v2 adds set note, nullable reps-in-reserve 0–3 and independent deload/injury/form annotations. Session exercise notes remain separate from sticky notes; metadata appears in workout/summary/exercise history and is not inherited as today's annotation. Warm uses existing warm-up type. MR labels do not invent reps or affect existing maths. Explicit media-ID mappings cover barbell bench press and back squat with bundled FitnessScape CC BY 3.0 real footage/stills, tap/hover playback and attribution; no substitution for different/custom variants. 114 tests in 15 suites passed (`/tmp/gymapp-additions-tests.log`), including migration, backup/restore, damaged primary, unavailable external folder, retention, rollback, metadata and interrupted-draft replay. Isolated simulator `GymApp Additions` used a read-only copy of original history: terminated/relaunched before note Done, confirmed note/MR−1/form survived; exercise note and warm-up selection persisted in both primary and latest backup, one unfinished session and 30 retained copies. Squat still/play/stop and restore preview verified visually. Screenshots: additions-notes-labels.png, additions-exercise-media.png, additions-recovery.png. Pointer hover/Reduce Motion behavior, physical full-disk/kill-during-copy and cloud-server upload not verified on a physical device. External folder selection is still required on the real phone. Narrowed `.gitignore` personal-data rule to `/data/`: it had also excluded Swift source in GymApp/Data. No commits/pushes; preserved separate phase-2/Live Activity work.
+
+- **2.10 phase close (11 Oct)**: Reviewed workout lifecycle, persistence, summary calculations and rest activity behavior. Prototype directory, seed script, ignored seed entry, Settings link and `ProtoEquipment` references are absent. Rechecked the persisted Full Body 1: finished, 13/13 sets across six exercises, rest cleared; loads reproduce 3,808.3 kg. Visually checked existing list/focus/rest screenshots and `summary.png` (the earlier Full Body 3 leg-press summary: 3 sets, 1,770 kg, 0 records). `full-body-summary.png` was mislabelled and actually shows the History placeholder; it is not summary evidence. The owner requested using existing session evidence while parallel simulator work continues. Before that reply, resumed Full Body 2, captured `phase-2-close-list.png`, `phase-2-close-focus.png`, `phase-2-close-rest.png`, and verified terminate/relaunch mid-rest (0:57 → 0:39); that verification workout remains unfinished, with seven sets logged. Review fixed finish/discard clearing the visible session after failed database writes; trigger-based regression tests verify the session and persisted sets survive. Launch also exposed a WAL safety-copy issue in the concurrent recovery additions; portable copies now use DELETE journal mode, with a DatabasePool regression test. Verified the existing on-disk database opens and resumes without deleting data. Final suite: 112 tests in 15 suites passed (`** TEST SUCCEEDED **`, `/tmp/gymapp-2-10-complete-tests.log`); `git diff --check` passed. README and ROADMAP mark phase 2 done. Separate additions continue; phase 3 waits for its spec. Changes left uncommitted.
+
+- **2.9 expiry follow-up (11 Oct)**: Accepted clearing on return rather than requiring removal while suspended. Added `context.isStale` presentation: lock screen/expanded Island show “Rest over”, compact shows “Ready”, minimal shows a checkmark. Notification and next-set details are retained. Verified locked countdown, alert at expiry, system-driven “Rest over” without reopening, and removal after return; screenshot `docs/screenshots/live-activity-rest-over.png`. iOS scheduled its stale refresh about 60 seconds after the deadline on this simulator, so 0:00 can remain during that system-controlled delay; the revised criterion explicitly permits it. All 98 tests passed on rerun (`** TEST SUCCEEDED **`); the first run hit the existing 0.2-second extension test timing race while locked. No tests weakened. The Full Body 2 verification workout now has two squat sets logged. Changes remain uncommitted. Card 2.10 still awaits final review.
+
+- **2.9 original verification**: Created GymAppWidgets through Xcode's Widget Extension wizard, with Include Live Activity on and configuration App Intent/control off; embedded in GymApp. Untouched template built successfully. Shared RestActivityAttributes is compiled into both targets; the extension now contains only the rest Live Activity. Lock screen and Dynamic Island UI use the absolute end time and volt accent. ActiveWorkoutModel requests, updates and ends activities, restores an existing activity on resume, logs request errors, and owns expiry independently of WorkoutView. App and extension deployment targets are 26.1 and marketing versions both 0.1. All 98 tests passed, including minimised expiry and cancellation of the earlier deadline after extension. Lock-screen countdown verified; screenshot docs/screenshots/live-activity-rest.png. Locked expiry check failed: after 60 s of rest while locked, the notification arrived but the activity remained at 0:00 (docs/screenshots/live-activity-expired-locked.png). Returning to GymApp cleared rest and ended the activity; locking again confirmed it was gone. The simulator has a Full Body 2 verification workout in progress, with one squat set logged. No finished history was deleted.
+- **2.10 (partial)**: The interrupted Full Body 1 session had already reached its summary. Verified the saved workout is finished, with all 13 sets completed across 6 exercises and no rest end remaining. Bench values are 20×10, 50×10, 40×10. Volume is 3,808.3 kg, displayed as 3,808 kg, equal to last time; no new records. Saved docs/screenshots/full-body-summary.png; list, focus and rest screenshots from cards 2.3–2.5 remain available. README and ROADMAP now describe the implemented screens and removed prototype. After the full test run and relaunch, Train shows Full Body 2 next and no mini-player. All 96 tests passed (`** TEST SUCCEEDED **`); existing unused-write-result and App Intents metadata warnings remain. Card 2.9 remains outstanding, so phase 2 is not marked closed.
 - **2.8**: Summary: SummaryQueries (volume with body weight, previous volume from the day lineage, records vs earlier bests, hard sets per muscle), BodyQueries.weightKg, SummaryView (tiles, records, muscles via FlowLayout, exercises, effort 1–10 and note). RootView's cover shows the summary after finish until Done. The prototype was deleted here rather than in 2.10 (its SummaryView.swift clashed by file name): GymApp/Prototype, tools/make_prototype_seed.py, the .gitignore line and the Settings link are gone. Simulator: 3 × 59×10 leg press → volume 1,770 kg, 3 sets, quads 3 / glutes 1.5 / hamstrings 1.5; Done returns to Train with Full Body 1 next up.
 - **2.7**: Swap (WorkoutExercisePicker with Same movement chip, Also change it in <day>), add exercise, ExerciseHistorySheet (the full detail view in a medium/large sheet), PlateMath + PlateMathTests, PlateCalculatorView, platesKg/platesLb settings. Collection[safe:] moved to WorkoutView.swift. ExerciseFilter gained movementPattern.
 - **2.6**: Start/Resume on Train, Empty workout in the + menu, fullScreenCover in RootView, MiniPlayer via tabViewBottomAccessory(isEnabled:). That API needs iOS 26.1, so the deployment target is now 26.1 (phone is on 26.6). Simulator: mini-player shows rest countdown; kill + relaunch mid-rest resumed with the countdown still right (0:43 → 0:33 ten seconds later).
@@ -82,7 +105,7 @@ card should know.
 Questions a card raised that the spec did not answer. Do not guess; record them here and
 stop.
 
-- *(none)*
+None for card 2.9: expiry behavior settled in decision #37.
 
 ## Known issues
 

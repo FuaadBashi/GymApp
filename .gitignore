@@ -1,5 +1,5 @@
 # Personal data: JEFIT exports, backups, anything with real training history.
-data/
+/data/
 
 # Xcode
 xcuserdata/

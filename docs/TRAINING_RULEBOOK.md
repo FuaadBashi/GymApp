@@ -51,6 +51,14 @@ computed: `drop` rows add volume and nothing else.
 
 A superset is a grouping of exercises, not a set type, and changes no calculation.
 
+**Effort labels (11 October):** Max rep means 0 reps in reserve. MR −1, MR −2 and
+MR −3 mean 1, 2 and 3 reps left in the tank. Store this separately from actual reps,
+RPE and set type. Max rep does not imply a failed repetition. Deload, injury and form
+are independent annotations that may coexist with an effort label. Warm uses warm-up.
+These annotations do not change the existing calculation rules: 60 kg × 8 at MR −1
+still uses 8 actual reps and 480 kg of volume, not 9 inferred reps. Notes and labels
+belong to that particular set/session and are not copied into a new workout as facts.
+
 ## §4 Estimated 1RM
 
 - Epley: `load × (1 + reps / 30)`. One rep gives the load itself.

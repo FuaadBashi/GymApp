@@ -108,6 +108,10 @@ nonisolated struct WorkoutSetRecord: Codable, Identifiable, Hashable, FetchableR
     var completedAt: Date?
     var rpe: Double?
     var externalId: String?
+    var note: String? = nil
+    var repsInReserve: Int? = nil
+    var annotations: [SetAnnotation] = []
+
 }
 
 nonisolated struct ExerciseNoteRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {

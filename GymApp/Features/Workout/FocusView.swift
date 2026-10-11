@@ -5,10 +5,14 @@ import SwiftUI
 struct FocusView: View {
     var onAction: (ExerciseCardAction, WorkoutSnapshot.Item) -> Void = { _, _ in }
     @Environment(ActiveWorkoutModel.self) private var model
+    @State private var metadata: MetadataDraft?
 
     var body: some View {
         if let snapshot = model.snapshot, let item = model.currentItem ?? snapshot.items.first {
             content(snapshot, item)
+                .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
+                    if let metadata { WorkoutMetadataEditor(db: model.db, title: "Notes & labels", draft: metadata) { await model.refresh() } }
+                }
         } else {
             ContentUnavailableView("No exercises yet", systemImage: "dumbbell",
                                    description: Text("Add one from the menu."))
@@ -31,11 +35,25 @@ struct FocusView: View {
 
                 if let set {
                     SetEditor(set: set, exercise: item.exercise, onChange: { edit in
-                        Task { await model.update(set.id, edit: edit) }
+                        Task { await model.updateDurably(set.id, edit: edit) }
                     }, large: true)
                     .disabled(set.completedAt != nil)
                 }
 
+                ExerciseMediaView(exercise: item.exercise)
+                Button("Exercise note") { metadata = MetadataDraft(kind: .exercise, id: item.id, note: item.workoutExercise.note ?? "") }
+                if let note = item.workoutExercise.note { Text(note).font(.caption).foregroundStyle(Theme.note) }
+                if let set {
+                    Menu("Set type: " + set.type.label) {
+                        ForEach(SetType.allCases, id: \.self) { type in
+                            Button(type.label) { Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: set.loadHundredths, unit: set.unit, reps: set.reps, type: type)) } }
+                        }
+                    }
+                    Button("Set notes & labels") {
+                        metadata = MetadataDraft(kind: .set, id: set.id, note: set.note ?? "", reserve: set.repsInReserve, annotations: set.annotations)
+                    }
+                    if !set.metadataText.isEmpty { Text(set.metadataText).font(.caption).foregroundStyle(Theme.note) }
+                }
                 Text(contextLine(item, set: set)).font(.subheadline).foregroundStyle(.secondary)
                 if let note = item.exercise.stickyNote {
                     Label(note, systemImage: "pin.fill").font(.subheadline).foregroundStyle(Theme.note)
