@@ -55,7 +55,7 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 2 | Workout screen | done |
 | 3 | History and analytics (lean) | done |
 | 4 | Import, export and backups | done |
-| 5 | On the phone | **next** |
+| 5 | On the phone | code done; [install on the phone](docs/PHONE_SETUP.md) next |
 
 ## The constraints this repo is shaped around
 

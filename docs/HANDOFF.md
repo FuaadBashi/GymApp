@@ -6,14 +6,20 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 5.2.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+**Next card: none.** Every card in phases 0–5 is done. What remains needs the phone:
+follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
 
-**Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
-The post-phase-2 additions are implemented and tested locally, with initial media
-coverage for eight barbell and bodyweight lifts; see [02a-additions.md](specs/02a-additions.md).
-Choose an independent backup folder on the actual phone. Phase 3 awaits a full spec and has not started.
-The user authorised committing all pending work on 11 October; phase-2 closure and
-the additions are recorded together in Git. No phase-3 implementation was started here.
+The unattended run on 12 October (authorised: lean phase 3, then phases 4 and 5; spec and
+build card by card; push after every card) finished all of it. 153 tests pass. Judgement
+calls are under *Open questions*.
+
+### Device checklist (from PHONE_SETUP.md)
+- [ ] Rest alert with the phone locked and music playing
+- [ ] Lock-screen countdown (may be refused on a free account; the alert is enough)
+- [ ] A backup reaching iCloud Drive
+- [ ] Restore from that backup
+- [ ] Expiry banner via `-signingExpiry 1`, and the real date on day six
+- [ ] Reinstall after 7 days keeps the data
 
 ## Cards
 
@@ -64,7 +70,7 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 
 ### Phase 5: On the phone ([spec](specs/05-phone.md))
 - [x] 5.1 Signing expiry warning
-- [ ] 5.2 Phone setup guide and checklist
+- [x] 5.2 Phone setup guide and checklist
 
 ## Requested after phase 2
 
@@ -81,6 +87,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **5.2**: docs/PHONE_SETUP.md: signing with a free Apple ID for both targets, Developer Mode, trust, notifications, JEFIT import, iCloud Drive backup folder, the device checklist, switching from JEFIT, and the weekly reinstall (over Wi-Fi after the first). Repeats decision #2's warning never to delete the app. README, ROADMAP and HANDOFF updated; the device checklist is in Current.
 - **5.1**: SigningExpiry reads ExpirationDate from embedded.mobileprovision (the XML plist inside the CMS envelope); Train shows an orange banner from two days before and a red one after; a 'signing-expiry' notification is rescheduled at every launch for two days before. The simulator has no profile, so DEBUG launch argument -signingExpiry <days> fakes one. Simulator with -signingExpiry 1: 'This install expires Tuesday 01:00…' (screenshot expiry-banner.png). 153 tests pass. The real profile's date can only be confirmed on the phone (PHONE_SETUP.md).
 - **4.2**: docs/EXPORT_FORMAT.md documents the CSV columns and the .sqlite backup's tables, units, load modes and set types, which rows count as history, and a starting SQL query, for the separate analysis tool. BackupRoundTripTests: the real import backed up with RecoveryStore, staged and applied onto a fresh install, has identical counts in all 11 tables (7,751 sets) and identical ExerciseStats points and records for bench, squat and deadlift. Phase 4 closed; README and ROADMAP updated. 149 tests pass.
 - **4.1**: CSVExport: one row per completed set of finished workouts; Strong's 12 columns first, then unit, set type, reps in reserve, labels, session exercise note, load mode, equipment, primary muscles, effort, workout and exercise ids. Weights as entered with their unit (rulebook §1); decimals always use a dot. RFC 4180 quoting, CRLF, UTF-8 without BOM. Settings → Data → Export sets as CSV shares it (BackupShareSheet made internal for reuse). Real export: 7,751 rows. The share sheet tap could not be driven on the simulator (the file picker swallowed taps); the file write is covered by a test.

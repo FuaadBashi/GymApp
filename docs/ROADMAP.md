@@ -116,6 +116,9 @@ and that test has actually been run.
 
 ## Phase 5: On the phone
 
+**Code done 12 October 2026** ([spec](specs/05-phone.md)): the expiry warning. The rest is
+[the phone setup guide](PHONE_SETUP.md), which needs the phone in hand.
+
 - Free Apple ID signing, Developer Mode, first install.
 - Expiry warning two days before the 7-day install lapses (decision #3).
 - First real sessions alongside JEFIT, then JEFIT is dropped.
