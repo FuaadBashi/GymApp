@@ -15,7 +15,7 @@ calls are under *Open questions*.
 ### Device checklist (from PHONE_SETUP.md)
 - [ ] Rest alert with the phone locked and music playing
 - [ ] Lock-screen countdown (may be refused on a free account; the alert is enough)
-- [ ] A backup reaching iCloud Drive
+- [x] An external backup copy verified on the phone (13 Oct; confirm the folder is in iCloud Drive for protection against phone loss)
 - [ ] Restore from that backup
 - [ ] Expiry banner via `-signingExpiry 1`, and the real date on day six
 - [ ] Reinstall after 7 days keeps the data
@@ -86,6 +86,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **On the phone (13 Oct)**: Installed on the iPhone 17 Pro Max (iOS 26.6.1) with the free Personal Team; Developer Mode was already on; the developer profile was trusted once. The JEFIT export imported. Choosing the backup folder failed three ways, each fixed and reinstalled: (1) two `.fileImporter`s on one view, so only the last worked; (2) SQLite error 14 opening the copy inside a file-provider folder, so external copies are now verified by SHA-256 read-back against the already-checked local copy, and restore files are copied into the app before SQLite opens them; (3) the merged picker lost its mode on dismiss and read the folder as a restore file (error 26). External copy now verified on the device. None of these could show on the simulator, where the picker and file providers behave differently.
 - **5.2**: docs/PHONE_SETUP.md: signing with a free Apple ID for both targets, Developer Mode, trust, notifications, JEFIT import, iCloud Drive backup folder, the device checklist, switching from JEFIT, and the weekly reinstall (over Wi-Fi after the first). Repeats decision #2's warning never to delete the app. README, ROADMAP and HANDOFF updated; the device checklist is in Current.
 - **5.1**: SigningExpiry reads ExpirationDate from embedded.mobileprovision (the XML plist inside the CMS envelope); Train shows an orange banner from two days before and a red one after; a 'signing-expiry' notification is rescheduled at every launch for two days before. The simulator has no profile, so DEBUG launch argument -signingExpiry <days> fakes one. Simulator with -signingExpiry 1: 'This install expires Tuesday 01:00…' (screenshot expiry-banner.png). 153 tests pass. The real profile's date can only be confirmed on the phone (PHONE_SETUP.md).
 - **4.2**: docs/EXPORT_FORMAT.md documents the CSV columns and the .sqlite backup's tables, units, load modes and set types, which rows count as history, and a starting SQL query, for the separate analysis tool. BackupRoundTripTests: the real import backed up with RecoveryStore, staged and applied onto a fresh install, has identical counts in all 11 tables (7,751 sets) and identical ExerciseStats points and records for bench, squat and deadlift. Phase 4 closed; README and ROADMAP updated. 149 tests pass.
