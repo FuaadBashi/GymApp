@@ -6,7 +6,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-**Next card: 5.1.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
+**Next card: 5.2.** Unattended run authorised 12 October: lean phase 3, then phase 4 and the phase 5 code; spec and build card by card, push after every card, judgement calls under Open questions.
 
 **Phase 2 closed: Card 2.10 complete locally (11 October 2026).**
 The post-phase-2 additions are implemented and tested locally, with initial media
@@ -63,7 +63,7 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 4.2 Export format and round trip
 
 ### Phase 5: On the phone ([spec](specs/05-phone.md))
-- [ ] 5.1 Signing expiry warning
+- [x] 5.1 Signing expiry warning
 - [ ] 5.2 Phone setup guide and checklist
 
 ## Requested after phase 2
@@ -81,6 +81,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **5.1**: SigningExpiry reads ExpirationDate from embedded.mobileprovision (the XML plist inside the CMS envelope); Train shows an orange banner from two days before and a red one after; a 'signing-expiry' notification is rescheduled at every launch for two days before. The simulator has no profile, so DEBUG launch argument -signingExpiry <days> fakes one. Simulator with -signingExpiry 1: 'This install expires Tuesday 01:00…' (screenshot expiry-banner.png). 153 tests pass. The real profile's date can only be confirmed on the phone (PHONE_SETUP.md).
 - **4.2**: docs/EXPORT_FORMAT.md documents the CSV columns and the .sqlite backup's tables, units, load modes and set types, which rows count as history, and a starting SQL query, for the separate analysis tool. BackupRoundTripTests: the real import backed up with RecoveryStore, staged and applied onto a fresh install, has identical counts in all 11 tables (7,751 sets) and identical ExerciseStats points and records for bench, squat and deadlift. Phase 4 closed; README and ROADMAP updated. 149 tests pass.
 - **4.1**: CSVExport: one row per completed set of finished workouts; Strong's 12 columns first, then unit, set type, reps in reserve, labels, session exercise note, load mode, equipment, primary muscles, effort, workout and exercise ids. Weights as entered with their unit (rulebook §1); decimals always use a dot. RFC 4180 quoting, CRLF, UTF-8 without BOM. Settings → Data → Export sets as CSV shares it (BackupShareSheet made internal for reuse). Real export: 7,751 rows. The share sheet tap could not be driven on the simulator (the file picker swallowed taps); the file write is covered by a test.
 - **3.6**: Phase 3 closed. tools/check_phase3.py computes, from the raw export with the importer's rules, sessions, heaviest, best e1RM and best session volume for bench press (77 sessions, 77.5 kg, 93.33, 2,692.5), squat (63, 105, 123.5, 2,690) and deadlift (87, 137.5, 170, 4,025); Phase3ExportTests asserts the app's ExerciseStats match exactly (they do). JEFIT EXERCISE RECORDS: 147 of 175 comparable records match the logs' best Epley within 1 kg (JEFIT_EXPORT.md expected about 155 of 195; reported, not fixed). Screenshots: history, workout-detail, exercise-progress, progress. README, ROADMAP and spec updated. 143 tests pass.

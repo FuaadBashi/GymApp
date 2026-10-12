@@ -18,6 +18,7 @@ struct TrainView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    SigningExpiryBanner()
                     if let program = model.program {
                         Text(program.name.uppercased())
                             .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
@@ -149,5 +150,33 @@ private struct CompactDayCard: View {
         .padding()
         .background(Theme.card, in: .rect(cornerRadius: 16))
         .contentShape(.rect)
+    }
+}
+
+/// Decision #3: two days before the free signing lapses, and after.
+private struct SigningExpiryBanner: View {
+    private let expiry = SigningExpiry.current()
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            switch SigningExpiry.state(expiry: expiry, now: context.date) {
+            case .fine:
+                EmptyView()
+            case .expiringSoon(let date):
+                banner("This install expires \(date.formatted(.dateTime.weekday(.wide).hour().minute())). Reinstall from Xcode to keep training without interruption.",
+                       color: .orange)
+            case .expired:
+                banner("This install has expired. Reinstall from Xcode; your data is kept.", color: .red)
+            }
+        }
+    }
+
+    private func banner(_ text: String, color: Color) -> some View {
+        Label(text, systemImage: "exclamationmark.triangle.fill")
+            .font(.subheadline)
+            .foregroundStyle(color)
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(color.opacity(0.15), in: .rect(cornerRadius: 12))
     }
 }

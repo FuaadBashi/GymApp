@@ -36,6 +36,7 @@ struct RootView: View {
             .sheet(item: $launchReport) { ImportReportView(report: $0.report, db: db) }
             .task {
                 await workout.resumeIfNeeded()
+                SigningExpiry.scheduleReminder(expiry: SigningExpiry.current())
                 await importFromLaunchArgument()
             }
     }
