@@ -9,8 +9,7 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 **Next card: none.** Every card in phases 0–5 is done. What remains needs the phone:
 follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
 
-The unattended run on 12 October (authorised: lean phase 3, then phases 4 and 5; spec and
-build card by card; push after every card) finished all of it. 153 tests pass. Judgement
+Phases 3 (lean), 4 and 5 were specified and built card by card on 12 October. 153 tests pass. Judgement
 calls are under *Open questions*.
 
 ### Device checklist (from PHONE_SETUP.md)

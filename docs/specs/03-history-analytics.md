@@ -5,8 +5,7 @@
 **Outcome:** every finished workout since 2022 can be browsed, opened and corrected; each
 exercise shows its progress and records; a Progress tab summarises recent training.
 
-**Scope decision (12 October 2026):** lean. Deeper analysis, and anything that would use a
-language model, belongs to a separate offline tool that reads the phase 4 export
+**Scope decision (12 October 2026):** lean. Deeper analysis belongs to a separate offline tool that reads the phase 4 export
 (decision #36). Left out of this phase: the consistency heat strip and the body
 measurements table.
 
