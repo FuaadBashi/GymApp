@@ -6,8 +6,10 @@ struct RecoveryView: View {
     let db: AppDatabase
     @State private var status = RecoveryStore.Status()
     @State private var copies: [URL] = []
-    @State private var choosingFolder = false
-    @State private var choosingRestore = false
+    /// One file importer for both pickers: SwiftUI honours only the last `.fileImporter` on a
+    /// view, so two of them left "Choose backup folder…" doing nothing.
+    private enum Picking { case folder, restore }
+    @State private var picking: Picking?
     @State private var restoreFile: URL?
     @State private var inspection: RecoveryStore.Inspection?
     @State private var shareFile: URL?
@@ -20,8 +22,12 @@ struct RecoveryView: View {
         .task { refresh() }
         .overlay { if busy { ProgressView().padding().background(.regularMaterial, in: Capsule()) } }
         .disabled(busy)
-        .fileImporter(isPresented: $choosingFolder, allowedContentTypes: [.folder]) { handleFolder($0) }
-        .fileImporter(isPresented: $choosingRestore, allowedContentTypes: [.data]) { handleRestore($0) }
+        .fileImporter(isPresented: Binding(get: { picking != nil }, set: { if !$0 { picking = nil } }),
+                      allowedContentTypes: picking == .folder ? [.folder] : [.data]) { result in
+            let mode = picking
+            picking = nil
+            if mode == .folder { handleFolder(result) } else { handleRestore(result) }
+        }
         .sheet(isPresented: Binding(get: { shareFile != nil }, set: { if !$0 { shareFile = nil } })) {
             if let shareFile { BackupShareSheet(url: shareFile) }
         }
@@ -45,7 +51,7 @@ struct RecoveryView: View {
                         .foregroundStyle(.orange)
                 }
                 if let error = status.error { Text(error).font(.footnote).foregroundStyle(.orange) }
-                Button("Choose backup folder…") { choosingFolder = true }
+                Button("Choose backup folder…") { picking = .folder }
                 Button("Back up now / retry") { run {
                     guard let store = db.recovery else { return }
                     _ = try await db.reader.read { try store.capture($0) }
@@ -62,7 +68,7 @@ struct RecoveryView: View {
                         Text(copyTitle(url)).font(.subheadline).lineLimit(2)
                     }
                 }
-                Button("Restore from file…") { choosingRestore = true }
+                Button("Restore from file…") { picking = .restore }
             } header: { Text("Recovery copies") } footer: {
                 Text("Keeps the latest 30 local copies plus one per month. Restore is applied next launch after making a safety copy of the current data. Full backups contain your private training history and notes.")
             }
