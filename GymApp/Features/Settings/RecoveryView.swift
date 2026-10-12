@@ -112,10 +112,10 @@ struct RecoveryView: View {
     }
     private func inspect(_ url: URL) {
         run {
-            let accessed = url.startAccessingSecurityScopedResource()
-            defer { if accessed { url.stopAccessingSecurityScopedResource() } }
-            inspection = try RecoveryStore.inspect(url)
-            restoreFile = url
+            // Opened only as a local copy: SQLite can't open files in iCloud Drive in place.
+            let local = try RecoveryStore.localCopy(of: url)
+            inspection = try RecoveryStore.inspect(local)
+            restoreFile = local
         }
     }
     private func run(_ operation: @escaping () async throws -> Void) {

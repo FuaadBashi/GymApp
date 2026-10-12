@@ -169,8 +169,10 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
         let partial = destination.appending(path: ".\(UUID().uuidString).partial")
         do {
             try fm.copyItem(at: source, to: partial)
+            // Read back and compare with the local copy, which `capture` already opened and
+            // checked. SQLite itself is not opened here: file-provider folders (iCloud Drive,
+            // On My iPhone) refuse SQLite's locks and fail with error 14, while plain reads work.
             guard SHA256.hash(data: try Data(contentsOf: source)) == SHA256.hash(data: try Data(contentsOf: partial)) else { throw Failure.invalidBackup }
-            _ = try Self.inspect(partial)
             try check(.externalValidated)
             if fm.fileExists(atPath: final.path) {
                 guard SHA256.hash(data: try Data(contentsOf: final)) == SHA256.hash(data: try Data(contentsOf: source)) else { throw Failure.invalidBackup }
@@ -200,10 +202,25 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
             return copy
         }
     }
+    /// A chosen file may live in a file-provider folder SQLite cannot open (error 14), so it
+    /// is copied into the app's temporary directory first and only ever opened there.
+    static func localCopy(of url: URL) throws -> URL {
+        let accessed = url.startAccessingSecurityScopedResource()
+        defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+        let copy = FileManager.default.temporaryDirectory.appending(path: "chosen-\(UUID().uuidString).sqlite")
+        var coordinationError: NSError?
+        var copyError: Error?
+        NSFileCoordinator().coordinate(readingItemAt: url, options: .forUploading, error: &coordinationError) { readable in
+            do { try FileManager.default.copyItem(at: readable, to: copy) } catch { copyError = error }
+        }
+        if let error = coordinationError ?? copyError { throw error }
+        return copy
+    }
+
     func stageRestore(_ source: URL) throws -> Inspection {
         try lock.withLock {
-            let accessed = source.startAccessingSecurityScopedResource()
-            defer { if accessed { source.stopAccessingSecurityScopedResource() } }
+            let source = try Self.localCopy(of: source)
+            defer { try? fm.removeItem(at: source) }
             let inspection = try Self.inspect(source)
             let pending = folder.appending(path: "pending-restore.sqlite")
             let staging = folder.appending(path: ".restore-\(UUID().uuidString).partial")
