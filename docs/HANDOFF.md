@@ -62,8 +62,9 @@ the additions are recorded together in Git. No phase-3 implementation was starte
 - [x] 4.1 CSV export of every set
 - [x] 4.2 Export format and round trip
 
-### Phase 5 ([outline](specs/03-05-outline.md))
-Specified when phase 4 closes.
+### Phase 5: On the phone ([spec](specs/05-phone.md))
+- [ ] 5.1 Signing expiry warning
+- [ ] 5.2 Phone setup guide and checklist
 
 ## Requested after phase 2
 

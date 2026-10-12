@@ -11,7 +11,8 @@ rely on everything before it.
 | [02-workout-screen.md](02-workout-screen.md) | 2: workout screen | full |
 | [03-history-analytics.md](03-history-analytics.md) | 3: history and analytics, lean | full |
 | [04-export.md](04-export.md) | 4: export, reconciled with the earlier backup work | full |
-| [03-05-outline.md](03-05-outline.md) | 5: on the phone | outline |
+| [05-phone.md](05-phone.md) | 5: on the phone | full |
+| [03-05-outline.md](03-05-outline.md) | 3–5 outline, superseded by the files above | historical |
 
 Progress is tracked in [../HANDOFF.md](../HANDOFF.md).
 
