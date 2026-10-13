@@ -118,7 +118,20 @@ into, so option C replaces it unless you say otherwise.
 5. **S4, AI:** ask-your-data, weekly review, notes mining.
 6. **App parity:** in parallel, cards in the app for recovery, movement patterns, body fat and measurements, tap-a-point, recaps, and next-weight suggestions once S2 has proven the rule.
 
-## 7. Questions
+## 7. Decisions (13 October 2026)
+
+- **Use:** any time, from daily to monthly. Only the owner uses it for now.
+- **Decisions it supports:** weights, exercise choice, program changes and deloads, grounded in the research. Health data stays narrow for now: training, body weight and **steps**.
+- **Phone:** receives proven rules, and also program suggestions. Every suggestion is clearly marked as one, shows where it came from, and changes nothing until accepted.
+- **Interface:** option C, dashboards plus a Lab of marimo notebooks on the same data and functions.
+- **Ideas:** all of section 4, and more.
+- **AI:** the Claude API, with a local model as an option.
+- **Build order:** S0–S4 and app parity as in section 6.
+- **Effort:** RIR is logged on every set from now on.
+- **Plateau:** three weeks with no increase in weight on an exercise. Then look at the other exercises for the same muscles to find the weak point.
+- **Research findings to build:** double progression as the default rule; stall rules (Stronglifts-style) back-tested on the history; the 2026 load-dependent e1RM equation compared with Epley on these sets; RIR-based targets once RIR data exists.
+
+## 8. Questions (original list)
 
 **Purpose and use**
 1. When would you open the studio: after every session, weekly, or occasionally to dig?
