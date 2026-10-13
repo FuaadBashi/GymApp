@@ -6,17 +6,24 @@ from __future__ import annotations
 
 import json
 import threading
-from dataclasses import fields
+import os
+import tempfile
+import sqlite3
+import hashlib
+import secrets
+from contextlib import asynccontextmanager
+from dataclasses import fields, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, watch
+from . import analysis, progression, watch
 from .data import History
+from .lab import NotebookLab
 
 WEB = Path(__file__).resolve().parents[1] / "web"
 SUPPORT = Path.home() / "Library/Application Support/GymApp Studio"
@@ -31,6 +38,9 @@ class State:
         self.loaded_at: Optional[datetime] = None
         self.settings = self._load_settings()
         self.folders: Optional[list[Path]] = None
+        self.load_error = None
+        self.snapshot = None
+        self.fingerprint = None
 
     def _load_settings(self) -> analysis.Settings:
         s = analysis.Settings()
@@ -42,16 +52,55 @@ class State:
                     setattr(s, f.name, tuple(value) if isinstance(getattr(s, f.name), tuple) else value)
         except (OSError, ValueError):
             pass
+        try:
+            progression.validate_settings(s)
+        except ValueError:
+            return analysis.Settings()
         return s
 
-    def save_settings(self) -> None:
+    def save_settings(self, settings=None) -> None:
         SUPPORT.mkdir(parents=True, exist_ok=True)
-        SETTINGS_FILE.write_text(json.dumps(self.settings.to_dict(), indent=1))
+        name = None
+        try:
+            with tempfile.NamedTemporaryFile(mode="w", dir=SUPPORT, delete=False) as file:
+                name = file.name
+                file.write(json.dumps((settings or self.settings).to_dict(), indent=1))
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(name, SETTINGS_FILE)
+        finally:
+            if name and os.path.exists(name): os.unlink(name)
 
     def load(self, path: Path) -> None:
-        h = History(path)
+        # Freeze the exact bytes shared with notebooks before validating/loading.
+        content = path.read_bytes()
+        fingerprint = hashlib.sha256(content).hexdigest()
+        folder = SUPPORT / "LoadedData"
+        folder.mkdir(parents=True, exist_ok=True)
+        snapshot = folder / (fingerprint + ".sqlite")
+        if not snapshot.exists():
+            with tempfile.NamedTemporaryFile(dir=folder, delete=False) as file:
+                temporary = Path(file.name)
+                file.write(content)
+            try:
+                h = History(temporary)
+                os.replace(temporary, snapshot)
+            finally:
+                temporary.unlink(missing_ok=True)
+        else:
+            h = History(snapshot)
         with self.lock:
             self.history, self.path, self.loaded_at = h, path, datetime.now(timezone.utc)
+            self.snapshot, self.fingerprint = snapshot, fingerprint
+            self.load_error = None
+
+    def try_load(self, path: Path) -> bool:
+        try:
+            self.load(path)
+            return True
+        except (OSError, ValueError, sqlite3.Error):
+            self.load_error = "Newest backup is unavailable or invalid; keeping the previous loaded data."
+            return False
 
     def require(self) -> History:
         if self.history is None:
@@ -60,15 +109,25 @@ class State:
 
 
 state = State()
-app = FastAPI(title="GymApp Studio", docs_url=None, redoc_url=None)
+lab = NotebookLab(SUPPORT)
+WRITE_TOKEN = secrets.token_urlsafe(32)
+
+
+@asynccontextmanager
+async def lifespan(_):
+    yield
+    lab.stop()
+
+
+app = FastAPI(title="GymApp Studio", docs_url=None, redoc_url=None, lifespan=lifespan)
 
 
 def start_watching(folders: Optional[list[Path]] = None, interval: float = 10.0) -> None:
     state.folders = folders
     first = watch.latest(folders)
     if first:
-        state.load(first)
-    threading.Thread(target=watch.follow, args=(lambda p: p != state.path and state.load(p), folders, interval),
+        state.try_load(first)
+    threading.Thread(target=watch.follow, args=(state.try_load, folders, interval),
                      daemon=True).start()
 
 
@@ -79,6 +138,7 @@ def start_watching(folders: Optional[list[Path]] = None, interval: float = 10.0)
 def status():
     h = state.history
     return {"backup": str(state.path) if state.path else None,
+            "load_error": state.load_error,
             "loaded_at": state.loaded_at.isoformat() if state.loaded_at else None,
             "workouts": len(h.workouts) if h else 0,
             "folders": [str(f) for f in (state.folders or watch.default_folders())]}
@@ -89,7 +149,7 @@ def reload():
     path = watch.latest(state.folders)
     if not path:
         raise HTTPException(404, "No backup found")
-    state.load(path)
+    if not state.try_load(path): raise HTTPException(422, state.load_error)
     return status()
 
 
@@ -100,13 +160,16 @@ def get_settings():
 
 @app.put("/api/settings")
 def put_settings(values: dict):
-    s = state.settings
-    for f in fields(s):
-        if f.name in values:
-            current = getattr(s, f.name)
-            value = values[f.name]
-            setattr(s, f.name, tuple(value) if isinstance(current, tuple) else type(current)(value))
-    state.save_settings()
+    known = {f.name for f in fields(state.settings)}
+    if set(values) - known: raise HTTPException(422, "Unknown settings")
+    try:
+        with state.lock:
+            s = replace(state.settings, **values)
+            progression.validate_settings(s)
+            state.save_settings(s)
+            state.settings = s
+    except (TypeError, ValueError) as error:
+        raise HTTPException(422, str(error)) from error
     return s.to_dict()
 
 
@@ -164,7 +227,79 @@ def breaks():
     return analysis.breaks(state.require(), state.settings)
 
 
+@app.get("/api/rules")
+def rules(exercise_id: Optional[str] = None, outcome_days: int = Query(21, ge=7, le=180),
+          holdout_fraction: float = Query(.3, ge=.1, le=.8), rule: Optional[str] = None,
+          offset: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=500)):
+    h = state.require()
+    if exercise_id is not None and exercise_id not in h.exercises:
+        raise HTTPException(404, "Unknown exercise")
+    if rule is not None and rule not in progression.RULES:
+        raise HTTPException(422, "Unknown progression rule")
+    try:
+        result = progression.backtest(h, state.settings, exercise_id, outcome_days, holdout_fraction)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+    for entry in result["rules"]:
+        trials = entry.pop("trials")
+        entry["trial_count"] = len(trials)
+        entry["trials"] = list(reversed(trials))[offset:offset + limit] if rule == entry["id"] else []
+    return result
+
+
 # Interface
+
+
+@app.get("/api/lab/notebooks")
+def notebooks():
+    return {"notebooks": lab.list(), "folder": str(lab.notebooks)}
+
+
+@app.post("/api/lab/notebooks")
+def create_notebook(values: dict, request: Request):
+    check_notebook_write(request)
+    try:
+        return lab.create(values.get("name"))
+    except (ValueError, FileExistsError) as error:
+        raise HTTPException(422, str(error)) from error
+
+
+@app.get("/api/lab/context")
+def notebook_context():
+    with state.lock:
+        state.require()
+        return lab.context(state.snapshot, state.settings.to_dict(), WRITE_TOKEN)
+
+
+@app.post("/api/lab/start")
+def start_notebooks(request: Request):
+    check_notebook_write(request)
+    try:
+        return lab.start(str(request.base_url).rstrip("/"))
+    except ValueError as error:
+        raise HTTPException(503, str(error)) from error
+
+
+@app.get("/api/lab/metrics")
+def notebook_metrics():
+    return {"metrics": lab.metrics(state.fingerprint)}
+
+
+@app.post("/api/lab/metrics")
+def publish_metric(values: dict, request: Request):
+    check_notebook_write(request)
+    try:
+        return lab.publish(values)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+
+
+def check_notebook_write(request):
+    if not secrets.compare_digest(request.headers.get("X-Studio-Token", ""), WRITE_TOKEN):
+        raise HTTPException(403, "Invalid notebook write token")
+    origin = request.headers.get("origin")
+    if origin and origin != str(request.base_url).rstrip("/"):
+        raise HTTPException(403, "Notebook writes must come from Studio")
 
 
 @app.get("/")

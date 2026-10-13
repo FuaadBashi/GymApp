@@ -3,10 +3,13 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const main = $("#main");
 const VOLT = "#c7f242", DIM = "#9a9aa3", LINE = "#2e2e33", ORANGE = "#ff9f5a", BLUE = "#73a9ff";
 const charts = [];
+let navigationEpoch = 0;
 
 async function api(path, options) {
+  const epoch = navigationEpoch;
   const r = await fetch("/api/" + path, options);
   const body = await r.json();
+  if (epoch !== navigationEpoch && path !== "status") throw new DOMException("Navigation changed", "AbortError");
   if (!r.ok) throw new Error(body.error || r.statusText);
   return body;
 }
@@ -34,6 +37,7 @@ const axis = extra => Object.assign({ axisLine: { lineStyle: { color: LINE } }, 
 
 const pages = {};
 async function route() {
+  const epoch = ++navigationEpoch;
   charts.splice(0).forEach(c => c.dispose());
   closeDrawer();
   const [page, ...rest] = (location.hash.slice(2) || "overview").split("/");
@@ -42,6 +46,7 @@ async function route() {
   try {
     await (pages[page] || pages.overview)(decodeURIComponent(rest.join("/")));
   } catch (e) {
+    if (epoch !== navigationEpoch || e.name === "AbortError") return;
     main.innerHTML = `<h1>Can't load this yet</h1><p class="sub">${esc(e.message)}</p>`;
   }
 }
@@ -59,6 +64,7 @@ async function refreshStatus() {
 pages.overview = async () => {
   const o = await api("overview");
   const b = o.balance;
+  const custom = await api("lab/metrics");
   main.innerHTML = `
     <h1>Overview</h1>
     <p class="sub">${fmt(o.totals.workouts)} workouts and ${fmt(o.totals.sets)} sets since ${day(o.totals.since)}.</p>
@@ -68,6 +74,7 @@ pages.overview = async () => {
       <div class="card tile"><div class="k">Plateaus</div><div class="v ${o.plateaus.length ? "orange" : ""}">${o.plateaus.length}</div><div class="c">3 weeks without a weight increase</div></div>
       <div class="card tile"><div class="k">Last workout</div><div class="v" style="font-size:20px">${esc(o.last_workout?.title || "–")}</div><div class="c">${o.last_workout ? day(o.last_workout.date) + " · " + fmt(o.last_workout.volume_kg) + " kg" : ""}</div></div>
     </div>
+    <div id="custom-metrics" class="grid g4" style="margin-top:16px">${custom.metrics.map(m => `<div class="card tile"><div class="k">${esc(m.name)}</div><div class="v">${fmt(m.value)}</div><div class="c">${esc(m.unit)}${m.stale ? " · older snapshot" : ""}</div><p class="sub">${esc(m.description)}</p></div>`).join("")}</div>
     <h2 style="margin-top:26px">Next session · double progression</h2>
     <div class="grid g4" id="targets"></div>
     <div class="grid g3" style="margin-top:16px">
@@ -265,28 +272,95 @@ pages.history = async () => {
   draw();
 };
 
-// Rule lab (S2 extends this page with back-tests)
+// Rule lab
 
 pages.lab = async () => {
-  const f = await api("formulas");
+  const [f, exercises] = await Promise.all([api("formulas"), api("exercises")]);
   main.innerHTML = `<h1>Rule lab</h1><p class="sub">Testing rules on your own history before the phone uses them.</p>
     <div class="grid g2">
       <div class="card"><h2>1RM formula lab</h2><div class="chart" id="form"></div>
         <p class="muted" style="font-size:13px;line-height:1.55">Within one session, different weight × rep sets of the same lift should estimate the same 1RM. Lower spread = more consistent on your data.
         Compared over ${fmt(f.sessions_compared)} sessions; most consistent: <b class="volt">${esc(f.most_consistent)}</b>.</p>
         ${f.caveat ? `<div class="warn">${esc(f.caveat)}</div>` : ""}</div>
-      <div class="card soon"><h2>Progression back-tests</h2>Replaying double progression, linear-with-deload and stall rules over four years of sessions, scoring how often each called a real plateau and how often it raised the weight too soon. Coming in the next stage (S2).</div>
-    </div>`;
+      <div class="card"><h2>Progression replay</h2><p class="muted">Compare rules against sessions that actually happened. Earlier sessions generate targets; later sessions score them.</p>
+        <label>Exercise<select id="rule-exercise"><option value="">All trained exercises</option>${exercises.map(e => `<option value="${esc(e.id)}">${esc(e.name)}</option>`).join("")}</select></label>
+        <div class="grid g2" style="margin-top:12px"><label>Outcome window (days)<input id="rule-days" type="number" min="7" max="180" value="21"></label>
+        <label>Later sessions held out (%)<input id="rule-holdout" type="number" min="10" max="80" value="30"></label></div>
+        <button class="primary" id="rule-run" style="margin-top:12px">Run comparison</button><span id="rule-error" role="status" class="orange"></span>
+        <p class="faint">Rep ranges come from the workout snapshot, or the default range in Settings. Load steps use earlier logged loads only.</p></div>
+    </div><div id="rule-results" style="margin-top:16px"></div>`;
   const names = Object.keys(f.mean_spread_pct);
   chart($("#form"), {
     xAxis: axis({ type: "category", data: names.map(n => n.replace("_", " ")) }), yAxis: axis({ type: "value", axisLabel: { color: DIM, formatter: "{value}%" } }),
     series: [{ type: "bar", data: names.map(n => ({ value: f.mean_spread_pct[n], itemStyle: { color: n === f.most_consistent ? VOLT : "#4a5a1f", borderRadius: [6, 6, 0, 0] } })), label: { show: true, position: "top", color: DIM, formatter: "{c}%" } }],
   });
+  let offset = 0, selectedRule = "double_progression";
+  const run = async () => {
+    const button = $("#rule-run"), errorBox = $("#rule-error");
+    button.disabled = true; errorBox.textContent = "";
+    try {
+      const params = new URLSearchParams({ outcome_days: $("#rule-days").value, holdout_fraction: Number($("#rule-holdout").value) / 100,
+        rule: selectedRule, offset, limit: 100 });
+      if ($("#rule-exercise").value) params.set("exercise_id", $("#rule-exercise").value);
+      const result = await api("rules?" + params);
+      renderRuleReplay(result, selectedRule, offset, async (rule, nextOffset) => { selectedRule = rule; offset = nextOffset; await run(); });
+    } catch (error) { if (error.name !== "AbortError") errorBox.textContent = " " + error.message; }
+    finally { button.disabled = false; }
+  };
+  $("#rule-run").onclick = () => { offset = 0; run(); };
+  await run();
 };
 
+function renderRuleReplay(result, selectedRule, offset, change) {
+  const percent = value => value == null ? "–" : fmt(value * 100, 1) + "%";
+  const selected = result.rules.find(r => r.id === selectedRule);
+  const target = t => t ? `${fmt(t.weight, 2)} ${esc(t.unit)} × ${t.reps} · ${esc(t.kind)}${t.rir != null ? ` @ ${t.rir} left` : ""}` : "No logged RIR";
+  $("#rule-results").innerHTML = `<div class="card"><h2>Later-session holdout comparison</h2>
+    <p class="sub">${result.exercises.length} exercises · final ${fmt(result.holdout_fraction * 100)}% of each exercise's exposures · ${result.outcome_days}-day plateau outcome.</p>
+    <div class="table-scroll"><table><thead><tr><th>Rule</th><th>Plateau outcomes</th><th>Precision</th><th>Recall</th><th>Balanced accuracy</th><th>Raised targets missed</th></tr></thead><tbody>
+    ${result.rules.map(r => { const m = r.holdout; return `<tr><td>${esc(r.name)}</td><td>${m.plateau_evaluated} (${m.true_positive + m.false_negative} plateaus)</td>
+      <td>${percent(m.precision)}</td><td>${percent(m.recall)}</td><td>${percent(m.balanced_accuracy)}</td><td>${percent(m.raised_target_miss_rate)} / ${m.raised_targets_evaluated} attempted</td></tr>`; }).join("")}</tbody></table></div>
+    <p class="faint">Precision: how many deload calls preceded the defined plateau. Recall: how many defined plateaus were called. Balanced accuracy gives plateau and non-plateau outcomes equal weight. A dash means the denominator is missing. Repeated windows overlap; these are descriptive scores.</p>
+    <div class="warn">These results do not prove that following a different rule would improve your gains. No rule is automatically sent to the phone.</div></div>
+    <div class="card" style="margin-top:16px"><h2>Inspect the replay</h2>
+      <label>Rule<select id="rule-choice">${result.rules.map(r => `<option value="${r.id}" ${r.id === selectedRule ? "selected" : ""}>${esc(r.name)}</option>`).join("")}</select></label>
+      <p class="muted">All history: ${selected.metrics.predictions} targets; ${selected.metrics.abstained} abstentions. Exact targets attempted: ${selected.metrics.targets_met} met, ${selected.metrics.targets_missed} missed. Other weights do not reveal whether an untried target was possible.</p>
+      <div class="table-scroll"><table id="rule-trials"><thead><tr><th>Session</th><th>Observed sets</th><th>Next target</th><th>Next exposure</th><th>Later plateau?</th></tr></thead><tbody>
+      ${selected.trials.map(r => `<tr class="click" data-w="${esc(r.workout_id)}"><td>${day(r.date)}<br>${esc(r.name)}<br><span class="faint">${r.fold}</span></td>
+        <td>${r.last.map(x => `${fmt(x.weight, 2)} ${esc(x.unit)} × ${x.reps}${x.rir != null ? ` @ ${x.rir}` : ""}`).join("<br>")}</td>
+        <td>${target(r.target)}<br><span class="faint">${esc(r.target?.reason || "Effort rule abstained")}</span></td><td>${esc(r.next_result)}</td>
+        <td>${r.observed_plateau == null ? "Unscored" : r.observed_plateau ? "Yes" : "No"}</td></tr>`).join("") || `<tr><td colspan="5">No eligible exposures.</td></tr>`}</tbody></table></div>
+      <div style="display:flex;gap:10px;margin-top:12px"><button id="rule-prev" ${offset === 0 ? "disabled" : ""}>Previous</button><button id="rule-next" ${offset + 100 >= selected.trial_count ? "disabled" : ""}>Next</button><span class="faint">${selected.trial_count ? offset + 1 : 0}–${Math.min(offset + 100, selected.trial_count)} of ${selected.trial_count}</span></div>
+      <details style="margin-top:16px"><summary>Method and limits</summary><p>${esc(result.method)}</p><ul>${result.limitations.map(x => `<li>${esc(x)}</li>`).join("")}</ul></details></div>`;
+  $("#rule-choice").onchange = event => change(event.target.value, 0);
+  $("#rule-prev").onclick = () => change(selectedRule, Math.max(0, offset - 100));
+  $("#rule-next").onclick = () => change(selectedRule, offset + 100);
+  $("#rule-trials").onclick = event => { const row = event.target.closest("[data-w]"); if (row) openWorkout(row.dataset.w); };
+}
+
 pages.notebooks = async () => {
-  main.innerHTML = `<h1>Notebooks</h1><p class="sub">Your own code on the same data and functions.</p>
-    <div class="soon">The Lab opens marimo notebooks with the loaded history and every analysis function ready to use, and saves custom metrics back to the dashboards. Coming in stage S3.</div>`;
+  const [listing, context] = await Promise.all([api("lab/notebooks"), api("lab/context")]);
+  main.innerHTML = `<h1>Notebooks</h1><p class="sub">Editable Python on the same saved snapshot and tested analysis functions.</p>
+    <div class="card"><h2>Your notebooks</h2><p class="sub">Saved on this Mac: ${esc(listing.folder)}</p>
+    <label>Notebook <select id="notebook-select">${listing.notebooks.map(n => `<option value="${esc(n.filename)}">${esc(n.name)}</option>`).join("")}</select></label>
+    <button class="btn" id="notebook-open">Open editor</button>
+    <label>New notebook name <input id="notebook-name" placeholder="my_analysis"></label><button class="btn" id="notebook-create">Create notebook</button>
+    <p id="notebook-error" class="orange"></p><p id="notebook-link"></p></div>
+    <p class="sub">Notebooks run your Python locally. The supplied history and tables are read-only copies. Publish a custom metric to show it on Overview.</p>`;
+  const errorBox = $("#notebook-error");
+  const write = async (path, values) => api(path, {method:"POST", headers:{"Content-Type":"application/json", "X-Studio-Token":context.write_token}, body:JSON.stringify(values || {})});
+  $("#notebook-create").onclick = async () => {
+    try { await write("lab/notebooks", {name:$("#notebook-name").value}); await pages.notebooks(); }
+    catch(e) { if(e.name !== "AbortError") errorBox.textContent=e.message; }
+  };
+  $("#notebook-open").onclick = async () => {
+    const filename = $("#notebook-select").value;
+    const linkBox = $("#notebook-link");
+    try { const editor = await write("lab/start");
+      const url = new URL(editor.url); url.searchParams.set("file",filename);
+      linkBox.innerHTML = `<a class="btn" href="${esc(url.href)}" target="_blank" rel="noopener">Open ${esc(filename)} in the notebook editor</a>`;
+    } catch(e) { if(e.name !== "AbortError") errorBox.textContent=e.message; }
+  };
 };
 
 pages.ask = async () => {
@@ -326,9 +400,10 @@ pages.settings = async () => {
       const val = raw === "true" ? true : raw === "false" ? false : Number(raw);
       if (el.dataset.i != null) { out[k] = out[k] || [...s[k]]; out[k][+el.dataset.i] = val; } else out[k] = val;
     });
-    await api("settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(out) });
-    exerciseIndex = null;
-    $("#saved").textContent = "Saved. Every page now uses these values.";
+    try {
+      await api("settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(out) });
+      exerciseIndex = null; $("#saved").textContent = "Saved. Every page now uses these values.";
+    } catch (error) { $("#saved").textContent = error.message; }
   };
   $("#reload").onclick = async () => { await api("reload", { method: "POST" }); exerciseIndex = null; refreshStatus(); };
 };

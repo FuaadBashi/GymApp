@@ -61,6 +61,8 @@ class Session:
     position: int
     sets: list[SetRow] = field(default_factory=list)
     note: Optional[str] = None
+    rep_min: Optional[int] = None
+    rep_max: Optional[int] = None
 
 
 @dataclass
@@ -114,6 +116,8 @@ class History:
                 db.close()
 
     def _load(self, db: sqlite3.Connection) -> None:
+        if db.execute("PRAGMA quick_check").fetchone()[0] != "ok" or db.execute("PRAGMA foreign_key_check").fetchone() is not None:
+            raise ValueError("The backup failed its integrity check")
         self.exercises = {
             r["id"]: Exercise(r["id"], r["name"], r["equipment"], r["loadMode"],
                               _json_list(r["primaryMuscles"]), _json_list(r["secondaryMuscles"]),
@@ -129,7 +133,8 @@ class History:
             w = self.workouts.get(r["workoutId"])
             if w is None:
                 continue
-            s = Session(w.id, w.started_at, r["exerciseId"], r["position"], note=r["note"])
+            s = Session(w.id, w.started_at, r["exerciseId"], r["position"], note=r["note"],
+                        rep_min=r["repMin"], rep_max=r["repMax"])
             sessions[r["id"]] = s
         columns = {row[1] for row in db.execute("PRAGMA table_info(workoutSet)")}
         has_v2 = "repsInReserve" in columns

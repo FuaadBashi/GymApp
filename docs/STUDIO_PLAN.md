@@ -1,7 +1,10 @@
 # GymApp and the analysis studio: plan, ideas and open questions
 
-13 October 2026. Builds on [ANALYTICS_RESEARCH.md](ANALYTICS_RESEARCH.md). Nothing here is
-built yet; the questions in section 7 decide the shape before any code is written.
+Updated 14 October 2026. Builds on [ANALYTICS_RESEARCH.md](ANALYTICS_RESEARCH.md).
+S0 foundations and S1 dashboards are implemented. S2 Rule Lab now replays five rules
+with historical targets, outcome scoring and a later-session holdout. Notebook work
+is retained, including the editor and local custom metrics. Ask and the later phone
+additions remain deferred. See [the S2 implementation](specs/studio-s2-rule-lab.md).
 
 ## 1. The split
 

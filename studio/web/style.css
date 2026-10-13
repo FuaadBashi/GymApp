@@ -91,3 +91,10 @@ tr.click { cursor: pointer; } tr.click:hover td { background: var(--row); }
 .field { display: grid; grid-template-columns: 1fr 160px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #ffffff08; }
 .field .help { font-size: 12px; color: var(--faint); margin-top: 3px; }
 .soon { border: 1px dashed var(--line); border-radius: var(--radius); padding: 28px; color: var(--dim); line-height: 1.6; }
+
+.table-scroll { overflow-x: auto; }
+.table-scroll table { min-width: 720px; }
+#rule-trials td { vertical-align: top; }
+#rule-trials td:nth-child(3) { max-width: 330px; line-height: 1.5; }
+button:disabled { opacity: .45; cursor: default; }
+label { display: block; font-size: 13px; color: var(--dim); line-height: 1.8; }

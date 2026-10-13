@@ -7,6 +7,7 @@ extra dependency) and reloads when a newer, fully downloaded backup lands.
 from __future__ import annotations
 
 import time
+import sqlite3
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -43,11 +44,16 @@ def follow(on_new: Callable[[Path], None], folders: Optional[list[Path]] = None,
     """Calls on_new with each newer backup, after its size has stopped changing."""
     seen = None
     while not stop():
-        path = latest(folders)
-        if path and path != seen:
-            size = path.stat().st_size
-            time.sleep(1.0)
-            if path.stat().st_size == size:
-                seen = path
-                on_new(path)
+        try:
+            path = latest(folders)
+            if path:
+                before = path.stat()
+                key = (path, before.st_size, before.st_mtime_ns)
+                if key != seen:
+                    time.sleep(1.0)
+                    after = path.stat()
+                    if (after.st_size, after.st_mtime_ns) == (before.st_size, before.st_mtime_ns):
+                        if on_new(path) is not False: seen = key
+        except (OSError, ValueError, sqlite3.Error):
+            pass       # Incomplete cloud copies are retried; keep the last good history.
         time.sleep(interval)

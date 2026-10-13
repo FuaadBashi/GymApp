@@ -6,6 +6,20 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
+### Mac Studio (14 October)
+
+S2 Rule Lab is implemented locally: five progression/deload comparisons, exercise
+filtering, configurable outcome window, later-session holdout, paginated target reasons
+and original-workout inspection. Replay uses only information available at each decision;
+missing RIR or incomplete outcomes remain unscored. No causal winner or phone promotion.
+See [S2 spec](specs/studio-s2-rule-lab.md) and [Studio README](../studio/README.md).
+
+Notebook work is retained at the user's request: local marimo editor, read-only snapshot
+tables and persisted custom metrics. Existing notebook files are preserved. Ask and
+later phone additions are deferred. 48 Studio tests pass. The owner authorised committing
+and pushing this Studio work on 14 October. The phone status and device checklist below
+are unchanged by Studio work.
+
 **Next card: none.** Every card in phases 0–5 is done. What remains needs the phone:
 follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
 
