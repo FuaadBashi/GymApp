@@ -62,9 +62,10 @@ def top_load(sets: list, load_mode: str) -> Optional[float]:
     return max(s.kg for s in counted)
 
 
-def slope_per_30_days(points: list[tuple[datetime, float]]) -> Optional[float]:
-    """Least-squares slope, in units per 30 days."""
-    if len(points) < 3:
+def slope_per_30_days(points: list[tuple[datetime, float]], min_points: int = 4, min_span_days: int = 30) -> Optional[float]:
+    """Least-squares slope, in units per 30 days. A trend needs enough sessions spread over
+    enough time: three sessions in one week would otherwise extrapolate wildly."""
+    if len(points) < min_points or (points[-1][0] - points[0][0]).days < min_span_days:
         return None
     t0 = points[0][0]
     xs = [(d - t0).total_seconds() / 86400 for d, _ in points]

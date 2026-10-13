@@ -56,6 +56,19 @@ class NextTargetTests(unittest.TestCase):
         self.assertEqual((t["kind"], t["weight"]), ("plateau", 54))
 
 
+class ProgressTests(unittest.TestCase):
+    def test_a_few_sessions_close_together_give_no_trend(self):
+        from datetime import datetime, timezone
+        pts = [(datetime(2026, 1, d, tzinfo=timezone.utc), v) for d, v in ((1, 50), (3, 60), (5, 70))]
+        self.assertIsNone(a.slope_per_30_days(pts))
+
+    def test_a_steady_rise_gives_its_rate(self):
+        from datetime import datetime, timedelta, timezone
+        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        pts = [(start + timedelta(days=10 * i), 60 + i) for i in range(6)]
+        self.assertAlmostEqual(a.slope_per_30_days(pts), 3.0)
+
+
 class OtherTests(unittest.TestCase):
     s = a.Settings()
 
