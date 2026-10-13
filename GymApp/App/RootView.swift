@@ -50,12 +50,15 @@ struct RootView: View {
         return 0
     }
 
-    /// Simulator verification: `-importJEFIT <absolute path>` imports at launch.
+    /// Debug builds: `-importJEFIT <path>` imports at launch. A relative path is inside the
+    /// app's home, so a file copied onto a cabled phone (`devicectl device copy to`) imports too.
     private func importFromLaunchArgument() async {
         #if DEBUG
         let args = ProcessInfo.processInfo.arguments
         guard let flag = args.firstIndex(of: "-importJEFIT"), flag + 1 < args.count else { return }
-        if let report = try? await ImportService.importJEFIT(fileAt: URL(filePath: args[flag + 1]), into: db) {
+        let path = args[flag + 1]
+        let url = path.hasPrefix("/") ? URL(filePath: path) : URL(filePath: NSHomeDirectory()).appending(path: path)
+        if let report = try? await ImportService.importJEFIT(fileAt: url, into: db) {
             launchReport = LaunchReport(report: report)
         }
         #endif
