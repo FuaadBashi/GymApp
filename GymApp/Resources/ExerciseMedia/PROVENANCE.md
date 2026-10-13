@@ -33,3 +33,43 @@ to silent H.264 with a still at 0.2 seconds. Pinned original SHA-256 hashes and 
 URLs are in manifest.json. The acquisition script verifies original bytes before
 conversion. All assets are bundled; source/license links are optional outbound links,
 not playback dependencies. More variants require separate visual/provenance review.
+
+## wger clips reviewed 13 October 2026
+
+Twenty clips come from the [wger](https://wger.de) exercise database. Every one is by
+**Goulart**, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the
+converted clips and stills are shared under the same licence. The originals are 1080p HEVC
+phone videos; changes: silent H.264 at 480p, 24 fps, CRF 30, and a JPEG frame at 1 second.
+Download URLs and SHA-256 hashes of the originals are pinned in manifest.json, and
+`tools/fetch_exercise_media.py` rebuilds them only if the originals are unchanged.
+
+Each was checked on an eight-frame contact sheet. What each shows, and what it is mapped to:
+
+| Clip | wger exercise | Shows | Mapped to |
+|---|---|---|---|
+| leg-curl-lying | Leg Curls (laying) | prone, plate-loaded lying leg curl machine | Machine Leg Curl (Prone), Lying Leg Curls |
+| dumbbell-lateral-raise | Lateral Raises | standing, both arms together | Dumbbell Lateral Raise, Side Lateral Raise |
+| dumbbell-bench | Benchpress Dumbbells | flat bench, two dumbbells | Dumbbell Bench Press |
+| dumbbell-shoulder-press | Shoulder Press, Dumbbells | seated upright, two dumbbells | Dumbbell Seated Shoulder Press |
+| assisted-pull-up | Pull Ups on Machine | overhand pull-up on an assisted machine | Machine Assisted Pull-Up |
+| leg-press-seated | Leg Press | seated, selectorised horizontal leg press | Machine Leg Press |
+| machine-shoulder-press | Shoulder Press, on Machine | seated machine overhead press | Machine Shoulder Press |
+| face-pull | Facepull | standing cable pull to the face | Cable Rope Face Pull, Face Pull |
+| cable-seated-row | Rowing seated, narrow grip | seated cable row, close handle | Cable Seated Row, Seated Cable Rows |
+| dumbbell-romanian-deadlift | Romanian Deadlift | standing, **dumbbells** | Dumbbell Romanian Deadlift only (not barbell) |
+| alternating-hammer-curl | Hammer Curls | standing, one arm at a time | Dumbbell Alternating Hammer Curl |
+| incline-dumbbell-press | Incline Bench Press - Dumbbell | incline bench, two dumbbells | Dumbbell Incline Bench Press |
+| hip-adduction | Seated Hip Adduction | seated adduction machine | Thigh Adductor (and exercises linked to it) |
+| barbell-shrug | Shoulder Shrug | standing, barbell in front | Barbell Shrug |
+| one-arm-cable-curl | Biceps Curl With Cable | standing, one arm, low pulley | Standing One-Arm Cable Curl |
+| overhead-rope-extension | Triceps Extensions on Cable | overhead, rope | Cable Rope Overhead Tricep Extension |
+| dip | Dips | parallel bars, body weight | Dip, Parallel Bar Dip |
+| dumbbell-curl | Biceps Curls With Dumbbell | standing, both arms together | Dumbbell Bicep Curl (not alternating) |
+| one-arm-preacher-curl | Single-arm Preacher Curl | one dumbbell on a preacher pad | Dumbbell One-Arm Preacher Curl |
+| leg-press-wide | Leg Presses (wide) | 45° sled, wide stance | Machine Leg Press (Wide Stance) |
+
+Rejected: "Leg Curls (sitting)" (frames too ambiguous to confirm the machine) and
+"Hammercurls on Cable" (one-armed; the matching exercise is two-armed with a rope).
+
+The app also uses an exercise's hand-checked library link (tools/build_jefit_map.py
+LIBRARY_LINKS) to find a clip, still requiring the equipment to match what the clip shows.

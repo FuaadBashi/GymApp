@@ -1,74 +1,274 @@
 [
-  {
-    "name": "barbell-bench",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Bench_press_-_exercise_demonstration_video.webm",
-    "download": "https://upload.wikimedia.org/wikipedia/commons/d/df/Bench_press_-_exercise_demonstration_video.webm",
-    "sha256": "4b843d33d7b439884ed64d722edc6c7c46a3430060d4e2059f42b103e9187be7",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "barbell-squat",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Squat_-_exercise_demonstration_video.webm",
-    "download": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Squat_-_exercise_demonstration_video.webm",
-    "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "barbell-deadlift",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Deadlift_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Deadlift_-_exercise_demonstration_video.webm",
-    "sha256": "d7870f6d8abfde8d7daf2c97252738e89617a03eda7f9a4c4adbf7996e6c9c1f",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "barbell-row",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bent-over_row_-_exercise_demonstration_video.webm",
-    "sha256": "f6b90f2f72e9020dcc261fadb09725913fa31719a8614de26fab372826987f62",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "barbell-incline",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Incline_press_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Incline_press_-_exercise_demonstration_video.webm",
-    "sha256": "6e2265685feab055c9661dfe0db392d95d3c028bedf30f5ef88f043203ec49f4",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "barbell-shoulder",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Shoulder_press_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Shoulder_press_-_exercise_demonstration_video.webm",
-    "sha256": "c0ffde36fca4e9702460ffe35ce2dea50f4c0a5ad9ef426d134466a45d0e3b7a",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "pull-up",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Pull-ups_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pull-ups_-_exercise_demonstration_video.webm",
-    "sha256": "1ddf02c690c6da9d27c9ca50453d2df212d777bb402203af116b70bf27a2227d",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  },
-  {
-    "name": "hanging-leg-raise",
-    "author": "FitnessScape",
-    "license": "https://creativecommons.org/licenses/by/3.0/",
-    "source": "https://commons.wikimedia.org/wiki/File:Leg_raises_-_exercise_demonstration_video.webm",
-    "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Leg_raises_-_exercise_demonstration_video.webm",
-    "sha256": "4e7ae3d82625ed785c595fbbf6b62b1a37318874512f9edb80a0be2da2f8594b",
-    "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
-  }
+ {
+  "name": "barbell-bench",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Bench_press_-_exercise_demonstration_video.webm",
+  "download": "https://upload.wikimedia.org/wikipedia/commons/d/df/Bench_press_-_exercise_demonstration_video.webm",
+  "sha256": "4b843d33d7b439884ed64d722edc6c7c46a3430060d4e2059f42b103e9187be7",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "barbell-squat",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Squat_-_exercise_demonstration_video.webm",
+  "download": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Squat_-_exercise_demonstration_video.webm",
+  "sha256": "2440985661c3533a4ce78472b0f4577dbdf023aff3f8f9a225bbb5ff8071b1e9",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "barbell-deadlift",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Deadlift_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Deadlift_-_exercise_demonstration_video.webm",
+  "sha256": "d7870f6d8abfde8d7daf2c97252738e89617a03eda7f9a4c4adbf7996e6c9c1f",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "barbell-row",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Bent-over_row_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bent-over_row_-_exercise_demonstration_video.webm",
+  "sha256": "f6b90f2f72e9020dcc261fadb09725913fa31719a8614de26fab372826987f62",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "barbell-incline",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Incline_press_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Incline_press_-_exercise_demonstration_video.webm",
+  "sha256": "6e2265685feab055c9661dfe0db392d95d3c028bedf30f5ef88f043203ec49f4",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "barbell-shoulder",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Shoulder_press_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Shoulder_press_-_exercise_demonstration_video.webm",
+  "sha256": "c0ffde36fca4e9702460ffe35ce2dea50f4c0a5ad9ef426d134466a45d0e3b7a",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "pull-up",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Pull-ups_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pull-ups_-_exercise_demonstration_video.webm",
+  "sha256": "1ddf02c690c6da9d27c9ca50453d2df212d777bb402203af116b70bf27a2227d",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "hanging-leg-raise",
+  "author": "FitnessScape",
+  "license": "https://creativecommons.org/licenses/by/3.0/",
+  "source": "https://commons.wikimedia.org/wiki/File:Leg_raises_-_exercise_demonstration_video.webm",
+  "download": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Leg_raises_-_exercise_demonstration_video.webm",
+  "sha256": "4e7ae3d82625ed785c595fbbf6b62b1a37318874512f9edb80a0be2da2f8594b",
+  "changes": "Silent H.264 conversion; JPEG frame at 0.2 seconds"
+ },
+ {
+  "name": "leg-curl-lying",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/365/view-base",
+  "download": "https://wger.de/media/exercise-video/365/becaf013-5044-40d0-bae9-7ed60c973737.MOV",
+  "sha256": "77d70320a6d87af02532379039874eaf805d569462cc540060b04da915fcecb3",
+  "wgerExercise": "Leg Curls (laying)",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dumbbell-lateral-raise",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/348/view-base",
+  "download": "https://wger.de/media/exercise-video/348/de69928a-8a35-4096-821c-1f46de5e0e03.MOV",
+  "sha256": "41c47c5efd245d0dfbcd25e4c1e6a4f46f2093281871df3503278ea9e5444d7f",
+  "wgerExercise": "Lateral Raises",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dumbbell-bench",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/75/view-base",
+  "download": "https://wger.de/media/exercise-video/75/c9cbd391-1e22-4014-8794-04630c80665f.MOV",
+  "sha256": "d740856c3927ad1b89217c9b4d57df5202ff2dc0603991bd95d7823b5e63dde3",
+  "wgerExercise": "Benchpress Dumbbells",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dumbbell-shoulder-press",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/567/view-base",
+  "download": "https://wger.de/media/exercise-video/567/64f33c19-1d96-4b7c-af17-6c6a4941c614.MOV",
+  "sha256": "0151a7cd43894d60c1fe1ffb34f4f4b709fc17aa6a5913c7edea4a14c9113985",
+  "wgerExercise": "Shoulder Press, Dumbbells",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "assisted-pull-up",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/477/view-base",
+  "download": "https://wger.de/media/exercise-video/477/2e23bb52-2782-40c8-bf88-fa2d2e2a9a0d.MOV",
+  "sha256": "4c459f322f506eb7bd0b51e7efd81aaf6bd1e10fc0569e182a4815dee325f1b8",
+  "wgerExercise": "Pull Ups on Machine",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "leg-press-seated",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/371/view-base",
+  "download": "https://wger.de/media/exercise-video/371/db382bd9-f633-47cd-8b02-c52db835e41d.MOV",
+  "sha256": "62e58a97010f3810380ae96bbfdb686abb62f8e41fc86af82c880cf708f7765c",
+  "wgerExercise": "Leg Press",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "machine-shoulder-press",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/543/view-base",
+  "download": "https://wger.de/media/exercise-video/543/dbfd396b-1aab-4a64-a50b-2c31ff0a2cf7.MOV",
+  "sha256": "1b3f5619a871ea77871a17b777c606e793f1d728a8253bad45c13f3877e999d6",
+  "wgerExercise": "Shoulder Press, on Machine",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "face-pull",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/222/view-base",
+  "download": "https://wger.de/media/exercise-video/222/eea93fcc-6a3c-4783-8f70-0234c791a001.MOV",
+  "sha256": "88092b7fb9e905e706267d0c86a44c946ca261875640302e1b6956f12f262864",
+  "wgerExercise": "Facepull",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "cable-seated-row",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/512/view-base",
+  "download": "https://wger.de/media/exercise-video/512/fff4c294-93f0-4926-b3a2-bf59ad4afaa5.MOV",
+  "sha256": "623708fc1e5b1fb1be2b1647a0fa044d0208b2ebea2a5ed6bf1a77e9c1e21b90",
+  "wgerExercise": "Rowing seated, narrow grip",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dumbbell-romanian-deadlift",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/507/view-base",
+  "download": "https://wger.de/media/exercise-video/507/307e7276-a14d-4ea0-b579-f5b0dbc6f5af.MOV",
+  "sha256": "0526207ce774dd9e15c5be5198c3bd5233e2d434fcabe3db67f1060af51c5d84",
+  "wgerExercise": "Romanian Deadlift",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "alternating-hammer-curl",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/272/view-base",
+  "download": "https://wger.de/media/exercise-video/272/df069052-2173-4f24-855f-a0eebe729f24.MOV",
+  "sha256": "1bb9997de44f2c7b1ff182001c988ae1245006458a3a6e1bc85db52dcb1a4e38",
+  "wgerExercise": "Hammer Curls",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "incline-dumbbell-press",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/537/view-base",
+  "download": "https://wger.de/media/exercise-video/537/b9c937e9-daeb-42a9-be8e-7a77e368478c.MOV",
+  "sha256": "4861d89988c8e8886435e62064aedd68c04484f0c4646270d182307025c3a162",
+  "wgerExercise": "Incline Bench Press - Dumbbell",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "hip-adduction",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/12/view-base",
+  "download": "https://wger.de/media/exercise-video/12/5148c579-5df2-4618-9a7b-a2e29ac4dd7d.MOV",
+  "sha256": "9ea2e87291d7445c801f058a13f4c2c62a14c34869577a1ae1601824778e0f66",
+  "wgerExercise": "Seated Hip Adduction",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "barbell-shrug",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/570/view-base",
+  "download": "https://wger.de/media/exercise-video/570/bd1f14a3-9d2b-4ec0-b6b9-e82d739f7e60.MOV",
+  "sha256": "572115679d3f255ac7343fdff31837dbb2368a1222b97a857dcd2945209c5d41",
+  "wgerExercise": "Shoulder Shrug",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "one-arm-cable-curl",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/95/view-base",
+  "download": "https://wger.de/media/exercise-video/95/ab770931-47d3-44fd-aef0-ac7a64c3b794.MOV",
+  "sha256": "4a7f995405ea08af81ede59bc07ed05458596b420a7ca596a154f9e27a24c2cb",
+  "wgerExercise": "Biceps Curl With Cable",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "overhead-rope-extension",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/659/view-base",
+  "download": "https://wger.de/media/exercise-video/659/1f2eb3b6-3185-429f-8330-26dc88f39aff.MOV",
+  "sha256": "2b1cb2e47da66abd03bba3ef51ff83f5aebb84e3ac31cbad2435db91417fdf0e",
+  "wgerExercise": "Triceps Extensions on Cable",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dip",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/194/view-base",
+  "download": "https://wger.de/media/exercise-video/194/dd9a663f-d8ba-4621-823b-13788ccb66bc.MOV",
+  "sha256": "faeefaad3f10f5dfeb95648e4e7bb494b64e0b2efb7085f3793fac00883d5d55",
+  "wgerExercise": "Dips",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "dumbbell-curl",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/92/view-base",
+  "download": "https://wger.de/media/exercise-video/92/8bfb917c-3d0d-49b9-8073-5d7e01c1b894.MOV",
+  "sha256": "4e5e4bbbf24385e8bbed16b7fb2905243041646f56031c3c3515073d6b9ace75",
+  "wgerExercise": "Biceps Curls With Dumbbell",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "one-arm-preacher-curl",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/584/view-base",
+  "download": "https://wger.de/media/exercise-video/584/109e8d5d-62a4-40ad-8813-2ccef5bc751f.MOV",
+  "sha256": "b7f875efa49f4adc26331f9da7fce4b6db10bc8d346712256cdc5714ae89d3c4",
+  "wgerExercise": "Single-arm Preacher Curl",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ },
+ {
+  "name": "leg-press-wide",
+  "author": "Goulart",
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "source": "https://wger.de/en/exercise/374/view-base",
+  "download": "https://wger.de/media/exercise-video/374/5336822a-7803-45b3-a880-f2bbf37a28f2.MOV",
+  "sha256": "631218201fd7ec1b30312be5d06ff196c904c3be8d6cd8f837fbfe53fc6ca13a",
+  "wgerExercise": "Leg Presses (wide)",
+  "changes": "Silent H.264 at 480p and 24 fps (CRF 30); JPEG frame at 1 second"
+ }
 ]
