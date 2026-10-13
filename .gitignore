@@ -9,3 +9,6 @@ DerivedData/
 
 # Python
 __pycache__/
+
+# Studio
+studio/.venv/
