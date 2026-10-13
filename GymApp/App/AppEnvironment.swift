@@ -13,7 +13,10 @@ enum AppStartup {
         Result {
             let db = try AppDatabase.onDisk()
             try MetadataDraft.replay(into: db)
-            _ = try db.writer.write { try LibrarySeeder.seed(in: $0, now: .now) }
+            _ = try db.writer.write { db in
+                try LibrarySeeder.seed(in: db, now: .now)
+                try LibrarySeeder.linkImported(in: db)
+            }
             return db
         }
     }

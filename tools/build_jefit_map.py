@@ -97,6 +97,33 @@ OVERRIDES = {
     "1:1236": {"equipment": "bodyweight", "loadMode": "repsOnly", "importWeights": "drop"},
 }
 
+# Library twins name matching misses, checked by hand: the same movement on the same
+# equipment (decision #28: two different machines are never merged). With a link, the app
+# hides the library duplicate and borrows its instructions.
+LIBRARY_LINKS = {
+    "1:86": "Wide-Grip_Lat_Pulldown", "1:130": "Leg_Extensions", "1:2": "Barbell_Bench_Press_-_Medium_Grip",
+    "1:160": "Lying_Leg_Curls", "1:32": "Side_Lateral_Raise", "1:149": "Triceps_Pushdown_-_V-Bar_Attachment",
+    "1:447": "Smith_Machine_Overhead_Shoulder_Press", "1:132": "Leg_Press", "1:46": "Machine_Shoulder_Military_Press",
+    "1:874": "Face_Pull", "1:8": "Barbell_Incline_Bench_Press_-_Medium_Grip", "1:21": "Seated_Cable_Rows",
+    "1:116": "Dumbbell_Alternate_Bicep_Curl", "1:1256": "Single-Leg_Leg_Extension", "1:45": "Butterfly",
+    "1:199": "Romanian_Deadlift", "1:820": "Leverage_Iso_Row", "1:187": "V-Bar_Pulldown",
+    "1:114": "Alternate_Hammer_Curl", "1:140": "Calf_Press_On_The_Leg_Press_Machine", "1:31": "Incline_Dumbbell_Press",
+    "1:42": "Dumbbell_Shrug", "1:113": "Preacher_Curl", "1:155": "Cable_Rope_Overhead_Triceps_Extension",
+    "1:102": "Standing_Biceps_Cable_Curl", "1:250": "Triceps_Pushdown", "1:83": "Pullups",
+    "1:159": "Triceps_Pushdown_-_Rope_Attachment", "1:161": "Seated_Leg_Curl", "1:92": "Hyperextensions_Back_Extensions",
+    "1:271": "Machine_Preacher_Curls", "1:1274": "Leverage_High_Row", "1:253": "Machine_Triceps_Extension",
+    "1:146": "Seated_Side_Lateral_Raise", "1:474": "Dumbbell_Squat_To_A_Bench", "1:79": "Cable_Crunch",
+    "1:1043": "Bent_Over_Two-Dumbbell_Row_With_Palms_In", "1:88": "Bent_Over_Two-Dumbbell_Row", "1:107": "Concentration_Curls",
+    "1:108": "Hammer_Curls", "1:119": "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench", "1:1278": "Bent_Over_Low-Pulley_Side_Lateral",
+    "1:14": "Cable_Crossover", "1:486": "Narrow_Stance_Leg_Press", "1:878": "Reverse_Machine_Flyes", "1:886": "Leverage_Shrug",
+    "1:1040": "Dumbbell_Incline_Row", "1:115": "Alternate_Incline_Dumbbell_Curl", "1:136": "Dumbbell_Lunges",
+    "1:158": "Seated_Triceps_Press", "1:236": "Lying_Dumbbell_Tricep_Extension", "1:460": "JM_Press",
+    "1:467": "Barbell_Full_Squat", "1:954": "Stiff-Legged_Barbell_Deadlift", "1:393": "Pull_Through",
+    "1:401": "Bradford_Rocky_Presses", "1:41": "Dumbbell_Flyes", "1:424": "Lying_Face_Down_Plate_Neck_Resistance",
+    "1:425": "Lying_Face_Up_Plate_Neck_Resistance", "1:43": "Standing_Dumbbell_Upright_Row", "1:453": "Standing_Military_Press",
+    "1:257": "Cable_Hammer_Curls_-_Rope_Attachment", "1:216": "Thigh_Abductor",
+}
+
 BODYWEIGHT_REPS_ONLY = r"push-up|knee raise|leg raise|hip raise|decline crunch|reverse crunch|plank|bodyweight squat|arm circles|side neck"
 
 
@@ -184,12 +211,17 @@ def main():
     logs = table(s, "EXERCISE LOGS", "ename")
     custom = table(s, "CUSTOM EXERCISES", "unilateral")
     names, counts, last = latest_names(logs, custom)
-    library = {norm(x["name"]): x["id"] for x in json.load(open(a.library))}
+    library_rows = json.load(open(a.library))
+    library = {norm(x["name"]): x["id"] for x in library_rows}
+    ids = {x["id"] for x in library_rows}
+    assert all(v in ids for v in LIBRARY_LINKS.values()), "LIBRARY_LINKS names a missing library id"
 
     entries = []
     for key in sorted(names, key=lambda k: (-counts[k], k)):
         e = classify(key, names[key])
         e["libraryId"] = f'lib:{library[norm(e["name"])]}' if norm(e["name"]) in library else None
+        if e["libraryId"] is None and key in LIBRARY_LINKS:
+            e["libraryId"] = f'lib:{LIBRARY_LINKS[key]}'
         e["jefitLogCount"] = counts[key]
         entries.append(e)
 
