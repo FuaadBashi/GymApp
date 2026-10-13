@@ -27,6 +27,7 @@ class Exercise:
     secondary_muscles: list[str]
     body_region: str
     movement_pattern: Optional[str]
+    force: Optional[str]
     library_id: Optional[str]
     is_archived: bool
 
@@ -116,7 +117,7 @@ class History:
         self.exercises = {
             r["id"]: Exercise(r["id"], r["name"], r["equipment"], r["loadMode"],
                               _json_list(r["primaryMuscles"]), _json_list(r["secondaryMuscles"]),
-                              r["bodyRegion"], r["movementPattern"], r["libraryId"], bool(r["isArchived"]))
+                              r["bodyRegion"], r["movementPattern"], r["force"], r["libraryId"], bool(r["isArchived"]))
             for r in db.execute("SELECT * FROM exercise")
         }
         self.workouts: dict[str, Workout] = {}
@@ -148,9 +149,18 @@ class History:
                                 "WHERE weightHundredths IS NOT NULL ORDER BY date")
         ]
         self.program_days = {r["id"]: dict(r) for r in db.execute("SELECT * FROM programDay")}
+        self.programs = {r["id"]: dict(r) for r in db.execute("SELECT * FROM program")}
+        self.day_items = [dict(r) for r in db.execute("SELECT * FROM dayExercise ORDER BY dayId, position")]
         self.exercise_notes = [dict(r) for r in db.execute("SELECT * FROM exerciseNote ORDER BY date")]
 
     # Queries
+
+    def active_day_items(self) -> list[dict]:
+        """Items of the active program's days, in day then position order."""
+        active = {pid for pid, p in self.programs.items() if p["isActive"]}
+        days = {d for d, row in self.program_days.items() if row["programId"] in active}
+        order = {d: self.program_days[d]["position"] for d in days}
+        return sorted((i for i in self.day_items if i["dayId"] in days), key=lambda i: (order[i["dayId"]], i["position"]))
 
     def sessions_for(self, exercise_id: str) -> list[Session]:
         """Oldest first, like the app's ExerciseQueries.sessions but ascending."""
