@@ -86,6 +86,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **Duplicate exercises (13 Oct)**: LIBRARY_LINKS in build_jefit_map.py adds 63 hand-checked links (115 of 199 now linked); only libraryId changed in the map and the reference expectations are identical. Imports never rewrite existing exercises, so LibrarySeeder.linkImported fills empty links (and empty instructions) at launch for JEFIT exercises only, never overriding a link. On the phone: 114 imported exercises linked; Barbell Bench Press no longer lists its library twin. Skipped on purpose: assisted machines, lookalike machines, variants with a different grip or stance, and four library entries already linked to a closer variant.
 - **Program and tonight's session (13 Oct)**: Imported the 13 Oct JEFIT export over the cable (1 new workout, 7 exercises, 14 sets; phone 469 workouts / 7,765 sets). As Fuaad asked: Full Body 1–3 filled from his JEFIT FBD 1, FBD 2 and "Cardio" days as shown in the JEFIT app (each linked by copiedFromDayId to its JEFIT day for last-time values), Machine Hip Adduction added as a custom exercise, and tonight's session retitled Full Body 3 and linked to that day. Applied through the app's pending-restore path, which keeps a safety copy of the previous data. The debug `-importJEFIT` argument now accepts a path inside the app's home, for imports over the cable.
 - **On the phone (13 Oct)**: Installed on the iPhone 17 Pro Max (iOS 26.6.1) with the free Personal Team; Developer Mode was already on; the developer profile was trusted once. The JEFIT export imported. Choosing the backup folder failed three ways, each fixed and reinstalled: (1) two `.fileImporter`s on one view, so only the last worked; (2) SQLite error 14 opening the copy inside a file-provider folder, so external copies are now verified by SHA-256 read-back against the already-checked local copy, and restore files are copied into the app before SQLite opens them; (3) the merged picker lost its mode on dismiss and read the folder as a restore file (error 26). External copy now verified on the device. None of these could show on the simulator, where the picker and file providers behave differently.
 - **5.2**: docs/PHONE_SETUP.md: signing with a free Apple ID for both targets, Developer Mode, trust, notifications, JEFIT import, iCloud Drive backup folder, the device checklist, switching from JEFIT, and the weekly reinstall (over Wi-Fi after the first). Repeats decision #2's warning never to delete the app. README, ROADMAP and HANDOFF updated; the device checklist is in Current.
@@ -145,7 +146,7 @@ None for card 2.9: expiry behavior settled in decision #37.
 
 ## Known issues
 
-- Some JEFIT exercises have an obvious library equivalent that name matching missed (e.g. Barbell Bench Press ↔ "Barbell Bench Press - Medium Grip"), so both appear in Exercises. Fix by adding `libraryId` overrides in `tools/build_jefit_map.py` for the most used exercises, then regenerating the map and the reference expectations.
+- Resolved 13 Oct: 63 more JEFIT exercises are linked to their library twins (tools/build_jefit_map.py LIBRARY_LINKS, hand-checked: same movement, same equipment). Close variants without an exact twin stay unlinked by design (decision #28).
 
 ## Useful commands
 
