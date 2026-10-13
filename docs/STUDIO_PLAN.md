@@ -131,6 +131,15 @@ into, so option C replaces it unless you say otherwise.
 - **Plateau:** three weeks with no increase in weight on an exercise. Then look at the other exercises for the same muscles to find the weak point.
 - **Research findings to build:** double progression as the default rule; stall rules (Stronglifts-style) back-tested on the history; the 2026 load-dependent e1RM equation compared with Epley on these sets; RIR-based targets once RIR data exists.
 
+- **Steps and weight:** from Apple Health, read by GymApp and carried in the backup. Body fat and measurements are not wanted for now.
+- **Plateau response:** suggest a deload and rebuild, or a swap to a close variant. Rules start from the research and are tuned by the history, with every change shown.
+- **Goal:** size first, strength tracked on the main lifts. Weekly target 10–20 fractional sets per muscle, adjustable.
+- **Profile:** sex, birth year and height, set in both the app and the studio, never committed.
+- **Launch:** a double-click Mac app opening the studio in its own window.
+- **To the phone:** a suggestions file in the iCloud backup folder; GymApp shows each with Accept or Dismiss.
+- **Code:** in this repository under `studio/`. Name: **GymApp Studio**.
+- **Claude API data:** computed summaries by default; a mode where the model can query any table through tools, when chosen.
+
 ## 8. Questions (original list)
 
 **Purpose and use**
