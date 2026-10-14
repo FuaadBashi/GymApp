@@ -71,6 +71,11 @@ struct ProgressTab: View {
             }
             .background(Theme.background)
             .navigationTitle("Progress")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink { ReportsView(db: model.db) } label: { Label("Reports", systemImage: "doc.text.magnifyingglass") }
+                }
+            }
             .navigationDestination(for: String.self) { WorkoutDetailView(db: model.db, workoutId: $0) }
             .sheet(isPresented: $addingWeight) {
                 AddWeightSheet(unit: model.settings.weightUnit) { value, unit in Task { await model.addWeight(value, unit: unit) } }

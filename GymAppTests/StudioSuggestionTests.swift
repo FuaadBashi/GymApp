@@ -97,3 +97,24 @@ struct StudioSuggestionTests {
         #expect(decisions?.first?["id"] == "t1" && decisions?.first?["decision"] == "dismissed")
     }
 }
+
+/// Card 7.9: reports from the studio.
+struct StudioReportTests {
+    @Test func parsingSkipsBadReportsAndOrdersNewestFirst() throws {
+        let json = """
+        [
+          {"id": "2026-W41", "kind": "week", "title": "Week of 5 Oct", "from": "2026-10-05", "to": "2026-10-12",
+           "headline": "2 workouts", "sections": [{"title": "Totals", "lines": ["2 workouts"]}]},
+          {"id": "2026-10", "kind": "month", "title": "October 2026", "from": "2026-10-01", "to": "2026-11-01",
+           "headline": "5 workouts", "sections": [{"title": "Totals", "lines": ["5 workouts"]}]},
+          {"id": "2026-W42", "kind": "week", "title": "Week of 12 Oct", "from": "2026-10-12", "to": "2026-10-19",
+           "headline": "1 workout", "sections": [{"title": "Totals", "lines": ["1 workout"]}]},
+          {"id": "broken", "kind": "year", "title": "x", "from": "2026-01-01", "to": "2027-01-01", "headline": "", "sections": []},
+          {"id": "empty", "kind": "week", "title": "x", "from": "2026-01-01", "to": "2026-01-08", "headline": "", "sections": []}
+        ]
+        """
+        let reports = try StudioReports.parse(Data(json.utf8))
+        #expect(reports.map(\.id) == ["2026-W42", "2026-W41", "2026-10"])
+        #expect(throws: (any Error).self) { try StudioReports.parse(Data("{}".utf8)) }
+    }
+}

@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.9.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 7.10.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -110,7 +110,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 7.6 Supersets
 - [x] 7.7 Warm-up builder
 - [x] 7.8 Goals and standards
-- [ ] 7.9 Reports in the app
+- [x] 7.9 Reports in the app
 - [ ] 7.10 Phase close
 
 ### Phase 8: Studio reports, data health and the planner ([spec](specs/08-studio-reports-planner.md))
@@ -143,6 +143,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.9**: The app reads GymApp-reports.json (a list of {id, kind week|month, title, from, to, headline, sections [{title, lines}]}, format fixed here for card 8.1) from the backup folder and Documents with the suggestions, keeping the newer file. Progress has a Reports button: weeks and months listed newest first, each opening to its sections. Bad reports are skipped, not fatal.
 - **7.8**: Settings has a Profile section (sex, birth year, height). Each loaded lift's Progress page has a Goal card (target e1RM stored as entered; gap to the best; projected month with a range from a saturating fit e1RM = a − b·e^(−t/c) over the last 12 months, coarse then fine search over c; not enough data under 6 sessions over 8 weeks; 'not reachable at the current rate' above the ceiling) and, for barbell lifts in the table, a Standards card: percentile among gym lifters of the same sex and weight class with a plain band and a 'Powered by FitnessVolt' link. FitnessVolt's licence was confirmed as CC BY 4.0; tools/build_strength_standards.py fetches the gym population (needs a User-Agent; Python's default is refused). The bundled tables have no age adjustment, recorded in the spec.
 - **7.7**: Each loaded exercise's workout menu has a Warm-up sets toggle. On builds the ramp before the first unlogged working set from its load and unit (TrainingMath.warmUpRamp, rulebook §3a): the strength ramp for the day's first exercise when it is a barbell squat, hinge or horizontal push, the short ramp otherwise, rounded to the exercise's learnt step; off removes only unlogged warm-ups. The choice is remembered on the day item (migration v6, dayExercise.warmUps) and applied when the next workout starts from that day.
 - **7.6**: Migration v5 adds supersetGroup and supersetRestSeconds (default 0) to dayExercise and workoutExercise; starting a workout copies them. 'Superset with…' and 'Remove from superset' are on the day editor's row menu and the workout card's menu (a group left with one member ends). Logging a member with a later member still planned sets only the member rest (none by default); the round's last member gets its normal rest, and selection moves to the next member with a planned set, round after round, then on to the next exercise. Tested for a pair, a group of three and ungrouping.

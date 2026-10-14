@@ -10,11 +10,14 @@ final class StudioInbox {
     static let shared = StudioInbox()
     private(set) var suggestions: [StudioSuggestion] = []
     private(set) var pending: [StudioSuggestion] = []
+    /// Card 7.9: the studio's weekly and monthly reports.
+    private(set) var reports: [StudioReport] = []
     private(set) var lastError: String?
 
     func reload(_ db: AppDatabase) async {
         let recovery = db.recovery
         let found = await Task.detached { Self.readAll(recovery) }.value
+        reports = await Task.detached { Self.readReports(recovery) }.value
         suggestions = found.suggestions
         lastError = found.error
         pending = (try? await db.reader.read { [found] in try StudioSuggestions.pending($0, found.suggestions) }) ?? []
@@ -52,6 +55,16 @@ final class StudioInbox {
         var byId: [String: StudioSuggestion] = [:]
         for s in all where byId[s.id].map({ $0.created < s.created }) ?? true { byId[s.id] = s }
         return (byId.values.sorted { $0.created != $1.created ? $0.created > $1.created : $0.id < $1.id }, failure)
+    }
+
+    /// The newest-dated reports file wins between the backup folder and Documents.
+    private nonisolated static func readReports(_ recovery: RecoveryStore?) -> [StudioReport] {
+        var found: [[StudioReport]] = []
+        _ = try? recovery?.withExternalFolder { folder in
+            if let data = coordinatedRead(folder.appending(path: StudioReports.fileName)), let r = try? StudioReports.parse(data) { found.append(r) }
+        }
+        if let data = coordinatedRead(documents.appending(path: StudioReports.fileName)), let r = try? StudioReports.parse(data) { found.append(r) }
+        return found.max { ($0.first?.from ?? "") < ($1.first?.from ?? "") } ?? []
     }
 
     /// File-provider folders (iCloud Drive) may hold a placeholder; coordinating the read
