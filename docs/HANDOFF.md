@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 9.6.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: none.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -39,6 +39,7 @@ owner's answers (features first, then studio, then visual polish).
 - [ ] Reinstall after 7 days keeps the data
 - [x] Settings → Apple Health → Connect, allow steps and weight; Progress shows steps (6.2, 14 Oct: 362 days of steps)
 - [x] Train shows "Studio suggestions (1)"; accepted on the phone; "Studio: 52.5 kg × 10" with Fill sets shows in Full Body 1 (6.3, checked on a copy of the phone's data in the simulator)
+- [ ] Phase 9 on the phone: the glass bottom bar, rolling numbers, the haptics (they don't play in the simulator) and the bell after rest
 - [ ] Phase 8 on the phone: Progress → Reports lists weeks and months; a fix sent from Data health appears on Train and corrects the set when accepted
 - [ ] Phase 7 on the phone: a best banner during a real session, a superset, the warm-up toggle, Settings → Profile and a goal
 - [x] Move the backup folder to iCloud Drive so the studio can publish suggestions without the cable (6.3, 14 Oct: iCloud Drive/GymApp Backups)
@@ -128,7 +129,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 9.3 Animated icons and haptics
 - [x] 9.4 Charts that draw in
 - [x] 9.5 Studio restyle
-- [ ] 9.6 Phase close
+- [x] 9.6 Phase close
 
 ## Requested after phase 2
 
@@ -145,6 +146,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **9.6**: Phases 7 to 9 are complete. 198 app tests and 70 studio tests pass. The Train, History and Progress screenshots in docs/screenshots were replaced with the polished look; studio pages and the end screen were not committed because they carry the full analysis and personal notes in a public repo (recorded under Open questions). The final build is installed on the phone. What remains needs the phone or a decision: the device checklist and a code review of phases 7 to 9.
 - **9.5**: The studio's CSS variables now equal the app's Theme tokens (near-black base, three surfaces, separator, volt, gold, warning, danger, note, region colours), with tabular numbers throughout, rounded figures on tiles and targets, gold chips for window bests and coloured cells in the planner. Charts use a registered 'gymapp' ECharts theme built from the same tokens. The system font replaces Inter because the studio is offline and the system font is the app's family (spec updated).
 - **9.4**: A drawIn modifier sweeps every chart in from the left on first appear (weekly bars, body weight, steps, pattern sparklines, the exercise chart and recap months); under Reduce Motion they appear at once. The tapped point on the exercise chart grows and carries a value callout, animated with the selection.
 - **9.3**: One feedback vocabulary, written up as rulebook §12: a light tap for every logged set (from the bar, the row tick or focus mode, keyed to the logged-set count), success for an all-time best, a soft tap for a window best, the warning haptic when rest ends. The set tick, the best banner icon and set badges bounce once; a bell wiggles beside the Log button for four seconds after rest ends. Symbol animations follow the system's Reduce Motion.
@@ -226,6 +228,8 @@ card should know.
 - **Body map regions (3.5):** the MIT artwork has no separate lats/middle back region (both shade 'upper-back') and no outer-hip region (abductors shade the glutes, which hold gluteus medius). Its source names for the inner-thigh regions are swapped; both are mapped to adductors. Revisit if more precise artwork is wanted.
 - **Suggestion targets and migrations (6.3):** the spec named migration v3 for `studioDecision`; v3 was already card 6.2's `healthDay`, so it is v4. The app also reads `GymApp-suggestions.json` from its own Documents folder so the cable works without iCloud.
 - **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
+- **Screenshots (9.6):** the repo is public, so only the already-tracked Train, History and Progress screenshots were refreshed; studio pages and the end screen show the full analysis and notes and were kept out. Say if they should be committed.
+- **Studio font (9.5):** the system font replaced Inter (offline, and the app's family).
 - **Recap speed (6.6):** a year takes about 4 s on the simulator because records replay every exercise's history. Caching records would fix it if it bothers on the phone.
 - **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 

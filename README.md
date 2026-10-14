@@ -71,7 +71,7 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 6 | The phone side of the studio | done |
 | 7 | Records, the workout flow and goals | done |
 | 8 | Studio reports, data health, planner | done |
-| 9 | Visual polish | specified |
+| 9 | Visual polish | done |
 
 ## GymApp Studio
 
