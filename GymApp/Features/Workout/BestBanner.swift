@@ -10,6 +10,7 @@ struct BestBannerView: View {
             Image(systemName: banner.status.symbol)
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(banner.status.color)
+                .symbolEffect(.bounce, options: .nonRepeating, value: banner.id)
             VStack(alignment: .leading, spacing: 2) {
                 Text(banner.status.title).font(.headline)
                 Text("\(banner.exerciseName) · est. 1RM \(Load.format((banner.e1RM * 10).rounded() / 10)) kg")
@@ -33,6 +34,7 @@ struct BestBadge: View {
         Image(systemName: status.symbol)
             .font(.caption2.weight(.bold))
             .foregroundStyle(status.color)
+            .symbolEffect(.bounce, options: .nonRepeating, value: status)
             .accessibilityLabel(status.title)
     }
 }

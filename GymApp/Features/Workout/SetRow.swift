@@ -55,6 +55,7 @@ struct SetRow: View {
             Button(action: onToggle) {
                 Image(systemName: done ? "checkmark" : "")
                     .font(.subheadline.bold())
+                    .symbolEffect(.bounce, options: .nonRepeating, value: done)
                     .foregroundStyle(Theme.onAccent)
                     .frame(width: 32, height: 32)
                     .background(done ? Theme.accent : Color.clear, in: Circle())

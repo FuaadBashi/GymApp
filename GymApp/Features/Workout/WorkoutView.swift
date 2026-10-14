@@ -39,10 +39,15 @@ struct WorkoutView: View {
             }
         }
         .animation(.spring(duration: 0.35), value: model.banner)
+        // Card 9.3, the feedback vocabulary (rulebook §12): a light tap per logged set, success
+        // for an all-time best, a soft tap for a window best, a warning when rest ends.
+        .sensoryFeedback(trigger: model.snapshot?.completedSetCount) { old, new in
+            (new ?? 0) > (old ?? 0) ? .impact(weight: .light) : nil
+        }
         .sensoryFeedback(trigger: model.banner) { _, new in
             switch new?.status {
             case .allTime: .success
-            case .window: .impact(weight: .light)
+            case .window: .impact(flexibility: .soft)
             default: nil
             }
         }

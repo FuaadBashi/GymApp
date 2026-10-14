@@ -4,7 +4,7 @@ import SwiftUI
 /// Rest countdown while resting; otherwise the one big action for what comes next.
 struct WorkoutBottomBar: View {
     @Environment(ActiveWorkoutModel.self) private var model
-    @State private var logged = 0
+    @State private var bellShowing = false
     @State private var restEnded = 0
 
     var body: some View {
@@ -21,14 +21,16 @@ struct WorkoutBottomBar: View {
         .glassEffect(.regular, in: .rect(cornerRadius: 30))
         .padding(.horizontal, 10)
         .padding(.bottom, 4)
-        .sensoryFeedback(.success, trigger: logged)
         .sensoryFeedback(.warning, trigger: restEnded)
         .task(id: model.snapshot?.workout.restEndsAt) {
             guard let end = model.snapshot?.workout.restEndsAt else { return }
             try? await Task.sleep(for: .seconds(max(0, end.timeIntervalSinceNow)))
             guard !Task.isCancelled else { return }
             restEnded += 1
+            withAnimation { bellShowing = true }
             await model.restDidEnd()
+            try? await Task.sleep(for: .seconds(4))
+            withAnimation { bellShowing = false }
         }
     }
 
@@ -67,13 +69,21 @@ struct WorkoutBottomBar: View {
     @ViewBuilder private var action: some View {
         if let item = model.currentItem, let set = item.sets.first(where: { $0.id == model.selectedSetId && $0.completedAt == nil }) {
             let number = SetComparison.labels(item.sets)[item.sets.firstIndex(of: set) ?? 0]
-            Button {
-                logged += 1
-                Task { await model.log(set.id) }
-            } label: {
-                Text("Log set \(number) · \(SetFormat.long(set, loadMode: item.exercise.loadMode))").lineLimit(1)
+            HStack(spacing: 10) {
+                if bellShowing {
+                    // Card 9.3: rest is over.
+                    Image(systemName: "bell.fill").font(.title3).foregroundStyle(Theme.accent)
+                        .symbolEffect(.wiggle, options: .nonRepeating, value: restEnded)
+                        .accessibilityLabel("Rest over")
+                        .transition(.scale.combined(with: .opacity))
+                }
+                Button {
+                    Task { await model.log(set.id) }
+                } label: {
+                    Text("Log set \(number) · \(SetFormat.long(set, loadMode: item.exercise.loadMode))").lineLimit(1)
+                }
+                .buttonStyle(PrimaryButtonStyle())
             }
-            .buttonStyle(PrimaryButtonStyle())
         } else if let next = model.snapshot?.items.first(where: { !$0.plannedSets.isEmpty }) {
             Button("Next: \(next.exercise.name)") { model.select(itemId: next.id) }
                 .buttonStyle(PrimaryButtonStyle())

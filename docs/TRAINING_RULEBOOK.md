@@ -190,3 +190,15 @@ trains, fine enough that swaps are genuinely equivalent. The full list is in
 
 The median duration of your last three completed sessions of that routine day. With fewer
 than three, use Σ over sets of (40 s + that exercise's rest).
+
+## §12 Feedback (UI notes)
+
+One vocabulary, so a feeling always means the same thing (card 9.3):
+
+- **Set logged:** a light tap; the tick bounces.
+- **All-time best:** the success haptic; the volt trophy bounces in the banner and on the set.
+- **1/6/12-month best:** a soft tap; the gold clock bounces.
+- **Rest over:** the warning haptic and notification; the bell wiggles beside the Log button.
+- **Reps left chosen:** the selection tick.
+
+Animations are skipped under Reduce Motion; haptics follow the system setting.
