@@ -51,8 +51,12 @@ cards 7.9 (reports) and 8.3 (fix suggestions).
 - **Deloads only after a plateau:** the planner marks a deload week when 3 or more of the
   program's lifts are on plateau, or offers a deload for a single plateaued lift (the
   existing plateau target). No calendar deloads.
-- **Nothing is sent automatically.** A "Send to phone" button publishes the chosen changes
-  as suggestions (targets, swaps, set counts) only when pressed.
+- **Nothing is sent automatically.** A "Send to phone" button publishes the chosen weeks
+  only when pressed, as note suggestions listing each day's planned sets (and the deload, if
+  any): the owner wants deloads only for now and to send plans by hand, so set counts are not
+  applied to the program. Applying them would need a new suggestion kind.
+- Weekly sets assume each day is done sessionsPerWeekGoal / days times a week; each exercise
+  follows its first primary muscle's ramp; a deload week keeps 60% of the sets.
 - **Tests:** ramp arithmetic for a 5-week block; deload offered only with plateaus.
 
 ## Card 8.5: Phase close

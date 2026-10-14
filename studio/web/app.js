@@ -477,6 +477,48 @@ pages.reports = async (id) => {
   $("#copymd").onclick = () => navigator.clipboard.writeText(r.markdown);
 };
 
+// Planner (card 8.4)
+
+pages.planner = async () => {
+  let weeks = Number(localStorage.getItem("planWeeks") || 5);
+  const render = async () => {
+    const p = await api("planner?weeks=" + weeks);
+    if (p.error) { main.innerHTML = `<h1>Planner</h1><div class="empty">${esc(p.error)}</div>`; return; }
+    const muscles = Object.keys(p.weeks[0].muscles);
+    const [lo, hi] = p.band;
+    const cell = v => { const c = v < lo ? "orange" : v > hi ? "orange" : "volt"; return `<td class="${c}" style="text-align:right">${fmt(v, 1)}</td>`; };
+    main.innerHTML = `<h1>Planner</h1>
+      <p class="sub">${esc(p.program)}: each day about ${p.per_week}× a week. Sets per muscle climb from the bottom of your ${lo}–${hi} band toward the top. Nothing is sent unless you press Send.</p>
+      <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div class="seg" id="wk">${[4, 5, 6].map(n => `<button data-v="${n}" class="${n === weeks ? "on" : ""}">${n} weeks</button>`).join("")}</div>
+        <span class="faint">${p.deload_reason ? esc(p.deload_reason) : p.plateaued.length ? `${p.plateaued.length} lift on plateau: use its own deload target (below), no deload week.` : "No plateaus: no deload."}</span>
+      </div>
+      <div class="card" style="margin-top:16px;overflow:auto"><h2>Sets per muscle per week</h2>
+        <table><tr><th>Muscle</th><th style="text-align:right">Now</th>${p.weeks.map(w => `<th style="text-align:right">W${w.week}${w.deload ? " ↓" : ""}</th>`).join("")}</tr>
+        ${muscles.map(m => `<tr><td>${esc(muscleName(m))}</td><td style="text-align:right" class="faint">${fmt(p.now[m] || 0, 1)}</td>${p.weeks.map(w => cell(w.muscles[m] || 0)).join("")}</tr>`).join("")}
+        <tr><td>Push : pull</td><td></td>${p.weeks.map(w => `<td style="text-align:right">${w.balance.push_pull ?? "–"}</td>`).join("")}</tr>
+        <tr><td>Upper : lower</td><td></td>${p.weeks.map(w => `<td style="text-align:right">${w.balance.upper_lower ?? "–"}</td>`).join("")}</tr></table></div>
+      <div class="card" style="margin-top:16px;overflow:auto"><h2>Sets per exercise</h2>
+        <table><tr><th>Day</th><th>Exercise</th><th style="text-align:right">Now</th>${p.weeks.map(w => `<th style="text-align:right">W${w.week}</th>`).join("")}</tr>
+        ${p.weeks[0].items.map((it, i) => `<tr><td class="faint">${esc(it.day)}</td><td>${esc(it.name)}</td><td style="text-align:right" class="faint">${it.targetSets}</td>${p.weeks.map(w => `<td style="text-align:right">${w.items[i].plannedSets}</td>`).join("")}</tr>`).join("")}</table></div>
+      ${p.plateaued.length ? `<div class="card" style="margin-top:16px"><h2>Plateaued lifts</h2><div class="list">${p.plateaued.map(x => `<div class="row"><div class="grow"><div class="t">${esc(x.name)}</div><div class="s">${x.target ? `${fmt(x.target.weight, 2)} ${esc(x.target.unit)} × ${esc(x.target.reps)}: ${esc(x.target.reason)}` : ""}</div></div></div>`).join("")}</div></div>` : ""}
+      <div class="card" style="margin-top:16px"><h2>Send to the phone</h2>
+        <p class="sub">The chosen weeks arrive on Train as notes to read; your program is not changed.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap" id="chosen">${p.weeks.map(w => `<label><input type="checkbox" value="${w.week}"> Week ${w.week}</label>`).join("")}</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><button class="primary" id="send">Send</button><span id="msg" class="faint"></span></div></div>`;
+    $("#wk").onclick = e => { if (e.target.dataset.v) { weeks = Number(e.target.dataset.v); localStorage.setItem("planWeeks", weeks); render(); } };
+    $("#send").onclick = async () => {
+      const chosen = [...document.querySelectorAll("#chosen input:checked")].map(i => Number(i.value));
+      if (!chosen.length) { $("#msg").textContent = "Choose at least one week."; return; }
+      try {
+        const r = await api("planner/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ weeks, chosen }) });
+        $("#msg").textContent = `Sent ${r.published}.`;
+      } catch (e) { $("#msg").textContent = e.message; }
+    };
+  };
+  await render();
+};
+
 // Data health (card 8.2)
 
 pages.health = async () => {

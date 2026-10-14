@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, ask, health, progression, reports, suggestions, watch
+from . import analysis, ask, health, planner, progression, reports, suggestions, watch
 from .data import History
 from .lab import NotebookLab
 
@@ -397,6 +397,27 @@ def publish_fixes(values: dict, request: Request):
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
     return {"published": len(fixes), "waiting": len(written)}
+
+
+@app.get("/api/planner")
+def get_plan(weeks: int = Query(5, ge=4, le=6)):
+    return planner.plan(state.require(), state.settings, weeks)
+
+
+@app.post("/api/planner/send")
+def send_plan(values: dict, request: Request):
+    """Only on the owner's press: the chosen weeks go to the phone as notes."""
+    check_same_origin(request)
+    h = state.require()
+    p = planner.plan(h, state.settings, int(values.get("weeks") or 5))
+    if p.get("error"):
+        raise HTTPException(422, p["error"])
+    folder = suggestions_folder()
+    items = planner.notes(p, [int(w) for w in values.get("chosen") or []], analysis.now_utc().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    decided = suggestions.decisions(folder)
+    keep = [i for i in suggestions.published(folder) if i["id"] not in decided]
+    written = suggestions.publish(folder, keep + items)
+    return {"published": len(items), "waiting": len(written)}
 
 
 @app.get("/api/suggestions")
