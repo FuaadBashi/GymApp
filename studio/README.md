@@ -32,6 +32,7 @@ this Mac only), opens its own window, and stops the server when you quit. Withou
 | `gymstudio/server.py` | Local JSON API and the web interface (`web/`, charts by Apache ECharts, bundled) |
 | `gymstudio/progression.py` | Five progression/deload rules replayed using only history available at each decision |
 | `gymstudio/lab.py`, `gymstudio/notebook.py`, `notebooks/` | Private notebook editor, immutable data tables and saved custom metrics |
+| `gymstudio/ask.py` | Ask: Claude or a local Ollama model answering through the studio's tools; summaries-only or full-access mode; every figure in an answer is checked against what the tools returned |
 | `launcher/` | The native Mac window (`main.swift`), its icon, and `build.sh` |
 | `tests/` | The Swift tests' expected values, a synthetic backup built from the app's schema, and real-history checks against `GymAppTests/Fixtures/phase3_expected.json` (skipped without a backup in `data/`) |
 

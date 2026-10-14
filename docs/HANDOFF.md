@@ -8,6 +8,13 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ### Mac Studio (14 October)
 
+S4 Ask is implemented: Claude (key in the macOS keychain, set in Studio Settings) or a local
+Ollama model, calling the Studio's own functions. "Summaries only" exposes computed figures;
+"Full access" adds read-only SQL over the frozen snapshot, single workouts and note search.
+Every number in an answer is checked against the tool results and flagged if unmatched.
+Presets: weekly review, plateaus and weak points, balance, themes in notes. The installed
+llama3.2 (3B) is weak at tool use; a 7B+ model or Claude is recommended. 55 Studio tests pass.
+
 S2 Rule Lab is implemented locally: five progression/deload comparisons, exercise
 filtering, configurable outcome window, later-session holdout, paginated target reasons
 and original-workout inspection. Replay uses only information available at each decision;

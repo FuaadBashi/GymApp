@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, progression, watch
+from . import analysis, ask, progression, watch
 from .data import History
 from .lab import NotebookLab
 
@@ -292,6 +292,46 @@ def publish_metric(values: dict, request: Request):
         return lab.publish(values)
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
+
+
+@app.get("/api/ask/config")
+def ask_config():
+    return {"has_key": ask.get_key() is not None, "claude_models": ask.CLAUDE_MODELS,
+            "local_models": ask.local_models(), "presets": ask.PRESETS}
+
+
+def check_same_origin(request: Request) -> None:
+    origin = request.headers.get("origin")
+    if origin and origin != str(request.base_url).rstrip("/"):
+        raise HTTPException(403, "Requests must come from Studio")
+
+
+@app.put("/api/ask/key")
+def ask_key(values: dict, request: Request):
+    check_same_origin(request)
+    key = (values.get("key") or "").strip()
+    if key and not key.startswith("sk-ant-"):
+        raise HTTPException(422, "That doesn't look like an Anthropic API key (it starts with sk-ant-).")
+    ask.set_key(key or None)
+    return {"has_key": ask.get_key() is not None}
+
+
+@app.post("/api/ask")
+def ask_question(values: dict, request: Request):
+    check_same_origin(request)
+    h = state.require()
+    question = (values.get("question") or "").strip()
+    if not question:
+        raise HTTPException(422, "Ask a question")
+    mode = "full" if values.get("mode") == "full" else "summaries"
+    provider = "local" if values.get("provider") == "local" else "claude"
+    try:
+        a = ask.ask(h, state.settings, question, values.get("history") or [], provider, values.get("model"), mode,
+                    db_path=state.snapshot)
+    except RuntimeError as error:
+        raise HTTPException(502, str(error)) from error
+    return {"answer": a.text, "tool_calls": a.tool_calls, "provider": a.provider, "model": a.model, "mode": mode,
+            "unverified": a.unverified}
 
 
 def check_notebook_write(request):

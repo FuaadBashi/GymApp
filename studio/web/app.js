@@ -363,9 +363,72 @@ pages.notebooks = async () => {
   };
 };
 
+const askChat = { turns: [] };
 pages.ask = async () => {
-  main.innerHTML = `<h1>Ask</h1><p class="sub">Questions about your training, answered from figures the studio computed.</p>
-    <div class="soon">Ask-your-data, the weekly review and notes mining, with Claude or a local model. Coming in stage S4.</div>`;
+  const cfg = await api("ask/config");
+  const pref = JSON.parse(localStorage.getItem("askPrefs") || "{}");
+  const provider = pref.provider || (cfg.has_key ? "claude" : "local");
+  main.innerHTML = `<h1>Ask</h1><p class="sub">Questions about your training. The model calls the studio's own calculations and explains them; it never makes up figures.</p>
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <div class="seg" id="prov"><button data-v="claude">Claude</button><button data-v="local">Local model</button></div>
+      <select id="model" style="width:220px"></select>
+      <div class="seg" id="mode"><button data-v="summaries">Summaries only</button><button data-v="full">Full access</button></div>
+      <span id="modehelp" class="faint" style="font-size:12px;flex:1;min-width:220px"></span>
+    </div>
+    ${cfg.has_key ? "" : `<div class="warn" style="margin-top:12px">No Claude API key yet. Add one in Settings, or use the local model (${cfg.local_models.length ? esc(cfg.local_models.join(", ")) : "Ollama isn't running"}).</div>`}
+    <div class="card" style="margin-top:16px"><div id="chat" style="display:flex;flex-direction:column;gap:14px;min-height:120px"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0">${Object.entries(cfg.presets).map(([k]) => `<button data-preset="${k}">${{ weekly: "Weekly review", plateaus: "Plateaus and weak points", balance: "Is my training balanced?", notes: "Themes in my notes" }[k] || k}</button>`).join("")}
+        <button id="clear" style="margin-left:auto">New chat</button></div>
+      <div style="display:flex;gap:10px"><textarea id="q" rows="2" placeholder="e.g. Why has my bench stopped going up? What should I change in Full Body 2?"></textarea><button class="primary" id="send" style="align-self:stretch">Ask</button></div>
+    </div>`;
+  const st = { provider, mode: pref.mode || "summaries", model: pref.model };
+  const models = () => st.provider === "claude" ? cfg.claude_models : (cfg.local_models.length ? cfg.local_models : ["llama3.2"]);
+  const sync = () => {
+    [...$("#prov").children].forEach(b => b.classList.toggle("on", b.dataset.v === st.provider));
+    [...$("#mode").children].forEach(b => b.classList.toggle("on", b.dataset.v === st.mode));
+    const ms = models(); if (!ms.includes(st.model)) st.model = ms[0];
+    $("#model").innerHTML = ms.map(m => `<option ${m === st.model ? "selected" : ""}>${esc(m)}</option>`).join("");
+    $("#modehelp").textContent = st.mode === "full"
+      ? (st.provider === "claude" ? "Full access: Claude may read any table and your notes, sent to Anthropic." : "Full access: the local model may read any table and your notes. Nothing leaves this Mac.")
+      : (st.provider === "claude" ? "Summaries only: Claude sees computed figures, never raw sets or notes." : "Summaries only, on this Mac.");
+    localStorage.setItem("askPrefs", JSON.stringify(st));
+  };
+  $("#prov").onclick = e => { if (e.target.dataset.v) { st.provider = e.target.dataset.v; sync(); } };
+  $("#mode").onclick = e => { if (e.target.dataset.v) { st.mode = e.target.dataset.v; sync(); } };
+  $("#model").onchange = e => { st.model = e.target.value; sync(); };
+  const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#+ (.*)$/gm, "<b>$1</b>").replace(/^[-•] (.*)$/gm, "• $1").replace(/\n/g, "<br>");
+  const draw = () => {
+    $("#chat").innerHTML = askChat.turns.map(t => t.role === "user"
+      ? `<div style="align-self:flex-end;max-width:75%;background:var(--volt-dim);color:var(--text);padding:10px 14px;border-radius:14px">${esc(t.content)}</div>`
+      : `<div style="max-width:90%;line-height:1.55;font-size:14px">${t.error ? `<div class="warn">${esc(t.error)}</div>` : md(t.content)}
+          ${t.unverified?.length ? `<div class="warn" style="margin-top:8px">Unverified: ${t.unverified.map(esc).join(", ")} ${t.unverified.length > 1 ? "don't" : "doesn't"} appear in any calculation the model ran. Treat ${t.unverified.length > 1 ? "them" : "it"} as unreliable.</div>` : ""}
+          ${!t.error && t.content && t.content !== "Thinking…" && !t.calls?.length ? `<div class="faint" style="font-size:12px;margin-top:6px">No calculations were used for this answer.</div>` : ""}
+          ${t.calls?.length ? `<details style="margin-top:6px"><summary class="faint" style="cursor:pointer;font-size:12px">${t.calls.length} calculation${t.calls.length > 1 ? "s" : ""} used · ${esc(t.model || "")}</summary><div class="faint" style="font-size:12px;margin-top:4px">${t.calls.map(c => esc(c.tool) + (Object.keys(c.input || {}).length ? " " + esc(JSON.stringify(c.input)) : "")).join("<br>")}</div></details>` : ""}</div>`).join("")
+      || `<div class="empty">Ask anything about your training, or start with a button below.</div>`;
+  };
+  const send = async (question) => {
+    question = (question || $("#q").value).trim(); if (!question) return;
+    $("#q").value = "";
+    const history = askChat.turns.filter(t => !t.error).map(t => ({ role: t.role, content: t.content }));
+    askChat.turns.push({ role: "user", content: question }, { role: "assistant", content: "Thinking…" });
+    draw(); $("#send").disabled = true;
+    try {
+      const r = await api("ask", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, history, provider: st.provider, model: st.model, mode: st.mode }) });
+      askChat.turns[askChat.turns.length - 1] = { role: "assistant", content: r.answer, calls: r.tool_calls, model: r.model, unverified: r.unverified };
+    } catch (e) {
+      askChat.turns[askChat.turns.length - 1] = { role: "assistant", content: "", error: e.message };
+    }
+    $("#send").disabled = false; draw();
+  };
+  $("#send").onclick = () => send();
+  $("#q").onkeydown = e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send(); };
+  document.querySelectorAll("[data-preset]").forEach(b => b.onclick = () => {
+    if (b.dataset.preset === "notes" && st.mode !== "full") { st.mode = "full"; sync(); }
+    send(cfg.presets[b.dataset.preset]);
+  });
+  $("#clear").onclick = () => { askChat.turns = []; draw(); };
+  sync(); draw();
 };
 
 // Settings
@@ -390,6 +453,10 @@ pages.settings = async () => {
       return `<div class="field"><div><div>${label}</div><div class="help">${help}</div></div>${input}</div>`;
     }).join("")}
     <div style="margin-top:16px;display:flex;gap:10px"><button class="primary" id="save">Save</button><span id="saved" class="faint" style="align-self:center"></span></div></div>
+    <div class="card" style="margin-top:16px"><h2>Claude API key</h2>
+      <p class="muted" style="font-size:13px;line-height:1.5">Used only by Ask when Claude is chosen. Stored in this Mac's keychain, never in a file or the repository.</p>
+      <div style="display:flex;gap:10px"><input type="password" id="apikey" placeholder="sk-ant-…"><button id="savekey">Save key</button><button id="delkey">Remove</button></div>
+      <div id="keystate" class="faint" style="font-size:12px;margin-top:8px"></div></div>
     <div class="card" style="margin-top:16px"><h2>Backup</h2><div class="muted" style="font-size:13px;line-height:1.7">Loaded: ${esc(st.backup || "none")}<br>Watching: ${st.folders.map(esc).join("<br>")}</div>
       <p class="faint" style="font-size:12px;line-height:1.5">To update automatically, choose a folder inside iCloud Drive in the app (Settings → Backups &amp; recovery). Any iCloud Drive folder whose name contains "GymApp" is watched.</p>
       <button id="reload">Reload newest backup</button></div>`;
@@ -405,6 +472,14 @@ pages.settings = async () => {
       exerciseIndex = null; $("#saved").textContent = "Saved. Every page now uses these values.";
     } catch (error) { $("#saved").textContent = error.message; }
   };
+  const keyState = async () => { const c = await api("ask/config"); $("#keystate").textContent = c.has_key ? "A key is saved." : "No key saved."; };
+  keyState();
+  const putKey = async key => {
+    try { await api("ask/key", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key }) }); $("#apikey").value = ""; keyState(); }
+    catch (e) { $("#keystate").textContent = e.message; }
+  };
+  $("#savekey").onclick = () => putKey($("#apikey").value);
+  $("#delkey").onclick = () => putKey("");
   $("#reload").onclick = async () => { await api("reload", { method: "POST" }); exerciseIndex = null; refreshStatus(); };
 };
 
