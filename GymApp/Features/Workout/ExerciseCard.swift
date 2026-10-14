@@ -177,6 +177,17 @@ struct ExerciseCard: View {
                             metadata = MetadataDraft(kind: .set, id: set.id, note: set.note ?? "", reserve: set.repsInReserve, annotations: set.annotations)
                         }
                     }.font(.caption)
+                    if set.completedAt != nil {
+                        // Card 7.4: a logged set is fixed in place; records follow because they are derived.
+                        HStack {
+                            Text("Logged. Changes save at once and records update.").font(.caption2).foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Unlog") { Task { await model.unlog(set.id) } }
+                            Button("Delete", role: .destructive) { Task { await model.deleteSet(set.id) } }
+                        }
+                        .font(.caption.weight(.semibold))
+                        .buttonStyle(.bordered).controlSize(.mini)
+                    }
 
                     SetEditor(set: set, exercise: item.exercise) { edit in
                         Task { await model.updateDurably(set.id, edit: edit) }

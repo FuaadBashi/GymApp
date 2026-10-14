@@ -75,3 +75,21 @@ struct BeatBestTests {
         for row in rows { #expect(TrainingMath.e1RM(kg: row.kg, reps: row.reps) > 100.01) }
     }
 }
+
+/// Card 7.4: a corrected typo takes its record with it.
+struct FixingSetsTests {
+    @Test func correctingATypoRemovesTheRecordItMade() throws {
+        let db = try AppDatabase.inMemory()
+        let w = try db.writer.write { db -> WorkoutRecord in
+            try TestData.exercise(db, id: "bench")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(1), exercises: [("bench", [(59, 8)])])
+            return try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(8), exercises: [("bench", [(590, 8)])])
+        }
+        #expect(try db.reader.read { try ProgressQueries.recentRecords($0) }.count == 2)
+        #expect(try db.reader.read { try SummaryQueries.summary($0, workoutId: w.id) }.records.count == 2)
+        let setId = try #require(try db.reader.read { try String.fetchOne($0, sql: "SELECT id FROM workoutSet WHERE loadHundredths = 59000") })
+        try db.writer.write { try WorkoutWrites.updateSet($0, setId: setId, edit: SetEdit(loadHundredths: 5900, unit: .kg, reps: 8, type: .working)) }
+        #expect(try db.reader.read { try ProgressQueries.recentRecords($0) }.isEmpty)
+        #expect(try db.reader.read { try SummaryQueries.summary($0, workoutId: w.id) }.records.isEmpty)
+    }
+}

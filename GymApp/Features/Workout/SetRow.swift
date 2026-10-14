@@ -21,6 +21,11 @@ struct SetRow: View {
                     .font(.subheadline.weight(.semibold).monospacedDigit())
                     .foregroundStyle(set.type == .warmUp || set.type == .drop ? Theme.note : .primary)
                 if let best { BestBadge(status: best) }
+                if done && !isSelected {
+                    // Card 7.4: logged sets say they can be edited; tapping the row opens the editor.
+                    Image(systemName: "pencil").font(.caption2).foregroundStyle(.tertiary)
+                        .accessibilityLabel("Edit")
+                }
                 if set.type == .failed {
                     Text("F").font(.caption2.bold()).foregroundStyle(.white)
                         .padding(.horizontal, 3).background(.red, in: .rect(cornerRadius: 3))
