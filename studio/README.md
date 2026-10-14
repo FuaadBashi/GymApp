@@ -4,7 +4,9 @@ Offline analysis of GymApp backups on the Mac: dashboards, a rule lab for weight
 progression, a Lab of notebooks for your own code, and optional AI over figures the code
 has already computed. See [docs/STUDIO_PLAN.md](../docs/STUDIO_PLAN.md).
 
-It only ever **reads** a backup (the format is in [docs/EXPORT_FORMAT.md](../docs/EXPORT_FORMAT.md)),
+It writes only into the backup folder, never into a backup: suggestions for the phone
+(`GymApp-suggestions.json`), weekly and monthly reports (`GymApp-reports.json` and Markdown
+copies in `Reports/`). It only ever **reads** a backup (the format is in [docs/EXPORT_FORMAT.md](../docs/EXPORT_FORMAT.md)),
 copying it first, so the phone's data is never touched. It finds the newest backup in an
 iCloud Drive folder whose name contains "GymApp", or in `data/backups/`.
 
@@ -33,6 +35,10 @@ this Mac only), opens its own window, and stops the server when you quit. Withou
 | `gymstudio/progression.py` | Five progression/deload rules replayed using only history available at each decision |
 | `gymstudio/lab.py`, `gymstudio/notebook.py`, `notebooks/` | Private notebook editor, immutable data tables and saved custom metrics |
 | `gymstudio/ask.py` | Ask: Claude or a local Ollama model answering through the studio's tools; summaries-only or full-access mode; every figure in an answer is checked against what the tools returned |
+| `gymstudio/suggestions.py` | Drafts targets, swaps and notes, and publishes the ones you pick to the phone |
+| `gymstudio/reports.py` | A report for every week and month: totals, bests (rulebook §5a), sets per muscle, plateaus, program days, body; written as Markdown and for the app |
+| `gymstudio/health.py` | Data health: likely typos with a proposed fix, big jumps, near-duplicate names; fixes go to the phone as suggestions |
+| `gymstudio/planner.py` | The program planner: 4–6 week blocks ramping sets per muscle through the band, deloads only after plateaus, sent only when you press Send |
 | `launcher/` | The native Mac window (`main.swift`), its icon, and `build.sh` |
 | `tests/` | The Swift tests' expected values, a synthetic backup built from the app's schema, and real-history checks against `GymAppTests/Fixtures/phase3_expected.json` (skipped without a backup in `data/`) |
 

@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 8.5.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 9.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -39,6 +39,7 @@ owner's answers (features first, then studio, then visual polish).
 - [ ] Reinstall after 7 days keeps the data
 - [x] Settings → Apple Health → Connect, allow steps and weight; Progress shows steps (6.2, 14 Oct: 362 days of steps)
 - [x] Train shows "Studio suggestions (1)"; accepted on the phone; "Studio: 52.5 kg × 10" with Fill sets shows in Full Body 1 (6.3, checked on a copy of the phone's data in the simulator)
+- [ ] Phase 8 on the phone: Progress → Reports lists weeks and months; a fix sent from Data health appears on Train and corrects the set when accepted
 - [ ] Phase 7 on the phone: a best banner during a real session, a superset, the warm-up toggle, Settings → Profile and a goal
 - [x] Move the backup folder to iCloud Drive so the studio can publish suggestions without the cable (6.3, 14 Oct: iCloud Drive/GymApp Backups)
 
@@ -119,7 +120,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 8.2 Data health
 - [x] 8.3 Fix suggestions on the phone
 - [x] 8.4 Program planner
-- [ ] 8.5 Phase close
+- [x] 8.5 Phase close
 
 ### Phase 9: Visual polish ([spec](specs/09-polish.md))
 - [ ] 9.1 Theme and surfaces
@@ -144,6 +145,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **8.5**: Phase 8 closed. 70 studio tests and 198 app tests pass. With the studio restarted on the real backup, the Reports, Data health and Planner pages render without script errors; reports now list newest first, weeks before months of the same end. Report month totals were checked against the app's Recaps in 8.1. The app with migration v7 is installed on the phone. Studio README covers suggestions, reports, data health and the planner, and what the studio writes into the backup folder.
 - **8.4**: gymstudio/planner.py plans a 4 to 6 week block for the active program: weekly sets per muscle (from day items, sessions per week over days) ramp evenly from the band bottom, or current if higher, to the top, and each exercise's planned sets follow its first primary muscle. The Planner page shows a heat table of sets per muscle per week against the band, push:pull and upper:lower per week, sets per exercise per week, and plateaued lifts with their own deload targets. A deload week (60% of sets) is proposed only when 3 or more program lifts are on plateau. Send publishes the chosen weeks as note suggestions only when pressed; the program itself is not changed, as the owner asked (spec updated).
 - **8.3**: The app accepts fix suggestions: the title shows the exercise, date and old to new values, and Accept corrects that one finished set through WorkoutWrites.updateSet, keeping its type; nothing is deleted and records recompute. A fix for a set that no longer exists is refused and not recorded. Migration v7 rebuilds studioDecision (SQLite cannot alter a CHECK) to allow the fix kind, keeping every earlier decision.
 - **8.2**: gymstudio/health.py finds likely typos: loads far from the lift's neighbouring sessions (6 MADs and at least 2× or ½ the median) with a proposed correction (decimal slip, kg/lb slip, mistyped digit), reps over 50, big jumps against the recent best, and near-duplicate exercise names. The first pass on the real history gave 140 load flags, mostly empty-bar sets and comebacks; requiring the 2× ratio, skipping light sets without a likely correction and measuring jumps against the best of the last three sessions brought it to 18 (9 with a fix, e.g. Leverage Machine Iso Row 903 → 90.3 kg), 21 jumps and 3 names. A Data health page lists them; ticked fixes are published as fix suggestions (setId, weight, unit, reps) alongside whatever is already waiting.

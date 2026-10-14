@@ -70,15 +70,15 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 5 | On the phone ([setup](docs/PHONE_SETUP.md)) | done, installed |
 | 6 | The phone side of the studio | done |
 | 7 | Records, the workout flow and goals | done |
-| 8 | Studio reports, data health, planner | specified |
+| 8 | Studio reports, data health, planner | done |
 | 9 | Visual polish | specified |
 
 ## GymApp Studio
 
 A separate offline Mac program in [studio/](studio/README.md) reads the phone's backups and
 does the heavy analysis: plateau and weak-point checks, next targets, a rule lab that replays
-progression rules against the history, marimo notebooks, and an optional question box backed
-by Claude or a local model. Rules are proven there before they move into the app, and its
+progression rules against the history, weekly and monthly reports, a typo finder, a block
+planner, marimo notebooks, and an optional question box backed by Claude or a local model. Rules are proven there before they move into the app, and its
 suggestions reach the phone through the backup folder. [The plan](docs/STUDIO_PLAN.md) has
 the design and the decisions behind it.
 

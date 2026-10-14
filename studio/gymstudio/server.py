@@ -358,7 +358,8 @@ def get_reports():
     state.require()
     return {"folder": str(state.path.parent / reports.FOLDER), "info": state.reports_info,
             "reports": [{"id": r.id, "kind": r.kind, "title": r.title, "headline": r.headline,
-                         "from": r.start.date().isoformat()} for r in reversed(state.reports)]}
+                         "from": r.start.date().isoformat()}
+                        for r in sorted(state.reports, key=lambda r: (r.end, r.kind == "week"), reverse=True)]}
 
 
 @app.get("/api/reports/{report_id}")
