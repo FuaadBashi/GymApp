@@ -7,32 +7,36 @@ Decisions:
 - **Coverage target:** at least 80% of the exercises the owner has logged (155 of 193 on
   14 October) have a demonstration; the whole library is not a target.
 - **Realistic first:** a real, openly licensed one-angle video where one exists (wger:
-  78 videos for 46 exercises, CC BY-SA; 29 are already bundled). Everything else gets the
-  public-domain free-exercise-db photos (start and end position) shown as a slow loop.
-  Animated 3D figures and two angles are out of scope: no free source exists, AI video is
-  unreliable for lifting, and building a figure pipeline is a project of its own. A bought
-  library remains an option for later (recorded in HANDOFF).
+  78 videos for 46 exercises, CC BY-SA; 29 are already bundled). Everything else gets two-pose
+  pictures, rest and effort, shown as a slow loop: **Everkinetic** illustrations (CC BY-SA 4.0)
+  and **wger** images with a named licence and author. The free-exercise-db photos were the
+  first plan but their source cannot be verified (decision #14), so they are not used; the
+  owner chose licensed sources only. Animated 3D figures and two angles are out of scope: no
+  free source exists, AI video is unreliable for lifting, and building a figure pipeline is a
+  project of its own. A bought library remains an option for later (recorded in HANDOFF).
 - **Size budget:** demonstrations stay under 60 MB in the app (photos about 30 KB each at
   480 px; videos re-encoded to 480 px, about 0.3–0.7 MB each).
 - **Studio:** the web interface is restyled to feel like a native Mac app; no rewrite.
 
 ## Card 10.1: Demonstration sources
 
-- `tools/build_demos.py` writes `GymApp/Resources/Demos/`: for each logged exercise with a
-  library link, the library's two photos (downscaled to 480 px, JPEG quality 70), and a
-  manifest with source, licence and attribution. wger videos for any further logged exercise
-  are added through the existing `fetch_exercise_media.py` route, with provenance.
-- The list of logged exercises comes from a backup passed on the command line; only exercise
-  ids and library ids are read, never sets.
-- **Done when:** the manifest's coverage line reports the share of logged exercises covered.
+- `tools/build_demos.py` writes `GymApp/Resources/Demos/` from `tools/demo_map.json`: each
+  mapped exercise's two poses downscaled to 480 px (Everkinetic pinned to commit
+  446bb9a, images from `src/images-web` by slug, else `dist/png` by number; wger images from
+  its API, with animated WebPs reduced to their full-canvas frames), and `demos.json` with
+  every asset's source, author, licence and changes, and the exercise → asset map.
+- Images whose provenance looks doubtful (commercial 3D-render style with no named author) are
+  left out even when wger lists a licence.
+- **Done when:** the build reports the size (13.8 MB on 14 October).
 
 ## Card 10.2: Demonstration twins
 
-- `tools/demo_twins.json`: a hand-checked map from logged exercises without a library link to
-  the library exercise whose photos show the same movement on the same kind of equipment
-  (a demonstration only; records and history are not merged, decision #28 stands). Enough
-  twins to pass 80% coverage; each pair checked by name, equipment and movement pattern.
-- **Done when:** coverage of logged exercises ≥ 80%, and every twin is listed with its reason.
+- `tools/demo_map.json`: a hand-checked map from logged exercises without a video to the
+  picture showing the same movement on the same or close equipment, with a note when it is a
+  close equivalent (a demonstration only; records and history are never merged, decision #28
+  stands). Ambiguous names are left unmapped rather than guessed.
+- **Done when:** coverage of logged exercises ≥ 80% (160 of 193, 82.9%, on 14 October: 22 by
+  video, 138 by pictures).
 
 ## Card 10.3: The demonstration view
 

@@ -1,0 +1,608 @@
+{
+ "_about": "Hand-checked demonstration matches for logged exercises without a video (docs/specs/10-demos-cues-design.md, card 10.2). Same movement and the same or close equipment; 'note' says what the picture shows when it is a close equivalent. A demonstration only: records and history are never merged. Left out on purpose: wger images in a commercial 3D-render style without a named author (provenance unclear), e.g. wger 51 and 1642.",
+ "map": {
+  "jefit:1:86": {
+   "source": "everkinetic",
+   "ref": "wide-grip-lat-pull-down"
+  },
+  "jefit:1:175": {
+   "source": "everkinetic",
+   "ref": "smith-machine-incline-bench-press"
+  },
+  "jefit:1:130": {
+   "source": "everkinetic",
+   "ref": "leg-extensions"
+  },
+  "jefit:1:135": {
+   "source": "everkinetic",
+   "ref": "smith-machine-squats"
+  },
+  "jefit:1:149": {
+   "source": "everkinetic",
+   "ref": "triceps-pushdown-with-v-bar-and-cable"
+  },
+  "jefit:1:1261": {
+   "source": "everkinetic",
+   "ref": "tricep-dips-using-body-weight",
+   "note": "unassisted dip shown"
+  },
+  "jefit:1:447": {
+   "source": "everkinetic",
+   "ref": "seated-military-press",
+   "note": "seated barbell press shown; Smith bar path is fixed"
+  },
+  "jefit:1:770": {
+   "source": "everkinetic",
+   "ref": "lateral-dumbbell-raises",
+   "note": "same movement with dumbbells"
+  },
+  "jefit:1:56": {
+   "source": "everkinetic",
+   "ref": "seated-ab-crunch-with-cable",
+   "note": "seated crunch against a cable"
+  },
+  "jefit:1:106": {
+   "source": "everkinetic",
+   "ref": "alternating-incline-curl-with-dumbbell",
+   "note": "alternating arms shown"
+  },
+  "jefit:1:90": {
+   "source": "wger",
+   "ref": 81
+  },
+  "jefit:1:851": {
+   "source": "everkinetic",
+   "ref": "machine-bench-press"
+  },
+  "jefit:1:375": {
+   "source": "everkinetic",
+   "ref": "straight-arm-dumbbell-pullover"
+  },
+  "jefit:1:116": {
+   "source": "everkinetic",
+   "ref": "alternating-biceps-curl-with-dumbbell"
+  },
+  "jefit:1:178": {
+   "source": "everkinetic",
+   "ref": "incline-chest-press"
+  },
+  "jefit:1:45": {
+   "source": "everkinetic",
+   "ref": "butterfly-machine"
+  },
+  "jefit:1:163": {
+   "source": "everkinetic",
+   "ref": "machine-bench-press"
+  },
+  "jefit:1:1256": {
+   "source": "everkinetic",
+   "ref": "leg-extensions",
+   "note": "both legs shown"
+  },
+  "jefit:1:199": {
+   "source": "everkinetic",
+   "ref": "romanian-dead-lift"
+  },
+  "jefit:1:820": {
+   "source": "everkinetic",
+   "ref": "seated-cable-rows",
+   "note": "seated row on a cable shown"
+  },
+  "jefit:1:1204": {
+   "source": "everkinetic",
+   "ref": "front-squat-with-barbell",
+   "note": "free bar shown"
+  },
+  "jefit:1:187": {
+   "source": "everkinetic",
+   "ref": "v-bar-pull-down"
+  },
+  "jefit:1:807": {
+   "source": "wger",
+   "ref": 83
+  },
+  "jefit:1:140": {
+   "source": "everkinetic",
+   "ref": "calves-press-on-leg-machine"
+  },
+  "jefit:1:95": {
+   "source": "everkinetic",
+   "ref": "ez-bar-curl-with-barbell"
+  },
+  "jefit:1:42": {
+   "source": "everkinetic",
+   "ref": "shoulder-shrugs"
+  },
+  "jefit:1:10": {
+   "source": "everkinetic",
+   "ref": "barbell-shoulder-press"
+  },
+  "jefit:1:113": {
+   "source": "everkinetic",
+   "ref": "preacher-curl-with-barbell"
+  },
+  "jefit:1:700": {
+   "source": "everkinetic",
+   "ref": "seated-cable-rows",
+   "note": "seated row on a cable shown"
+  },
+  "jefit:1:248": {
+   "source": "everkinetic",
+   "ref": "smith-machine-close-grip-bench-press"
+  },
+  "jefit:1:1334": {
+   "source": "everkinetic",
+   "ref": "triceps-pushdown-with-cable",
+   "note": "two-arm pushdown shown"
+  },
+  "jefit:1:78": {
+   "source": "everkinetic",
+   "ref": "decline-crunch"
+  },
+  "jefit:1:804": {
+   "source": "everkinetic",
+   "ref": "biceps-hammer-curl-with-dumbbell",
+   "note": "standing hammer curl shown"
+  },
+  "jefit:1:19": {
+   "source": "wger",
+   "ref": 1378,
+   "note": "single-arm cable lateral raise shown"
+  },
+  "jefit:1:102": {
+   "source": "everkinetic",
+   "ref": "standing-biceps-curl-with-cable"
+  },
+  "jefit:1:250": {
+   "source": "everkinetic",
+   "ref": "triceps-pushdown-with-cable"
+  },
+  "jefit:1:876": {
+   "source": "everkinetic",
+   "ref": "seated-shoulder-press-machine"
+  },
+  "jefit:1:159": {
+   "source": "everkinetic",
+   "ref": "triceps-pushdown-with-rope-and-cable"
+  },
+  "jefit:1:112": {
+   "source": "everkinetic",
+   "ref": "biceps-curls-with-barbell"
+  },
+  "jefit:1:11": {
+   "source": "everkinetic",
+   "ref": "barbell-shrugs"
+  },
+  "jefit:1:1200": {
+   "source": "everkinetic",
+   "ref": "standing-leg-curls"
+  },
+  "jefit:1:1029": {
+   "source": "everkinetic",
+   "ref": "biceps-hammer-curl-with-dumbbell",
+   "note": "standing shown"
+  },
+  "jefit:1:1018": {
+   "source": "everkinetic",
+   "ref": "preacher-hammer-curl-with-dumbbell"
+  },
+  "jefit:1:100": {
+   "source": "everkinetic",
+   "ref": "seated-biceps-curl-with-dumbbell"
+  },
+  "jefit:1:711": {
+   "source": "everkinetic",
+   "ref": "decline-dumbbell-bench-press"
+  },
+  "jefit:1:25": {
+   "source": "everkinetic",
+   "ref": "arnold-press"
+  },
+  "jefit:1:161": {
+   "source": "everkinetic",
+   "ref": "seated-leg-curl"
+  },
+  "jefit:1:1263": {
+   "source": "everkinetic",
+   "ref": "chin-ups",
+   "note": "unassisted chin-up shown"
+  },
+  "jefit:1:853": {
+   "source": "everkinetic",
+   "ref": "incline-chest-press"
+  },
+  "jefit:1:190": {
+   "source": "everkinetic",
+   "ref": "smith-machine-good-mornings"
+  },
+  "jefit:1:137": {
+   "source": "everkinetic",
+   "ref": "front-squat-with-barbell"
+  },
+  "jefit:1:1266": {
+   "source": "everkinetic",
+   "ref": "seated-cable-rows",
+   "note": "seated row on a cable shown"
+  },
+  "jefit:1:1147": {
+   "source": "everkinetic",
+   "ref": "dumbbell-shoulder-press",
+   "note": "palms-forward grip shown"
+  },
+  "jefit:1:1127": {
+   "source": "wger",
+   "ref": 1378
+  },
+  "jefit:1:1010": {
+   "source": "everkinetic",
+   "ref": "seated-biceps-curl-with-dumbbell",
+   "note": "both arms shown"
+  },
+  "jefit:1:88": {
+   "source": "wger",
+   "ref": 83,
+   "note": "barbell shown"
+  },
+  "jefit:1:755": {
+   "source": "everkinetic",
+   "ref": "seated-military-press"
+  },
+  "jefit:1:701": {
+   "source": "everkinetic",
+   "ref": "seated-cable-rows",
+   "note": "seated shown"
+  },
+  "jefit:1:47": {
+   "source": "everkinetic",
+   "ref": "push-ups"
+  },
+  "jefit:1:1259": {
+   "source": "everkinetic",
+   "ref": "hyperextensions",
+   "note": "back-extension bench shown"
+  },
+  "jefit:1:1246": {
+   "source": "everkinetic",
+   "ref": "underhand-pull-down"
+  },
+  "jefit:1:1152": {
+   "source": "everkinetic",
+   "ref": "dumbbell-shoulder-press",
+   "note": "both arms, palms forward shown"
+  },
+  "jefit:1:92": {
+   "source": "everkinetic",
+   "ref": "hyperextensions"
+  },
+  "jefit:1:675": {
+   "source": "everkinetic",
+   "ref": "decline-crunch",
+   "note": "unweighted shown"
+  },
+  "jefit:1:50": {
+   "source": "everkinetic",
+   "ref": "smith-machine-shoulder-shrugs"
+  },
+  "jefit:1:145": {
+   "source": "everkinetic",
+   "ref": "standing-calf-raises-using-machine"
+  },
+  "jefit:1:1330": {
+   "source": "everkinetic",
+   "ref": "rear-deltoid-row-dumbbell"
+  },
+  "jefit:1:1268": {
+   "source": "everkinetic",
+   "ref": "wide-grip-lat-pull-down",
+   "note": "wide grip shown"
+  },
+  "jefit:1:459": {
+   "source": "everkinetic",
+   "ref": "tricep-dips"
+  },
+  "jefit:1:271": {
+   "source": "everkinetic",
+   "ref": "preacher-curl-with-machine"
+  },
+  "jefit:1:247": {
+   "source": "everkinetic",
+   "ref": "standing-triceps-extension"
+  },
+  "jefit:1:174": {
+   "source": "everkinetic",
+   "ref": "smith-machine-bench-press"
+  },
+  "jefit:1:1050": {
+   "source": "everkinetic",
+   "ref": "seated-cable-rows",
+   "note": "handle shown, not rope"
+  },
+  "jefit:1:1011": {
+   "source": "everkinetic",
+   "ref": "alternating-hammer-curl-with-dumbbell",
+   "note": "standing shown"
+  },
+  "jefit:1:91": {
+   "source": "wger",
+   "ref": 83,
+   "note": "free bar shown"
+  },
+  "jefit:1:474": {
+   "source": "everkinetic",
+   "ref": "squat-to-bench-with-dumbbells"
+  },
+  "jefit:1:4": {
+   "source": "everkinetic",
+   "ref": "close-grip-barbell-bench-press"
+  },
+  "jefit:1:39": {
+   "source": "everkinetic",
+   "ref": "decline-dumbbell-bench-press"
+  },
+  "jefit:1:253": {
+   "source": "everkinetic",
+   "ref": "triceps-extensions-using-machine"
+  },
+  "jefit:1:146": {
+   "source": "everkinetic",
+   "ref": "lateral-dumbbell-raises",
+   "note": "standing shown"
+  },
+  "jefit:1:131": {
+   "source": "everkinetic",
+   "ref": "squats-using-dumbbells"
+  },
+  "jefit:1:127": {
+   "source": "everkinetic",
+   "ref": "hack-squat-machine"
+  },
+  "jefit:1:886": {
+   "source": "everkinetic",
+   "ref": "shoulder-shrugs",
+   "note": "dumbbells shown"
+  },
+  "jefit:1:878": {
+   "source": "everkinetic",
+   "ref": "lying-rear-lateral-raise",
+   "note": "rear-delt fly with dumbbells shown"
+  },
+  "jefit:1:486": {
+   "source": "everkinetic",
+   "ref": "narrow-stance-leg-press"
+  },
+  "jefit:1:422": {
+   "source": "everkinetic",
+   "ref": "lateral-dumbbell-raises",
+   "note": "dumbbells shown"
+  },
+  "jefit:1:154": {
+   "source": "everkinetic",
+   "ref": "triceps-kickback-with-dumbbell"
+  },
+  "jefit:1:143": {
+   "source": "everkinetic",
+   "ref": "standing-barbell-calf-raise"
+  },
+  "jefit:1:14": {
+   "source": "everkinetic",
+   "ref": "cable-crossover"
+  },
+  "jefit:1:1351": {
+   "source": "everkinetic",
+   "ref": "t-bar-rows",
+   "note": "T-bar row shown"
+  },
+  "jefit:1:1322": {
+   "source": "everkinetic",
+   "ref": "front-dumbbell-raise",
+   "note": "palms-down grip shown"
+  },
+  "jefit:1:1278": {
+   "source": "everkinetic",
+   "ref": "bent-over-lateral-cable-raises"
+  },
+  "jefit:1:108": {
+   "source": "everkinetic",
+   "ref": "biceps-hammer-curl-with-dumbbell"
+  },
+  "jefit:1:107": {
+   "source": "everkinetic",
+   "ref": "concentration-curls-with-dumbbell"
+  },
+  "jefit:1:1043": {
+   "source": "wger",
+   "ref": 83,
+   "note": "barbell shown"
+  },
+  "jefit:1:954": {
+   "source": "everkinetic",
+   "ref": "romanian-dead-lift",
+   "note": "Romanian deadlift shown"
+  },
+  "jefit:1:852": {
+   "source": "everkinetic",
+   "ref": "decline-chest-press"
+  },
+  "jefit:1:652": {
+   "source": "everkinetic",
+   "ref": "pullover-stability-ball-weight"
+  },
+  "jefit:1:52": {
+   "source": "everkinetic",
+   "ref": "t-bar-rows"
+  },
+  "jefit:1:467": {
+   "source": "everkinetic",
+   "ref": "barbell-squat"
+  },
+  "jefit:1:460": {
+   "source": "everkinetic",
+   "ref": "jm-press"
+  },
+  "jefit:1:35": {
+   "source": "everkinetic",
+   "ref": "one-arm-dumbbell-shoulder-press"
+  },
+  "jefit:1:29": {
+   "source": "everkinetic",
+   "ref": "front-dumbbell-raise"
+  },
+  "jefit:1:264": {
+   "source": "everkinetic",
+   "ref": "biceps-hammer-curl-with-dumbbell",
+   "note": "standing shown"
+  },
+  "jefit:1:236": {
+   "source": "everkinetic",
+   "ref": "lying-triceps-extension-with-dumbbells"
+  },
+  "jefit:1:223": {
+   "source": "everkinetic",
+   "ref": "decline-close-grip-bench-to-skull-crusher"
+  },
+  "jefit:1:22": {
+   "source": "everkinetic",
+   "ref": "cable-shoulder-shrugs"
+  },
+  "jefit:1:169": {
+   "source": "everkinetic",
+   "ref": "one-arm-bench-press"
+  },
+  "jefit:1:158": {
+   "source": "everkinetic",
+   "ref": "seated-triceps-press-with-dumbbell"
+  },
+  "jefit:1:142": {
+   "source": "everkinetic",
+   "ref": "standing-barbell-calf-raise",
+   "note": "barbell shown"
+  },
+  "jefit:1:136": {
+   "source": "everkinetic",
+   "ref": "dumbbell-lunges"
+  },
+  "jefit:1:1299": {
+   "source": "everkinetic",
+   "ref": "preacher-curl-with-barbell",
+   "note": "straight bar shown"
+  },
+  "jefit:1:1270": {
+   "source": "everkinetic",
+   "ref": "machine-bench-press",
+   "note": "chest press machine shown"
+  },
+  "jefit:1:1241": {
+   "source": "everkinetic",
+   "ref": "seated-one-leg-calf-raise-with-dumbbell",
+   "note": "one leg shown"
+  },
+  "jefit:1:1164": {
+   "source": "everkinetic",
+   "ref": "triceps-kickback-with-dumbbell",
+   "note": "dumbbell shown"
+  },
+  "jefit:1:115": {
+   "source": "everkinetic",
+   "ref": "alternating-incline-curl-with-dumbbell"
+  },
+  "jefit:1:1140": {
+   "source": "everkinetic",
+   "ref": "front-dumbbell-raise",
+   "note": "standing shown"
+  },
+  "jefit:1:1061": {
+   "source": "everkinetic",
+   "ref": "push-ups",
+   "note": "floor push-up shown"
+  },
+  "jefit:1:884": {
+   "source": "everkinetic",
+   "ref": "dumbbell-shoulder-press"
+  },
+  "jefit:1:869": {
+   "source": "everkinetic",
+   "ref": "dumbbell-shoulder-press",
+   "note": "dumbbells shown"
+  },
+  "jefit:1:80": {
+   "source": "everkinetic",
+   "ref": "side-bend-with-dumbbell"
+  },
+  "jefit:1:766": {
+   "source": "everkinetic",
+   "ref": "one-arm-dumbbell-shoulder-press"
+  },
+  "jefit:1:441": {
+   "source": "everkinetic",
+   "ref": "bent-over-rear-deltoid-raise-with-head-on-bench"
+  },
+  "jefit:1:437": {
+   "source": "everkinetic",
+   "ref": "lateral-dumbbell-raises",
+   "note": "both arms shown"
+  },
+  "jefit:1:43": {
+   "source": "everkinetic",
+   "ref": "dumbbell-upright-rows"
+  },
+  "jefit:1:41": {
+   "source": "everkinetic",
+   "ref": "dumbbell-flys"
+  },
+  "jefit:1:385": {
+   "source": "everkinetic",
+   "ref": "bridging",
+   "note": "bodyweight bridge shown"
+  },
+  "jefit:1:257": {
+   "source": "everkinetic",
+   "ref": "hammer-curls-with-rope-and-cable"
+  },
+  "jefit:1:225": {
+   "source": "everkinetic",
+   "ref": "reverse-grip-triceps-pushdown",
+   "note": "two arms shown"
+  },
+  "jefit:1:216": {
+   "source": "everkinetic",
+   "ref": "thigh-abductor"
+  },
+  "jefit:1:128": {
+   "source": "everkinetic",
+   "ref": "barbell-lunges"
+  },
+  "jefit:1:1264": {
+   "source": "everkinetic",
+   "ref": "narrow-parallel-grip-chin-ups",
+   "note": "unassisted shown"
+  },
+  "jefit:1:1254": {
+   "source": "everkinetic",
+   "ref": "calves-press-on-leg-machine"
+  },
+  "jefit:1:1253": {
+   "source": "everkinetic",
+   "ref": "leg-press",
+   "note": "both legs shown"
+  },
+  "jefit:1:1248": {
+   "source": "everkinetic",
+   "ref": "underhand-pull-down"
+  },
+  "jefit:1:1236": {
+   "source": "everkinetic",
+   "ref": "standing-barbell-calf-raise",
+   "note": "both legs, barbell shown"
+  },
+  "jefit:1:1180": {
+   "source": "everkinetic",
+   "ref": "smith-machine-close-grip-bench-press",
+   "note": "overhand grip shown"
+  },
+  "jefit:1:1070": {
+   "source": "everkinetic",
+   "ref": "smith-machine-incline-bench-press",
+   "note": "overhand grip shown"
+  }
+ }
+}

@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 10.1.** Phases 0–9 are done and reviewed. Phase 10 (demonstrations, form cues,
+**Next card: 10.3.** Phases 0–9 are done and reviewed. Phase 10 (demonstrations, form cues,
 the exercise page, the studio's look) was specified on 14 October and waits for the go-ahead.
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -146,6 +146,8 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **10.2**: tools/demo_map.json maps 138 logged exercises to the picture of the same movement on the same or close equipment, with a note when it is a close equivalent; ambiguous names are left out. Coverage of logged exercises: 160 of 193 (82.9%), 22 by video and 138 by pictures. Three first choices had no images upstream and were remapped (barbell rows to wger's drawing, incline curl to the alternating version, calf raises to the barbell version).
+- **10.1**: tools/build_demos.py builds GymApp/Resources/Demos (13.8 MB) from licensed sources only: Everkinetic two-pose illustrations (CC BY-SA 4.0, pinned commit) and wger images with a named licence and author. The planned free-exercise-db photos were dropped because their source cannot be verified (decision 14 updated); the owner chose licensed-only. Everkinetic stores poses in src/images-web by slug (some spelt bicep) and some only in dist/png by number; the script handles both. One wger image was an animated WebP made of delta frames, so only full-canvas frames are used. Two wger images in a commercial 3D-render style without an author were left out.
 - **Review of phases 7–9**: six fixes. Muscle counts read sets directly instead of building full summaries (the 2025 recap went from 5–10 s to about 2 s, same figures). Moving an exercise between supersets ends a group left with one member. A goal already reached says so before the data check. Studio week and month boundaries are computed from local calendar dates, so they stay at midnight across clock changes. The beat-my-best table works in the set's own unit. Lists and forms use the near-black base.
 - **9.6**: Phases 7 to 9 are complete. 198 app tests and 70 studio tests pass. The Train, History and Progress screenshots in docs/screenshots were replaced with the polished look; studio pages and the end screen were not committed because they carry the full analysis and personal notes in a public repo (recorded under Open questions). The final build is installed on the phone. What remains needs the phone or a decision: the device checklist and a code review of phases 7 to 9.
 - **9.5**: The studio's CSS variables now equal the app's Theme tokens (near-black base, three surfaces, separator, volt, gold, warning, danger, note, region colours), with tabular numbers throughout, rounded figures on tiles and targets, gold chips for window bests and coloured cells in the planner. Charts use a registered 'gymapp' ECharts theme built from the same tokens. The system font replaces Inter because the studio is offline and the system font is the app's family (spec updated).
