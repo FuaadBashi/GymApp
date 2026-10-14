@@ -7,8 +7,10 @@ struct ExerciseProgressView: View {
     let points: [SessionPoint]
     let records: ExerciseRecords
     let loadMode: LoadMode
+    var sessions: [ExerciseSession] = []
     @State private var metric = Metric.e1RM
     @State private var range = Range.all
+    @State private var selectedId: String?
 
     enum Metric: String, CaseIterable { case e1RM = "Est. 1RM", heaviest = "Heaviest", volume = "Volume" }
     enum Range: String, CaseIterable { case quarter = "3M", year = "1Y", all = "All" }
@@ -63,21 +65,72 @@ struct ExerciseProgressView: View {
                 Text("No sessions in this range.").font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, minHeight: 200)
             } else {
+                let selected = data.first { $0.workoutId == selectedId }
                 Chart(data, id: \.workoutId) { p in
                     LineMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
                         .foregroundStyle(Theme.accent)
                     PointMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
                         .foregroundStyle(Theme.accent)
                         .symbolSize(data.count > 60 ? 10 : 30)
+                    if let selected, selected.workoutId == p.workoutId {
+                        RuleMark(x: .value("Date", p.date)).foregroundStyle(.secondary.opacity(0.5))
+                        PointMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
+                            .foregroundStyle(.white).symbolSize(90)
+                    }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
                 .chartYAxisLabel("kg")
+                .chartOverlay { proxy in
+                    // A tap, not chartXSelection: inside a scroll view that needs a long press.
+                    GeometryReader { geo in
+                        Rectangle().fill(.clear).contentShape(.rect)
+                            .gesture(SpatialTapGesture().onEnded { tap in
+                                guard let plot = proxy.plotFrame else { return }
+                                let x = tap.location.x - geo[plot].origin.x
+                                if let date: Date = proxy.value(atX: x) {
+                                    selectedId = ExerciseStats.nearest(data, to: date, at: \.date)?.workoutId
+                                }
+                            })
+                    }
+                }
+                .onChange(of: metric) { selectedId = nil }
+                .onChange(of: range) { selectedId = nil }
                 .frame(height: 220)
                 .accessibilityLabel("\(metric.rawValue) over time, \(data.count) sessions, latest \(Load.format((data.last!.value * 10).rounded() / 10)) kg")
+                if let selected {
+                    selectedSession(selected)
+                } else {
+                    Text("Tap the chart to see a session.").font(.caption).foregroundStyle(.secondary)
+                }
             }
         }
         .padding(14)
         .background(Theme.card, in: .rect(cornerRadius: 16))
+    }
+
+    /// Card 6.4: the tapped session's date and sets, with a link to the workout.
+    private func selectedSession(_ p: (date: Date, value: Double, workoutId: String)) -> some View {
+        let sets = sessions.filter { $0.workout.id == p.workoutId }.flatMap(\.sets)
+        return NavigationLink {
+            WorkoutDetailView(db: db, workoutId: p.workoutId)
+        } label: {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(p.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).year()))
+                        .font(.subheadline.weight(.semibold))
+                    Text("\(metric.rawValue) \(Load.format((p.value * 10).rounded() / 10)) kg").font(.caption).foregroundStyle(.secondary)
+                    if !sets.isEmpty {
+                        Text(SetFormat.line(sets, loadMode: loadMode)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            }
+            .padding(10)
+            .background(Theme.row, in: .rect(cornerRadius: 10))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 
     private var recordsList: some View {

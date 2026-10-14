@@ -38,6 +38,11 @@ nonisolated enum ExerciseStats {
         .sorted { $0.date < $1.date }
     }
 
+    /// Card 6.4: the session closest in time to a tapped date on the chart.
+    static func nearest<P>(_ points: [P], to date: Date, at: (P) -> Date) -> P? {
+        points.min { abs(at($0).timeIntervalSince(date)) < abs(at($1).timeIntervalSince(date)) }
+    }
+
     /// Ties keep the earliest date: that is when the record was set.
     static func records(_ sessions: [ExerciseSession], loadMode: LoadMode, bodyWeightKg: (Date) -> Double?) -> ExerciseRecords {
         let ordered = sessions.sorted { $0.workout.startedAt < $1.workout.startedAt }

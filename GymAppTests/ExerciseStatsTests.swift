@@ -33,6 +33,16 @@ struct ExerciseStatsTests {
         #expect(points.map(\.volumeKg) == volumes)
     }
 
+    @Test func aTapSelectsTheClosestSession() throws {
+        let points = ExerciseStats.points(try fixture(), loadMode: .total) { _ in nil }
+        let near = { (hours: Double) in ExerciseStats.nearest(points, to: TestData.day(3).addingTimeInterval(hours * 3600), at: \.date)?.date }
+        #expect(near(-20) == TestData.day(3))
+        #expect(near(20) == TestData.day(3))
+        #expect(near(30) == TestData.day(5))
+        #expect(near(-30) == TestData.day(1))
+        #expect(ExerciseStats.nearest([SessionPoint](), to: .now, at: \.date) == nil)
+    }
+
     @Test func recordsKeepTheEarliestDateOnATie() throws {
         let r = ExerciseStats.records(try fixture(), loadMode: .total) { _ in nil }
         #expect(r.heaviest?.valueKg == 70 && r.heaviest?.date == TestData.day(3))
