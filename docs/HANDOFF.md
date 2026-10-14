@@ -232,9 +232,9 @@ card should know.
 - **Body map regions (3.5):** the MIT artwork has no separate lats/middle back region (both shade 'upper-back') and no outer-hip region (abductors shade the glutes, which hold gluteus medius). Its source names for the inner-thigh regions are swapped; both are mapped to adductors. Revisit if more precise artwork is wanted.
 - **Suggestion targets and migrations (6.3):** the spec named migration v3 for `studioDecision`; v3 was already card 6.2's `healthDay`, so it is v4. The app also reads `GymApp-suggestions.json` from its own Documents folder so the cable works without iCloud.
 - **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
-- **Screenshots (9.6):** the repo is public, so only the already-tracked Train, History and Progress screenshots were refreshed; studio pages and the end screen show the full analysis and notes and were kept out. Say if they should be committed.
+- **Screenshots (9.6):** decided 14 October: the owner wants all new screenshots committed, including the end screen and studio pages; done at the phase 10 close.
 - **Studio font (9.5):** the system font replaced Inter (offline, and the app's family).
-- **Animated demonstrations (10):** a 3D figure from two angles has no free source. Options for later: a bought library (MoveKit Gym Pack, 424 exercises, £189 one-off; Vital Animations, about 400, $49; licence for bundling to be confirmed) or our own pose-extraction pipeline (GVHMR, Blender; several long sessions, game-quality look). AI video was rejected for unreliable hands, bars and consistency.
+- **Animated demonstrations (10):** decided 14 October: no bought 3D library. Demonstrations stay as licensed videos, Everkinetic drawings and credited wger photos.
 - **Recap speed (6.6):** about 2 s for a year on the simulator since the review fix.
 - **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 
