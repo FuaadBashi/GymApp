@@ -105,7 +105,7 @@ struct ProgressTab: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(title).font(.subheadline.weight(.semibold))
                 Spacer()
-                Text(format(current)).font(.subheadline.monospacedDigit())
+                Text(format(current)).font(.subheadline.monospacedDigit()).rollingNumber(current)
                 Text("vs last week \(change)").font(.caption).foregroundStyle(.secondary)
             }
             Chart(model.weeks) { w in

@@ -100,7 +100,7 @@ struct RecapView: View {
     private func tile(_ label: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(Theme.number(.title3)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(Theme.number(.title3)).rollingNumber(value).lineLimit(1).minimumScaleFactor(0.6)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)

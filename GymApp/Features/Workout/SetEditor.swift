@@ -67,7 +67,7 @@ struct SetEditor: View {
                         .font(.system(size: large ? 56 : 26, weight: .bold, design: .rounded).monospacedDigit())
                         .lineLimit(1).minimumScaleFactor(0.5)
                         .frame(maxWidth: .infinity)
-                        .contentTransition(.numericText())
+                        .rollingNumber(value)
                 }
                 .buttonStyle(.plain)
                 stepButton("plus", action: plus)

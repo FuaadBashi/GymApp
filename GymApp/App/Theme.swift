@@ -105,3 +105,19 @@ struct Chip: View {
         .buttonStyle(.plain)
     }
 }
+
+/// Card 9.2: figures roll digit by digit when they change, unless Reduce Motion is on.
+struct RollingNumber<V: Equatable>: ViewModifier {
+    let value: V
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .contentTransition(reduceMotion ? .identity : .numericText())
+            .animation(reduceMotion ? nil : .snappy(duration: 0.3), value: value)
+    }
+}
+
+extension View {
+    func rollingNumber<V: Equatable>(_ value: V) -> some View { modifier(RollingNumber(value: value)) }
+}

@@ -156,7 +156,7 @@ struct WorkoutDetailView: View {
     private func tile(_ title: String, _ value: String, _ caption: String? = nil) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(Theme.number(.title2, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(Theme.number(.title2, weight: .bold)).rollingNumber(value).lineLimit(1).minimumScaleFactor(0.6)
             Text(caption ?? " ").font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

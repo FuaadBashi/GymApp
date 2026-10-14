@@ -183,7 +183,7 @@ struct ProgressRing: View {
                 .trim(from: 0, to: total == 0 ? 0 : CGFloat(done) / CGFloat(total))
                 .stroke(Theme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-            Text("\(done)").font(.caption2.bold().monospacedDigit())
+            Text("\(done)").font(.caption2.bold().monospacedDigit()).rollingNumber(done)
         }
         .frame(width: size, height: size)
         .animation(.snappy, value: done)

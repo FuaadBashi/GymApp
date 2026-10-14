@@ -101,6 +101,7 @@ struct RestRing: View {
                     .rotationEffect(.degrees(-90))
                 Text(RestRing.clock(remaining))
                     .font(.system(size: size * 0.27, weight: .bold, design: .rounded).monospacedDigit())
+                    .rollingNumber(Int(remaining.rounded(.up)))
             }
         }
         .frame(width: size, height: size)

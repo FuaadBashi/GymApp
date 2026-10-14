@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 9.2.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 9.3.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -124,7 +124,7 @@ owner's answers (features first, then studio, then visual polish).
 
 ### Phase 9: Visual polish ([spec](specs/09-polish.md))
 - [x] 9.1 Theme and surfaces
-- [ ] 9.2 Rolling numbers
+- [x] 9.2 Rolling numbers
 - [ ] 9.3 Animated icons and haptics
 - [ ] 9.4 Charts that draw in
 - [ ] 9.5 Studio restyle
@@ -145,6 +145,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **9.2**: A rollingNumber modifier (numericText content transition with a short snappy animation, none under Reduce Motion) is applied to the set editor's load and reps, the rest timer, the workout's logged-set count, the end screen, workout detail and recap tiles, the Progress weekly figures and the goal value.
 - **9.1**: Theme now holds every colour: a near-black base (not pure black) with three surface levels, separator, idle and inert map fills, volt, gold, warning, danger, note, region and day palettes, and competition plate colours; no literal colours remain in views. Theme.number gives figures one rounded, fixed-width style (tiles, goal). The workout's bottom bar is the floating control: Liquid Glass in a 30 pt capsule, placed as a bottom safe-area inset so the list scrolls under it; the mini-player already gets glass as the system tab accessory.
 - **8.5**: Phase 8 closed. 70 studio tests and 198 app tests pass. With the studio restarted on the real backup, the Reports, Data health and Planner pages render without script errors; reports now list newest first, weeks before months of the same end. Report month totals were checked against the app's Recaps in 8.1. The app with migration v7 is installed on the phone. Studio README covers suggestions, reports, data health and the planner, and what the studio writes into the backup folder.
 - **8.4**: gymstudio/planner.py plans a 4 to 6 week block for the active program: weekly sets per muscle (from day items, sessions per week over days) ramp evenly from the band bottom, or current if higher, to the top, and each exercise's planned sets follow its first primary muscle. The Planner page shows a heat table of sets per muscle per week against the band, push:pull and upper:lower per week, sets per exercise per week, and plateaued lifts with their own deload targets. A deload week (60% of sets) is proposed only when 3 or more program lifts are on plateau. Send publishes the chosen weeks as note suggestions only when pressed; the program itself is not changed, as the owner asked (spec updated).
