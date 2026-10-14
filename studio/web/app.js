@@ -1,7 +1,18 @@
 // GymApp Studio interface. Plain JavaScript: one router, one fetch helper, one renderer per page.
 const $ = (sel, el = document) => el.querySelector(sel);
 const main = $("#main");
-const VOLT = "#c7f242", DIM = "#9a9aa3", LINE = "#2e2e33", ORANGE = "#ff9f5a", BLUE = "#73a9ff";
+// Card 9.5: the app's tokens; charts get them through one ECharts theme.
+const VOLT = "#c7f242", GOLD = "#ffc238", DIM = "#9a9aa3", LINE = "#2e2e33", ORANGE = "#ff9945", BLUE = "#73a8ff", PURPLE = "#bf8cff";
+echarts.registerTheme("gymapp", {
+  color: [VOLT, BLUE, GOLD, PURPLE, ORANGE, "#5ad9d9"],
+  backgroundColor: "transparent",
+  textStyle: { color: DIM, fontFamily: "-apple-system, system-ui" },
+  categoryAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
+  valueAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
+  timeAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
+  tooltip: { backgroundColor: "#232327", borderColor: "#313136", textStyle: { color: "#f2f2f4" } },
+  legend: { textStyle: { color: DIM } },
+});
 const charts = [];
 let navigationEpoch = 0;
 
@@ -21,7 +32,7 @@ const muscleName = m => ({ middleBack: "Middle back", lowerBack: "Lower back" }[
 const statusChip = s => `<span class="chip ${s.replace(/ /g, "-")}">${esc(s)}</span>`;
 
 function chart(el, option) {
-  const c = echarts.init(el, null, { renderer: "canvas" });
+  const c = echarts.init(el, "gymapp", { renderer: "canvas" });
   c.setOption(Object.assign({
     backgroundColor: "transparent", textStyle: { color: DIM, fontFamily: "-apple-system, system-ui" },
     grid: { left: 44, right: 16, top: 24, bottom: 30 },

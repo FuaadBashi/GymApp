@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 9.5.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 9.6.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -127,7 +127,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 9.2 Rolling numbers
 - [x] 9.3 Animated icons and haptics
 - [x] 9.4 Charts that draw in
-- [ ] 9.5 Studio restyle
+- [x] 9.5 Studio restyle
 - [ ] 9.6 Phase close
 
 ## Requested after phase 2
@@ -145,6 +145,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **9.5**: The studio's CSS variables now equal the app's Theme tokens (near-black base, three surfaces, separator, volt, gold, warning, danger, note, region colours), with tabular numbers throughout, rounded figures on tiles and targets, gold chips for window bests and coloured cells in the planner. Charts use a registered 'gymapp' ECharts theme built from the same tokens. The system font replaces Inter because the studio is offline and the system font is the app's family (spec updated).
 - **9.4**: A drawIn modifier sweeps every chart in from the left on first appear (weekly bars, body weight, steps, pattern sparklines, the exercise chart and recap months); under Reduce Motion they appear at once. The tapped point on the exercise chart grows and carries a value callout, animated with the selection.
 - **9.3**: One feedback vocabulary, written up as rulebook §12: a light tap for every logged set (from the bar, the row tick or focus mode, keyed to the logged-set count), success for an all-time best, a soft tap for a window best, the warning haptic when rest ends. The set tick, the best banner icon and set badges bounce once; a bell wiggles beside the Log button for four seconds after rest ends. Symbol animations follow the system's Reduce Motion.
 - **9.2**: A rollingNumber modifier (numericText content transition with a short snappy animation, none under Reduce Motion) is applied to the set editor's load and reps, the rest timer, the workout's logged-set count, the end screen, workout detail and recap tiles, the Progress weekly figures and the goal value.

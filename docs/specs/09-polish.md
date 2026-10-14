@@ -40,7 +40,9 @@ Principles:
 ## Card 9.5: Studio restyle
 
 - The studio's CSS adopts the same tokens (near-black base, grey text, volt/gold/orange for
-  data), Inter with tabular numbers, and an ECharts theme built from the tokens.
+  data), tabular numbers everywhere and rounded figures for tiles, and a registered ECharts
+  theme built from the tokens. The Mac's system font is used instead of Inter: the studio
+  runs offline, and the system font is the app's own family.
 
 ## Card 9.6: Phase close
 

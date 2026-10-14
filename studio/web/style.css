@@ -1,9 +1,14 @@
 :root {
-  --bg: #0a0a0b; --panel: #141416; --card: #1c1c1f; --row: #26262a; --line: #2e2e33;
+  /* Card 9.5: the app's Theme tokens (GymApp/App/Theme.swift), so both look like one product. */
+  --bg: #09090b; --panel: #0f0f11; --card: #17171a; --row: #232327; --raised: #313136; --line: rgba(255, 255, 255, .08);
   --text: #f2f2f4; --dim: #9a9aa3; --faint: #6b6b73;
-  --volt: #c7f242; --volt-dim: rgba(199, 242, 66, .14); --orange: #ff9f5a; --red: #ff5f57; --blue: #73a9ff; --purple: #bf8cff;
+  --volt: #c7f242; --volt-dim: rgba(199, 242, 66, .14); --gold: #ffc238; --gold-dim: rgba(255, 194, 56, .14);
+  --orange: #ff9945; --red: #ff5c5c; --note: #fad461; --blue: #73a8ff; --purple: #bf8cff;
   --radius: 16px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  --num: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* The Mac's system font: the same family as the app, and available offline. */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -31,10 +36,10 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: va
 .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 1100px) { .g3, .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.card { background: var(--card); border-radius: var(--radius); padding: 18px; border: 1px solid #ffffff08; }
+.card { background: var(--card); border-radius: var(--radius); padding: 18px; border: 1px solid var(--line); }
 .span2 { grid-column: span 2; } .span3 { grid-column: span 3; } .span4 { grid-column: 1 / -1; }
 .tile .k { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
-.tile .v { font-size: 28px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.tile .v { font-family: var(--num); font-size: 28px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
 .tile .c { font-size: 12px; color: var(--faint); margin-top: 4px; }
 .chart { width: 100%; height: 260px; }
 .chart.tall { height: 380px; }
@@ -60,7 +65,7 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: va
 .muted { color: var(--dim); } .faint { color: var(--faint); } .volt { color: var(--volt); } .orange { color: var(--orange); }
 
 .target { display: flex; flex-direction: column; gap: 6px; }
-.target .w { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.target .w { font-family: var(--num); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .target .why { font-size: 12px; color: var(--dim); line-height: 1.45; }
 .target .last { font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
 
@@ -78,20 +83,20 @@ button.primary { background: var(--volt); color: #000; border: none; font-weight
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { text-align: left; color: var(--faint); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
-td { padding: 8px; border-bottom: 1px solid #ffffff08; font-variant-numeric: tabular-nums; }
+td { padding: 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 tr.click { cursor: pointer; } tr.click:hover td { background: var(--row); }
 
-.note { background: rgba(250, 212, 97, .08); color: #f5d77a; border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
+.note { background: rgba(250, 212, 97, .08); color: var(--note); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
 .warn { background: rgba(255, 159, 90, .1); color: var(--orange); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
 .empty { color: var(--faint); font-size: 14px; padding: 30px 0; text-align: center; }
 .setline { display: flex; flex-wrap: wrap; gap: 6px; }
 .set { background: var(--row); border-radius: 8px; padding: 4px 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
-.set.warmUp { color: #f5d77a; } .set.drop { color: var(--purple); } .set.failed { color: var(--red); }
+.set.warmUp { color: var(--note); } .set.drop { color: var(--purple); } .set.failed { color: var(--red); }
 
 .drawer { position: fixed; right: 0; top: 0; bottom: 0; width: 460px; background: var(--panel); border-left: 1px solid var(--line); padding: 24px; overflow: auto; box-shadow: -20px 0 60px #000a; z-index: 10; transition: transform .2s; }
 .drawer.hidden { transform: translateX(110%); }
 .drawer .close { float: right; }
-.field { display: grid; grid-template-columns: 1fr 160px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #ffffff08; }
+.field { display: grid; grid-template-columns: 1fr 160px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .field .help { font-size: 12px; color: var(--faint); margin-top: 3px; }
 .soon { border: 1px dashed var(--line); border-radius: var(--radius); padding: 28px; color: var(--dim); line-height: 1.6; }
 
@@ -101,3 +106,6 @@ tr.click { cursor: pointer; } tr.click:hover td { background: var(--row); }
 #rule-trials td:nth-child(3) { max-width: 330px; line-height: 1.5; }
 button:disabled { opacity: .45; cursor: default; }
 label { display: block; font-size: 13px; color: var(--dim); line-height: 1.8; }
+.chip.window, .chip.gold { background: var(--gold-dim); color: var(--gold); }
+.gold { color: var(--gold); }
+td.volt { color: var(--volt); } td.orange { color: var(--orange); }
