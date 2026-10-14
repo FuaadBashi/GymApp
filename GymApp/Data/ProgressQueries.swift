@@ -72,7 +72,8 @@ nonisolated enum ProgressQueries {
     static func muscles(_ db: Database, from: Date, to: Date) throws -> [(muscle: Muscle, sets: Double)] {
         let ids = try String.fetchAll(db, sql: "SELECT id FROM workout WHERE endedAt IS NOT NULL AND startedAt >= ? AND startedAt < ?",
                                       arguments: [from, to])
-        let lines = try ids.flatMap { try SummaryQueries.summary(db, workoutId: $0).exercises }
+        // Only the sets are needed: a full summary also compares with last time and replays records.
+        let lines = try ids.flatMap { try SummaryQueries.exerciseLines(db, workoutId: $0) }
         return SummaryQueries.muscles(lines)
     }
 

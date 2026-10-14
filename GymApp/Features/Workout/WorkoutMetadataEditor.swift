@@ -40,6 +40,7 @@ struct WorkoutMetadataEditor: View {
                     if error != nil { Button("Retry save") { save() } }
                 }
             }
+            .themedList()
             .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) {
                 Button("Done") { Task { await pending?.value; if error == nil { dismiss() } } }

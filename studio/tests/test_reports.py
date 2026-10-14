@@ -72,3 +72,27 @@ class ReportTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ClockChangeTests(unittest.TestCase):
+    def test_week_and_month_boundaries_stay_at_local_midnight_across_a_clock_change(self):
+        import os, time
+        from datetime import timedelta
+        old = os.environ.get("TZ")
+        os.environ["TZ"] = "Europe/London"
+        time.tzset()
+        try:
+            from gymstudio import analysis as a
+            start = a.week_start(datetime(2026, 10, 20, 12, tzinfo=timezone.utc), monday=True)   # Mon 19 Oct, BST
+            nxt = a.local_midnight(start.date() + timedelta(days=7))                            # Mon 26 Oct, GMT
+            self.assertEqual((start.hour, nxt.hour), (0, 0))
+            self.assertEqual(nxt.utcoffset(), timedelta(0))
+            self.assertEqual(start.utcoffset(), timedelta(hours=1))
+            # A week computed after the change starts at that week's own midnight.
+            self.assertEqual(a.week_start(datetime(2026, 10, 31, 23, 30, tzinfo=timezone.utc), monday=False).hour, 0)
+        finally:
+            if old is None:
+                del os.environ["TZ"]
+            else:
+                os.environ["TZ"] = old
+            time.tzset()

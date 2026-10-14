@@ -339,6 +339,7 @@ private struct AddWeightSheet: View {
                 .pickerStyle(.segmented)
                 Text("Saved for today. A second entry today replaces the first.").font(.caption).foregroundStyle(.secondary)
             }
+            .themedList()
             .navigationTitle("Body weight")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

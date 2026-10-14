@@ -145,3 +145,8 @@ struct DrawIn: ViewModifier {
 extension View {
     func drawIn() -> some View { modifier(DrawIn()) }
 }
+
+extension View {
+    /// Lists and forms on the app's near-black base rather than the system's pure black.
+    func themedList() -> some View { scrollContentBackground(.hidden).background(Theme.background) }
+}

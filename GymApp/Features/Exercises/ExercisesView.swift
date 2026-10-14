@@ -18,6 +18,7 @@ struct ExercisesView: View {
                     ExerciseFilterBar(filter: $model.filter).textCase(nil)
                 }
             }
+            .themedList()
             .listStyle(.plain)
             .overlay {
                 if model.loaded, model.items.isEmpty {

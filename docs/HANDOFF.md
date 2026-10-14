@@ -146,6 +146,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **Review of phases 7–9**: six fixes. Muscle counts read sets directly instead of building full summaries (the 2025 recap went from 5–10 s to about 2 s, same figures). Moving an exercise between supersets ends a group left with one member. A goal already reached says so before the data check. Studio week and month boundaries are computed from local calendar dates, so they stay at midnight across clock changes. The beat-my-best table works in the set's own unit. Lists and forms use the near-black base.
 - **9.6**: Phases 7 to 9 are complete. 198 app tests and 70 studio tests pass. The Train, History and Progress screenshots in docs/screenshots were replaced with the polished look; studio pages and the end screen were not committed because they carry the full analysis and personal notes in a public repo (recorded under Open questions). The final build is installed on the phone. What remains needs the phone or a decision: the device checklist and a code review of phases 7 to 9.
 - **9.5**: The studio's CSS variables now equal the app's Theme tokens (near-black base, three surfaces, separator, volt, gold, warning, danger, note, region colours), with tabular numbers throughout, rounded figures on tiles and targets, gold chips for window bests and coloured cells in the planner. Charts use a registered 'gymapp' ECharts theme built from the same tokens. The system font replaces Inter because the studio is offline and the system font is the app's family (spec updated).
 - **9.4**: A drawIn modifier sweeps every chart in from the left on first appear (weekly bars, body weight, steps, pattern sparklines, the exercise chart and recap months); under Reduce Motion they appear at once. The tapped point on the exercise chart grows and carries a value callout, animated with the selection.
@@ -230,7 +231,7 @@ card should know.
 - **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
 - **Screenshots (9.6):** the repo is public, so only the already-tracked Train, History and Progress screenshots were refreshed; studio pages and the end screen show the full analysis and notes and were kept out. Say if they should be committed.
 - **Studio font (9.5):** the system font replaced Inter (offline, and the app's family).
-- **Recap speed (6.6):** a year takes about 4 s on the simulator because records replay every exercise's history. Caching records would fix it if it bothers on the phone.
+- **Recap speed (6.6):** about 2 s for a year on the simulator since the review fix.
 - **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 
 Questions a card raised that the spec did not answer. Do not guess; record them here and

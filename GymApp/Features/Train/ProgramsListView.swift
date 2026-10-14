@@ -14,6 +14,7 @@ struct ProgramsListView: View {
             section("Programs", programs.filter { !$0.program.isActive && !$0.program.isArchived })
             section("Archived", programs.filter { $0.program.isArchived })
         }
+        .themedList()
         .navigationTitle("Programs")
         .task { await reload() }
         .onAppear { Task { await reload() } }

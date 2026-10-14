@@ -142,6 +142,7 @@ private struct GoalSheet: View {
                     Button("Remove goal", role: .destructive) { onSave(nil); dismiss() }
                 }
             }
+            .themedList()
             .navigationTitle("Goal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

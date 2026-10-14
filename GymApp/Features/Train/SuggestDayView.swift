@@ -26,6 +26,7 @@ struct SuggestDayView: View {
                     row($suggestion)
                 }
             }
+            .themedList()
             .navigationTitle("Suggest \(day.name)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

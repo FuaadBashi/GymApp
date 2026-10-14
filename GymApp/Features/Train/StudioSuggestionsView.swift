@@ -47,6 +47,7 @@ struct StudioSuggestionsSheet: View {
                     }
                 }
             }
+            .themedList()
             .navigationTitle("Studio suggestions")
             .navigationBarTitleDisplayMode(.inline)
             .refreshable { await inbox.reload(db) }
@@ -81,6 +82,7 @@ private struct StudioSuggestionDetail: View {
                 if let error { Text(error).foregroundStyle(Theme.danger) }
             }
         }
+        .themedList()
         .navigationTitle(suggestion.kind.label)
         .navigationBarTitleDisplayMode(.inline)
     }

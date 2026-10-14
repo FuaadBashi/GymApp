@@ -161,7 +161,7 @@ nonisolated enum SummaryQueries {
             .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0.rawValue < $1.0.rawValue }
     }
 
-    private static func exerciseLines(_ db: Database, workoutId: String) throws -> [WorkoutSummary.ExerciseLine] {
+    static func exerciseLines(_ db: Database, workoutId: String) throws -> [WorkoutSummary.ExerciseLine] {
         let wes = try WorkoutExerciseRecord.filter(Column("workoutId") == workoutId).order(Column("position")).fetchAll(db)
         let exercises = Dictionary(uniqueKeysWithValues: try ExerciseRecord.filter(keys: Set(wes.map(\.exerciseId))).fetchAll(db).map { ($0.id, $0) })
         let sets = Dictionary(grouping: try WorkoutSetRecord

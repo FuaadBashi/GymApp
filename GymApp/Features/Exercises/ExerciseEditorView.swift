@@ -74,6 +74,7 @@ struct ExerciseEditorView: View {
                     .pickerStyle(.segmented)
                 }
             }
+            .themedList()
             .navigationTitle(editing == nil ? "New exercise" : "Edit exercise")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

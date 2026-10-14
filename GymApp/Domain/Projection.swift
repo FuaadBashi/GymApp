@@ -70,8 +70,8 @@ nonisolated enum Projection {
     }
 
     static func outcome(goal: Double, points: [(date: Date, value: Double)], now: Date = .now) -> Outcome {
-        guard let fit = fit(points) else { return .notEnoughData }
         if let current = points.map(\.value).max(), current >= goal { return .reached }
+        guard let fit = fit(points) else { return .notEnoughData }
         guard let date = fit.date(reaching: goal) else { return .unreachable(ceiling: fit.a) }
         let earliest = fit.date(reaching: goal - fit.spread) ?? date
         let latest = fit.date(reaching: goal + fit.spread)

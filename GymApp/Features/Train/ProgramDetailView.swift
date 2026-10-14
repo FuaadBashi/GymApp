@@ -37,6 +37,7 @@ struct ProgramDetailView: View {
                 if program?.isActive == true { Text("This is your active program.") }
             }
         }
+        .themedList()
         .navigationTitle(program?.name ?? "Program")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) { EditButton() }
@@ -115,6 +116,7 @@ struct AddDaySheet: View {
                     ForEach(DayFocus.allCases, id: \.self) { Text($0.displayName).tag($0) }
                 }
             }
+            .themedList()
             .navigationTitle("Add day")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

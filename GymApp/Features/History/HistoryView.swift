@@ -36,6 +36,7 @@ struct HistoryView: View {
                         .id(week.start)
                     }
                 }
+                .themedList()
                 .navigationTitle("History")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

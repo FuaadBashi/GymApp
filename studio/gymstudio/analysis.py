@@ -40,11 +40,16 @@ def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def local_midnight(day) -> datetime:
+    """Midnight of a calendar date in the Mac's time zone, with that date's own UTC offset,
+    so boundaries stay at midnight across clock changes."""
+    return datetime.combine(day, datetime.min.time()).astimezone()
+
+
 def week_start(d: datetime, monday: bool) -> datetime:
     local = d.astimezone()
     offset = local.weekday() if monday else (local.weekday() + 1) % 7
-    start = (local - timedelta(days=offset)).replace(hour=0, minute=0, second=0, microsecond=0)
-    return start
+    return local_midnight(local.date() - timedelta(days=offset))
 
 
 def per_workout(h: History, exercise_id: str) -> list[tuple[str, datetime, list]]:

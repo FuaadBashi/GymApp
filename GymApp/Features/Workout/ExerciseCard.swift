@@ -36,7 +36,7 @@ struct ExerciseCard: View {
                 BeatBestSheet(exerciseName: item.exercise.name, best: best, reps: repRange,
                               step: model.snapshot?.hints[item.exercise.id]?.step ?? 2.5, unit: set.unit,
                               onPick: { kg, reps in
-                                  Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: .kg, reps: reps, type: set.type)) }
+                                  Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: set.unit, reps: reps, type: set.type)) }
                               },
                               onHistory: { onAction(.history) })
             }

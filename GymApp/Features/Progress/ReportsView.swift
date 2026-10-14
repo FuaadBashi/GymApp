@@ -27,6 +27,7 @@ struct ReportsView: View {
                 }
             }
         }
+        .themedList()
         .navigationTitle("Reports")
         .refreshable { await inbox.reload(db) }
         .task { await inbox.reload(db) }

@@ -61,4 +61,14 @@ struct SupersetTests {
         #expect(model.snapshot?.workout.restEndsAt != nil)
         #expect(name(model) == "A")
     }
+
+    @Test func movingAnExerciseToAnotherSupersetEndsTheGroupItLeft() async throws {
+        let model = try await model(["A", "B", "C", "D"], grouped: 2)   // A+B grouped
+        let items = try #require(model.snapshot?.items)
+        await model.superset(items[2].id, with: items[3].id)            // C+D grouped
+        await model.superset(items[0].id, with: items[2].id)            // A joins C+D; B is left alone
+        let groups = try #require(model.snapshot?.items).map(\.workoutExercise.supersetGroup)
+        #expect(groups[1] == nil)
+        #expect(groups[0] != nil && groups[0] == groups[2] && groups[2] == groups[3])
+    }
 }

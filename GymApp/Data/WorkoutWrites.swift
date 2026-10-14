@@ -72,10 +72,16 @@ nonisolated enum WorkoutWrites {
         guard var a = try WorkoutExerciseRecord.fetchOne(db, key: workoutExerciseId),
               var b = try WorkoutExerciseRecord.fetchOne(db, key: otherId), a.workoutId == b.workoutId, a.id != b.id else { throw WorkoutError.notFound }
         let group = b.supersetGroup ?? a.supersetGroup ?? UUID().uuidString
+        let left = [a.supersetGroup, b.supersetGroup].compactMap { $0 }.filter { $0 != group }
         a.supersetGroup = group
         b.supersetGroup = group
         try a.update(db)
         try b.update(db)
+        // A group the move left with one member ends, as with "Remove from superset".
+        for old in left {
+            let members = try WorkoutExerciseRecord.filter(Column("workoutId") == a.workoutId && Column("supersetGroup") == old).fetchAll(db)
+            if members.count == 1, var last = members.first { last.supersetGroup = nil; try last.update(db) }
+        }
     }
 
     /// Card 7.6: takes an exercise out of its superset; a group left with one member ends.

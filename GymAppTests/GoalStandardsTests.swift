@@ -28,6 +28,8 @@ struct GoalStandardsTests {
             #expect(abs(ceiling - 120) < 0.5)
         } else { Issue.record("expected unreachable") }
         #expect(Projection.outcome(goal: 110, points: Array(curve.prefix(5)), now: day(140)) == .notEnoughData)
+        // Already past the goal says so even with too little data to fit.
+        #expect(Projection.outcome(goal: 85, points: Array(curve.prefix(5)), now: day(140)) == .reached)
         // Six sessions inside 8 weeks are still too little.
         let short = (0..<7).map { (day(Double($0 * 7)), 80 + Double($0)) }
         #expect(Projection.fit(short) == nil)

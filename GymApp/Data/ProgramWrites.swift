@@ -119,10 +119,16 @@ nonisolated enum ProgramWrites {
         guard var a = try DayExerciseRecord.fetchOne(db, key: itemId), var b = try DayExerciseRecord.fetchOne(db, key: otherId),
               a.dayId == b.dayId, a.id != b.id else { return }
         let group = b.supersetGroup ?? a.supersetGroup ?? UUID().uuidString
+        let left = [a.supersetGroup, b.supersetGroup].compactMap { $0 }.filter { $0 != group }
         a.supersetGroup = group
         b.supersetGroup = group
         try a.update(db)
         try b.update(db)
+        // A group the move left with one member ends, as with "Remove from superset".
+        for old in left {
+            let members = try DayExerciseRecord.filter(Column("dayId") == a.dayId && Column("supersetGroup") == old).fetchAll(db)
+            if members.count == 1, var last = members.first { last.supersetGroup = nil; try last.update(db) }
+        }
     }
 
     /// Card 7.6: takes a day item out of its superset; a group left with one member ends.

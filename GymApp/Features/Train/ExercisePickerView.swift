@@ -37,6 +37,7 @@ struct ExercisePickerView: View {
                     }
                 }
             }
+            .themedList()
             .navigationTitle("Add to \(day.day.name)")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $model.filter.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search exercises")

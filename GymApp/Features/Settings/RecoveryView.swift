@@ -77,6 +77,7 @@ struct RecoveryView: View {
                 Text("Keeps the latest 30 local copies plus one per month. Restore is applied next launch after making a safety copy of the current data. Full backups contain your private training history and notes.")
             }
         }
+        .themedList()
     }
     private var restoreDescription: String {
         guard let inspection else { return "" }

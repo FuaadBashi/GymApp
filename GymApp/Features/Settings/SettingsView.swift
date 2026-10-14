@@ -121,6 +121,7 @@ struct SettingsView: View {
                     }
                 }
             }
+            .themedList()
             .navigationTitle("Settings")
             .onChange(of: model.settings) { model.save() }
             .sheet(item: $csv) { BackupShareSheet(url: $0.url) }

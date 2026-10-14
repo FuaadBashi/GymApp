@@ -27,6 +27,7 @@ struct DayItemEditor: View {
                     TextField("Cue, seat setting…", text: Binding(get: { item.note ?? "" }, set: { item.note = $0.isEmpty ? nil : $0 }), axis: .vertical)
                 }
             }
+            .themedList()
             .navigationTitle(exerciseName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

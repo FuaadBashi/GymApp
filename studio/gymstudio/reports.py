@@ -81,14 +81,13 @@ def periods(h: History, s: analysis.Settings, today: datetime) -> list[tuple[str
     week = analysis.week_start(first, s.week_starts_monday)
     now_week = analysis.week_start(today, s.week_starts_monday)
     while week < now_week:
-        nxt = (week + timedelta(days=7, hours=12)).replace(hour=0)   # safe across clock changes
+        nxt = analysis.local_midnight(week.date() + timedelta(days=7))
         out.append(("week", week, nxt))
         week = nxt
-    local = first.astimezone()
-    month = local.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    this_month = today.astimezone().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    month = analysis.local_midnight(first.astimezone().date().replace(day=1))
+    this_month = analysis.local_midnight(today.astimezone().date().replace(day=1))
     while month < this_month:
-        nxt = (month + timedelta(days=32)).replace(day=1)
+        nxt = analysis.local_midnight((month.date() + timedelta(days=32)).replace(day=1))
         out.append(("month", month, nxt))
         month = nxt
     return out
