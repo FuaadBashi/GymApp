@@ -11,9 +11,16 @@ struct ExerciseCard: View {
     @State private var editingNote = false
     @State private var noteDraft = ""
     @State private var metadata: MetadataDraft?
+    @State private var beating: WorkoutSetRecord?
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
+    private var repRange: ClosedRange<Int> {
+        guard let lo = item.workoutExercise.repMin, let hi = item.workoutExercise.repMax, lo <= hi else {
+            return model.snapshot?.defaultRepRange ?? 8...12
+        }
+        return lo...hi
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -23,6 +30,16 @@ struct ExerciseCard: View {
         .background(Theme.card, in: .rect(cornerRadius: 18))
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
+        }
+        .sheet(item: $beating) { set in
+            if let best = model.snapshot?.hints[item.exercise.id]?.allTime {
+                BeatBestSheet(exerciseName: item.exercise.name, best: best, reps: repRange,
+                              step: model.snapshot?.hints[item.exercise.id]?.step ?? 2.5, unit: set.unit,
+                              onPick: { kg, reps in
+                                  Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: .kg, reps: reps, type: set.type)) }
+                              },
+                              onHistory: { onAction(.history) })
+            }
         }
         .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
             if let metadata {
@@ -169,6 +186,10 @@ struct ExerciseCard: View {
                         Task { await model.setReserve(set.id, value) }
                     }
                     .padding(.bottom, 4)
+                    if let hint = model.snapshot?.hints[item.exercise.id] {
+                        BestHintLine(set: set, hint: hint, loadMode: loadMode) { beating = set }
+                            .padding(.horizontal, 10).padding(.bottom, 4)
+                    }
                 }
             }
         }

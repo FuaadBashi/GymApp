@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.3.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 7.4.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -104,7 +104,7 @@ owner's answers (features first, then studio, then visual polish).
 ### Phase 7: Records, the workout flow and goals ([spec](specs/07-records-workout.md))
 - [x] 7.1 Time-window bests
 - [x] 7.2 Best banners and set badges in the workout
-- [ ] 7.3 Best hints and "beat my best"
+- [x] 7.3 Best hints and "beat my best"
 - [ ] 7.4 Fixing sets easily
 - [ ] 7.5 The end screen
 - [ ] 7.6 Supersets
@@ -143,6 +143,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.3**: Under the selected set: its estimated 1RM, the all-time best and, when the §5a break rule makes one eligible, the longest window best below it. Tapping opens a sheet with the lightest load per rep in the exercise's range (else the settings default) that beats the best, in the exercise's learnt step (TrainingMath.step: most common gap between loads used, else 2.5 kg); tapping a row fills the set, and a button opens the exercise history. The window rule now lives in TrainingMath.eligibleWindows, shared by the status and the hint. The table and filled loads are in kg.
 - **7.2**: The workout snapshot carries each logged set's best status (WorkoutQueries.bests: finished history plus sets logged earlier in the workout). Logging a best shows an in-screen banner for 3 s (volt trophy for all-time, gold clock for a window best) with a success or light haptic, and the set row keeps a badge; unlogging or editing re-evaluates. Theme.gold added.
 - **7.1**: TrainingMath.bestStatus implements rulebook §5a: an all-time best by estimated 1RM first; otherwise, only after a break of 30 days or more since the all-time best was reached, the longest 12/6/1-month window whose best is below the all-time best and is beaten. The break condition makes 'a gap of under a month keeps the all-time mark' hold for lifts trained continuously, which the window rule alone did not; spec and rulebook updated. First-ever sets and ties are not bests. ExerciseStats.e1RMHistory and marks supply the history and per-window bests for 7.2 and 7.3.
 - **6.7**: Phase 6 closed. 173 app tests and 59 studio tests pass; the final build is installed on the phone. README covers the new features and GymApp Studio; HANDOFF lists the phone checks still to do by hand (Apple Health, accepting the cabled suggestion, moving the backup folder to iCloud Drive) and the phase's judgement calls.

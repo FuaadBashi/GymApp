@@ -19,6 +19,16 @@ nonisolated struct WorkoutSnapshot: Equatable {
     var completedSetCount: Int
     var totalSetCount: Int
     var bests: [String: TrainingMath.BestStatus] = [:]   // card 7.2: set id → status
+    var hints: [String: BestHint] = [:]                   // card 7.3: exercise id → marks
+    var defaultRepRange: ClosedRange<Int> = 8...12
+
+    /// Card 7.3: what a set is measured against, including sets logged in this workout.
+    nonisolated struct BestHint: Equatable {
+        var allTime: Double?
+        var windowMonths: Int?
+        var windowBest: Double?
+        var step: Double
+    }
 }
 
 nonisolated enum WorkoutQueries {
@@ -45,19 +55,25 @@ nonisolated enum WorkoutQueries {
                                         studioTarget: try StudioSuggestions.activeTarget(db, exerciseId: exercise.id))
         }
         let all = items.flatMap(\.sets)
+        var hints: [String: WorkoutSnapshot.BestHint] = [:]
         return WorkoutSnapshot(workout: workout, items: items,
                                completedSetCount: all.filter { $0.completedAt != nil }.count, totalSetCount: all.count,
-                               bests: try bests(db, items: items))
+                               bests: try bests(db, items: items, hints: &hints),
+                               hints: hints,
+                               defaultRepRange: settings.defaultRepMin...max(settings.defaultRepMin, settings.defaultRepMax))
     }
 
     /// Card 7.2 (rulebook §5a): the best status of every logged set in the workout, each judged
     /// against the exercise's finished history and the sets logged before it in this workout.
-    static func bests(_ db: Database, items: [WorkoutSnapshot.Item]) throws -> [String: TrainingMath.BestStatus] {
+    static func bests(_ db: Database, items: [WorkoutSnapshot.Item],
+                      hints: inout [String: WorkoutSnapshot.BestHint], now: Date = .now) throws -> [String: TrainingMath.BestStatus] {
         var out: [String: TrainingMath.BestStatus] = [:]
         for exerciseId in Set(items.map(\.exercise.id)) {
             let mine = items.filter { $0.exercise.id == exerciseId }
             guard let loadMode = mine.first?.exercise.loadMode, loadMode != .bodyweightPlus, loadMode != .repsOnly else { continue }
-            var history = ExerciseStats.e1RMHistory(try ExerciseQueries.sessions(db, exerciseId: exerciseId), loadMode: loadMode)
+            let sessions = try ExerciseQueries.sessions(db, exerciseId: exerciseId)
+            var history = ExerciseStats.e1RMHistory(sessions, loadMode: loadMode)
+            let loads = sessions.flatMap(\.sets).compactMap { set in set.loadHundredths.map { Load(hundredths: $0, unit: set.unit).kg } }
             let logged = mine.flatMap(\.sets).filter { $0.completedAt != nil }.sorted { $0.completedAt! < $1.completedAt! }
             for set in logged {
                 guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths, let done = set.completedAt,
@@ -67,6 +83,9 @@ nonisolated enum WorkoutQueries {
                 if status != .none { out[set.id] = status }
                 history.append((done, e))
             }
+            let window = TrainingMath.eligibleWindows(history: history, at: now).first
+            hints[exerciseId] = .init(allTime: history.map(\.e1RM).max(), windowMonths: window?.months,
+                                      windowBest: window?.best, step: TrainingMath.step(loads: loads))
         }
         return out
     }

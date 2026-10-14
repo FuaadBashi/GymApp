@@ -71,23 +71,49 @@ nonisolated enum TrainingMath {
     /// the all-time best and is beaten. Ties are not bests (0.01 kg), and a first-ever set has
     /// nothing to beat. `history` holds earlier estimated 1RMs with their dates.
     static func bestStatus(e1RM: Double, history: [(date: Date, e1RM: Double)], at date: Date) -> BestStatus {
-        let earlier = history.filter { $0.date <= date }.sorted { $0.date < $1.date }
-        guard let allTime = earlier.map(\.e1RM).max() else { return .none }
+        guard let allTime = history.filter({ $0.date <= date }).map(\.e1RM).max() else { return .none }
         if e1RM - allTime > 0.01 { return .allTime(beat: allTime) }
-
-        // When the all-time best was last reached, and whether training broke off since.
-        let bestDate = earlier.last { allTime - $0.e1RM <= 0.01 }!.date
-        let since = earlier.map(\.date).filter { $0 >= bestDate } + [date]
-        let gapSeconds = Double(breakDays) * 86_400
-        let hadBreak = zip(since, since.dropFirst()).contains { $1.timeIntervalSince($0) >= gapSeconds }
-        guard hadBreak else { return .none }
-
-        for window in bestWindows {
-            let from = date.addingTimeInterval(-Double(window.days) * 86_400)
-            guard let best = earlier.filter({ $0.date >= from }).map(\.e1RM).max(),
-                  allTime - best > 0.01, e1RM - best > 0.01 else { continue }
-            return .window(months: window.months, beat: best)
+        for window in eligibleWindows(history: history, at: date) where e1RM - window.best > 0.01 {
+            return .window(months: window.months, beat: window.best)
         }
         return .none
+    }
+
+    /// §5a: the windows a set could earn, longest first: empty unless training broke off for
+    /// `breakDays` since the all-time best was last reached, and only windows whose best is
+    /// below the all-time best.
+    static func eligibleWindows(history: [(date: Date, e1RM: Double)], at date: Date) -> [(months: Int, best: Double)] {
+        let earlier = history.filter { $0.date <= date }.sorted { $0.date < $1.date }
+        guard let allTime = earlier.map(\.e1RM).max(),
+              let bestDate = earlier.last(where: { allTime - $0.e1RM <= 0.01 })?.date else { return [] }
+        let since = earlier.map(\.date).filter { $0 >= bestDate } + [date]
+        let gapSeconds = Double(breakDays) * 86_400
+        guard zip(since, since.dropFirst()).contains(where: { $1.timeIntervalSince($0) >= gapSeconds }) else { return [] }
+        return bestWindows.compactMap { window in
+            let from = date.addingTimeInterval(-Double(window.days) * 86_400)
+            guard let best = earlier.filter({ $0.date >= from }).map(\.e1RM).max(), allTime - best > 0.01 else { return nil }
+            return (window.months, best)
+        }
+    }
+
+    // MARK: Card 7.3 Beat my best
+
+    /// The load step an exercise moves in: the most common positive gap between the distinct
+    /// loads used (smaller wins a tie), else 2.5 kg.
+    static func step(loads: [Double]) -> Double {
+        let distinct = Set(loads.filter { $0 > 0 }.map { ($0 * 100).rounded() / 100 }).sorted()
+        var counts: [Double: Int] = [:]
+        for (a, b) in zip(distinct, distinct.dropFirst()) { counts[((b - a) * 100).rounded() / 100, default: 0] += 1 }
+        return counts.max { $0.value != $1.value ? $0.value < $1.value : $0.key > $1.key }?.key ?? 2.5
+    }
+
+    /// For each rep count, the lightest multiple of `step` whose estimated 1RM beats `best`
+    /// by more than 0.01 kg (§4, §5a).
+    static func beatTable(best: Double, reps: ClosedRange<Int>, step: Double) -> [(reps: Int, kg: Double)] {
+        reps.map { r in
+            var kg = (best / (r <= 1 ? 1 : 1 + Double(r) / 30) / step).rounded(.up) * step
+            if e1RM(kg: kg, reps: r) - best <= 0.01 { kg += step }
+            return (r, (kg * 100).rounded() / 100)
+        }
     }
 }

@@ -56,3 +56,22 @@ struct BestStatusTests {
         #expect(marks.windows[12] == 76)
     }
 }
+
+/// Card 7.3: steps and the "beat my best" table.
+struct BeatBestTests {
+    @Test func stepIsTheMostCommonGap() {
+        #expect(TrainingMath.step(loads: [4.5, 9, 13.5, 18, 22.5, 27]) == 4.5)
+        #expect(TrainingMath.step(loads: [20, 22.5, 25, 27.5, 30, 40]) == 2.5)
+        #expect(TrainingMath.step(loads: []) == 2.5)
+        #expect(TrainingMath.step(loads: [10, 15, 20, 22.5]) == 5)
+    }
+
+    @Test func tableGivesTheLightestLoadThatBeatsTheBest() {
+        // Best 100 kg. Epley: 8 reps needs > 100 / (1 + 8/30) = 78.95 → 80; 10 → 75.00 exactly
+        // ties, so 77.5; 12 → 71.43 → 72.5.
+        let rows = TrainingMath.beatTable(best: 100, reps: 8...12, step: 2.5)
+        #expect(rows.map(\.reps) == [8, 9, 10, 11, 12])
+        #expect(rows.map(\.kg) == [80, 77.5, 77.5, 75, 72.5])
+        for row in rows { #expect(TrainingMath.e1RM(kg: row.kg, reps: row.reps) > 100.01) }
+    }
+}
