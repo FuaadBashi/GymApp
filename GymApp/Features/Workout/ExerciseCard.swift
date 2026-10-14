@@ -98,6 +98,21 @@ struct ExerciseCard: View {
             .buttonStyle(.plain)
         }
 
+        if let target = item.studioTarget, let unit = target.unit, let reps = target.reps {
+            HStack {
+                Label("Studio: \(Load.format(Double(target.loadHundredths ?? 0) / 100)) \(unit.rawValue) × \(reps)", systemImage: "wand.and.stars")
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                if !item.plannedSets.isEmpty {
+                    Button("Fill sets") { Task { await model.fillStudioTarget(item.id) } }
+                        .buttonStyle(.bordered).controlSize(.small)
+                }
+            }
+            .padding(10)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .accessibilityElement(children: .combine)
+        }
+
         ExerciseMediaView(exercise: item.exercise)
         Button {
             metadata = MetadataDraft(kind: .exercise, id: item.id, note: item.workoutExercise.note ?? "")

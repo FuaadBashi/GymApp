@@ -154,6 +154,15 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
             saveStatus()
         }
     }
+    /// Runs `body` with the chosen backup folder open, for files other than backups (card 6.3).
+    func withExternalFolder<T>(_ body: (URL) throws -> T) throws -> T {
+        guard let bookmark = try? Data(contentsOf: folder.appending(path: "destination.bookmark")) else { throw Failure.missingFolder }
+        var stale = false
+        let destination = try URL(resolvingBookmarkData: bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &stale)
+        let accessed = destination.startAccessingSecurityScopedResource()
+        defer { if accessed { destination.stopAccessingSecurityScopedResource() } }
+        return try body(destination)
+    }
     private func copyOutside(_ source: URL) throws {
         guard let bookmark = try? Data(contentsOf: folder.appending(path: "destination.bookmark")) else { throw Failure.missingFolder }
         var stale = false

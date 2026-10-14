@@ -37,14 +37,18 @@ the Progress tab shows real steps.
 - The studio writes `GymApp-suggestions.json` into the backup folder: a list of
   `{id, created, kind, title, detail, reason, exerciseId?, dayId?, change}` where kind is
   `target` (weight × reps for the next session), `swap` (replace an exercise in a day) or
-  `note` (advice with no change). Every item carries its reason and the rule that made it.
+  `note` (advice with no change). Every item carries its reason and the rule that made it
+  (`rule`). `change` is `{weight, unit, reps}` for a target (weight as entered, negative for
+  assistance) and `{from, to}` for a swap.
+- The app also reads the file from its own Documents folder, so a file copied over the
+  cable works when the backup folder isn't in iCloud Drive.
 - The app reads the file from the bookmarked backup folder on launch, foreground and pull
   to refresh. Train shows a "Studio suggestions (n)" card; each suggestion opens with the
   reason and **Accept** / **Dismiss**. Nothing changes until Accept.
 - Accept: `target` stores an accepted target that the workout screen shows above that
   exercise's sets ("Studio: 52.5 kg × 8", with "Fill sets"); `swap` changes the day item
   through `ProgramWrites`; `note` is just marked read. Decisions are stored (table
-  `studioDecision`, migration v3) and written back to `GymApp-suggestion-decisions.json`
+  `studioDecision`, migration v4, since v3 is card 6.2's `healthDay`) and written back to `GymApp-suggestion-decisions.json`
   so the studio knows what was accepted.
 - Studio: a Suggestions page to draft, review and publish them, from plateau checks, the
   weak-point check and next targets, plus free text.

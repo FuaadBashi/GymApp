@@ -112,6 +112,18 @@ final class ActiveWorkoutModel {
         await change { try WorkoutWrites.updateSet($0, setId: setId, edit: edit) }
     }
 
+    /// Card 6.3: puts an accepted studio target into every planned set of the exercise.
+    func fillStudioTarget(_ itemId: String) async {
+        guard let item = snapshot?.items.first(where: { $0.id == itemId }), let target = item.studioTarget,
+              let unit = target.unit, let reps = target.reps else { return }
+        let load = item.exercise.loadMode == .repsOnly ? nil : target.loadHundredths
+        await change { db in
+            for set in item.plannedSets where set.type != .warmUp {
+                try WorkoutWrites.updateSet(db, setId: set.id, edit: SetEdit(loadHundredths: load, unit: unit, reps: reps, type: set.type))
+            }
+        }
+    }
+
     func addSet(to itemId: String) async {
         guard let newId = await change({ db in
             try WorkoutWrites.addSet(db, workoutExerciseId: itemId, settings: try AppSettings.load(db)).id

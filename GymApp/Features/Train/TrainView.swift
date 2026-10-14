@@ -11,6 +11,8 @@ struct TrainView: View {
     @State private var model: TrainViewModel
     @State private var path: [TrainRoute] = []
     @State private var creating = false
+    @State private var inbox = StudioInbox.shared
+    @State private var showingSuggestions = false
 
     init(db: AppDatabase) { _model = State(initialValue: TrainViewModel(db: db)) }
 
@@ -19,6 +21,9 @@ struct TrainView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     SigningExpiryBanner()
+                    if !inbox.pending.isEmpty {
+                        StudioSuggestionsCard(count: inbox.pending.count) { showingSuggestions = true }
+                    }
                     if let program = model.program {
                         Text(program.name.uppercased())
                             .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
@@ -76,6 +81,13 @@ struct TrainView: View {
                     Task { await model.reload() }
                     path.append(.program(id))
                 }
+            }
+            .sheet(isPresented: $showingSuggestions) {
+                StudioSuggestionsSheet(db: model.db) { Task { await model.reload() } }
+            }
+            .refreshable {
+                await inbox.reload(model.db)
+                await model.reload()
             }
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }

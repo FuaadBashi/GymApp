@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, ask, progression, watch
+from . import analysis, ask, progression, suggestions, watch
 from .data import History
 from .lab import NotebookLab
 
@@ -332,6 +332,41 @@ def ask_question(values: dict, request: Request):
         raise HTTPException(502, str(error)) from error
     return {"answer": a.text, "tool_calls": a.tool_calls, "provider": a.provider, "model": a.model, "mode": mode,
             "unverified": a.unverified}
+
+
+def suggestions_folder() -> Path:
+    """Suggestions go beside the loaded backup, which is the phone's backup folder when the
+    studio reads it from iCloud Drive."""
+    state.require()
+    return state.path.parent
+
+
+@app.get("/api/suggestions")
+def get_suggestions():
+    h = state.require()
+    folder = suggestions_folder()
+    decided = suggestions.decisions(folder)
+    live = {i["id"] for i in suggestions.published(folder)}
+    drafts = [d for d in suggestions.drafts(h, state.settings) if d["id"] not in decided and d["id"] not in live]
+    return {"folder": str(folder), "drafts": drafts, "published": suggestions.published(folder),
+            "decisions": list(decided.values())}
+
+
+@app.post("/api/suggestions/publish")
+def publish_suggestions(values: dict, request: Request):
+    check_same_origin(request)
+    folder = suggestions_folder()
+    items = list(values.get("items") or [])
+    for n in values.get("notes") or []:
+        try:
+            items.append(suggestions.note(n.get("title", ""), n.get("detail", ""), n.get("reason", "")))
+        except ValueError as error:
+            raise HTTPException(422, str(error)) from error
+    try:
+        written = suggestions.publish(folder, items)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+    return {"published": written, "folder": str(folder)}
 
 
 def check_notebook_write(request):

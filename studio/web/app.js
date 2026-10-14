@@ -451,6 +451,45 @@ const SETTING_HELP = {
   default_rep_range: ["Default rep range", "Used for exercises that aren't in the program."],
   week_starts_monday: ["Week starts Monday", "Otherwise Sunday, like the app's default."],
 };
+// Suggestions (card 6.3)
+
+pages.suggestions = async () => {
+  const d = await api("suggestions");
+  const decided = Object.fromEntries(d.decisions.map(x => [x.id, x]));
+  const kindLabel = { target: "Next target", swap: "Swap", note: "Note" };
+  const row = (s, box) => `
+    <label class="row" style="align-items:flex-start;gap:12px;cursor:${box ? "pointer" : "default"}">
+      ${box ? `<input type="checkbox" data-id="${esc(s.id)}" checked style="margin-top:4px">` : ""}
+      <div class="grow"><div class="t">${esc(s.title)}</div>
+        <div class="s">${esc(s.detail)}</div>
+        <div class="s faint">${esc(kindLabel[s.kind])} · ${esc(s.rule)} · ${esc(s.reason)}</div></div>
+      ${box ? "" : statusChip(decided[s.id]?.decision || "waiting")}
+    </label>`;
+  main.innerHTML = `<h1>Suggestions</h1>
+    <p class="sub">Drafted from the plateau check, the weak-point check and next targets. Publishing writes ${esc("GymApp-suggestions.json")} to <code>${esc(d.folder)}</code>; the phone shows each one on Train with its reason, and nothing changes there until you accept it.</p>
+    <div class="card"><h2>Drafts</h2>
+      ${d.drafts.length ? `<div class="list" id="drafts">${d.drafts.map(s => row(s, true)).join("")}</div>` : `<div class="empty">No new drafts. Every current suggestion is already published or decided.</div>`}
+      <h2 style="margin-top:20px">Note</h2>
+      <div style="display:grid;gap:8px"><input id="nt" placeholder="Title, e.g. Sleep before heavy days">
+        <textarea id="nd" rows="2" placeholder="Detail"></textarea><input id="nr" placeholder="Why (optional)"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:14px"><button class="primary" id="pub">Publish selected</button><span id="pubmsg" class="faint"></span></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h2>On the phone</h2>
+      ${d.published.length ? `<div class="list">${d.published.map(s => row(s, false)).join("")}</div>` : `<div class="empty">Nothing published yet.</div>`}
+      ${d.decisions.length ? `<h2 style="margin-top:20px">Decided on the phone</h2><table><tr><th>Suggestion</th><th>Decision</th><th>When</th></tr>${d.decisions.map(x => `<tr><td>${esc(x.id)}</td><td>${esc(x.decision)}</td><td>${day(x.decidedAt)}</td></tr>`).join("")}</table>` : ""}
+    </div>`;
+  $("#pub").onclick = async () => {
+    const chosen = new Set([...document.querySelectorAll("#drafts input:checked")].map(i => i.dataset.id));
+    const items = [...d.published.filter(s => !decided[s.id]), ...d.drafts.filter(s => chosen.has(s.id))];
+    const notes = $("#nt").value.trim() ? [{ title: $("#nt").value, detail: $("#nd").value, reason: $("#nr").value }] : [];
+    try {
+      const r = await api("suggestions/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items, notes }) });
+      $("#pubmsg").textContent = `Published ${r.published.length}.`;
+      setTimeout(route, 600);
+    } catch (e) { $("#pubmsg").textContent = e.message; }
+  };
+};
+
 pages.settings = async () => {
   const [s, st] = await Promise.all([api("settings"), api("status")]);
   main.innerHTML = `<h1>Settings</h1><p class="sub">Every threshold the analyses use. Saved on this Mac only.</p>

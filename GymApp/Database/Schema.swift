@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3"]
+    static let versions = ["v1", "v2", "v3", "v4"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -28,6 +28,25 @@ nonisolated enum Schema {
                   CHECK ((weightHundredths IS NULL) = (weightUnit IS NULL))
                 )
                 """)
+        }
+        migrator.registerMigration("v4") { db in
+            // Card 6.3: what was decided about each studio suggestion. An accepted target keeps
+            // its load as entered in the studio (hundredths plus unit).
+            try db.execute(sql: """
+                CREATE TABLE studioDecision (
+                  suggestionId TEXT PRIMARY KEY NOT NULL CHECK (length(suggestionId) > 0),
+                  kind TEXT NOT NULL CHECK (kind IN ('target','swap','note')),
+                  decision TEXT NOT NULL CHECK (decision IN ('accepted','dismissed')),
+                  decidedAt TEXT NOT NULL,
+                  title TEXT NOT NULL,
+                  exerciseId TEXT,
+                  loadHundredths INTEGER,
+                  unit TEXT CHECK (unit IN ('kg','lb')),
+                  reps INTEGER CHECK (reps > 0),
+                  CHECK ((loadHundredths IS NULL) = (unit IS NULL))
+                )
+                """)
+            try db.execute(sql: "CREATE INDEX studioDecision_exercise ON studioDecision(exerciseId, decidedAt)")
         }
         return migrator
     }

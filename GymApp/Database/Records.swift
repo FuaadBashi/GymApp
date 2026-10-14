@@ -134,6 +134,21 @@ nonisolated struct HealthDayRecord: Codable, Identifiable, Hashable, FetchableRe
     var id: String { date }
 }
 
+nonisolated struct StudioDecisionRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "studioDecision"
+    enum Decision: String, Codable, Sendable { case accepted, dismissed }
+    var suggestionId: String
+    var kind: StudioSuggestion.Kind
+    var decision: Decision
+    var decidedAt: Date
+    var title: String
+    var exerciseId: String?
+    var loadHundredths: Int?
+    var unit: WeightUnit?
+    var reps: Int?
+    var id: String { suggestionId }
+}
+
 nonisolated struct BodyEntryRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {
     static let databaseTableName = "bodyEntry"
     var id: String

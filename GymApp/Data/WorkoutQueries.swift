@@ -11,6 +11,7 @@ nonisolated struct WorkoutSnapshot: Equatable {
         var sets: [WorkoutSetRecord]       // position order, completed and planned
         var previous: ExerciseSession?     // rulebook §7, finished sessions only
         var previousIsSameDay: Bool
+        var studioTarget: StudioDecisionRecord? = nil   // card 6.3, an accepted target
         var id: String { workoutExercise.id }
         var plannedSets: [WorkoutSetRecord] { sets.filter { $0.completedAt == nil } }
     }
@@ -39,7 +40,8 @@ nonisolated enum WorkoutQueries {
             guard let exercise = exercises[we.exerciseId] else { return nil }
             let last = try ExerciseQueries.lastSession(db, exerciseId: exercise.id, preferringDays: days, before: workout.startedAt)
             return WorkoutSnapshot.Item(workoutExercise: we, exercise: exercise, sets: sets[we.id] ?? [],
-                                        previous: last?.session, previousIsSameDay: last?.isSameDay ?? false)
+                                        previous: last?.session, previousIsSameDay: last?.isSameDay ?? false,
+                                        studioTarget: try StudioSuggestions.activeTarget(db, exerciseId: exercise.id))
         }
         let all = items.flatMap(\.sets)
         return WorkoutSnapshot(workout: workout, items: items,

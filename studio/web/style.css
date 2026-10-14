@@ -45,6 +45,9 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: va
 .chip.rebuilding { background: rgba(115, 169, 255, .14); color: var(--blue); }
 .chip.add-weight { background: var(--volt); color: #000; }
 .chip.add-reps { background: var(--volt-dim); color: var(--volt); }
+.chip.accepted { background: var(--volt-dim); color: var(--volt); }
+.chip.dismissed { background: rgba(255, 255, 255, .06); color: var(--dim); }
+.chip.waiting { background: rgba(115, 169, 255, .14); color: var(--blue); }
 
 .list { display: flex; flex-direction: column; gap: 2px; }
 .row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; }
