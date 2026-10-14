@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: none.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 10.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -231,6 +231,7 @@ card should know.
 - **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
 - **Screenshots (9.6):** the repo is public, so only the already-tracked Train, History and Progress screenshots were refreshed; studio pages and the end screen show the full analysis and notes and were kept out. Say if they should be committed.
 - **Studio font (9.5):** the system font replaced Inter (offline, and the app's family).
+- **Animated demonstrations (10):** a 3D figure from two angles has no free source. Options for later: a bought library (MoveKit Gym Pack, 424 exercises, £189 one-off; Vital Animations, about 400, $49; licence for bundling to be confirmed) or our own pose-extraction pipeline (GVHMR, Blender; several long sessions, game-quality look). AI video was rejected for unreliable hands, bars and consistency.
 - **Recap speed (6.6):** about 2 s for a year on the simulator since the review fix.
 - **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 

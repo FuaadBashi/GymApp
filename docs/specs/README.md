@@ -16,6 +16,7 @@ rely on everything before it.
 | [07-records-workout.md](07-records-workout.md) | 7: records, the workout flow and goals | full |
 | [08-studio-reports-planner.md](08-studio-reports-planner.md) | 8: studio reports, data health, planner | full |
 | [09-polish.md](09-polish.md) | 9: visual polish | full |
+| [10-demos-cues-design.md](10-demos-cues-design.md) | 10: demonstrations, form cues, exercise page, studio look | full |
 | [03-05-outline.md](03-05-outline.md) | 3–5 outline, superseded by the files above | historical |
 
 Progress is tracked in [../HANDOFF.md](../HANDOFF.md).
