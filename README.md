@@ -14,12 +14,18 @@ in-app and matching a Python reference importer row for row).
 - **Workout:** list and focus modes, prefill from the day's last session, every set saved
   immediately, resume after the app is killed, rest alerts and a lock-screen countdown, a
   mini-player, swaps, a plate calculator, and a summary with volume, records and muscles.
+  Reps left (Max, 1, 2, 3) is one tap under each set.
 - **History:** a month calendar and every workout since 2022 by week; each workout opens to
   its sets and figures and can be corrected, with every figure recomputing.
-- **Exercises:** search and filters, a progress chart (estimated 1RM, heaviest, volume),
-  records with dates, history, notes and offline demonstrations for eight lifts.
-- **Progress:** 12 weeks of volume, sessions and time; sets per muscle on a body map; recent
-  records; body weight.
+- **Exercises:** search and filters, a progress chart (estimated 1RM, heaviest, volume) where
+  tapping a point shows that session, records with dates, history, notes and offline
+  demonstrations.
+- **Recaps:** this month, last month and a "Year in training" page for every year since 2022.
+- **Progress:** 12 weeks of volume, sessions and time; sets per muscle on a body map; recovery
+  over the last 72 hours; movement-pattern strength trends; recent records; body weight and
+  daily steps, read from Apple Health with permission.
+- **Studio suggestions:** next targets, swaps and notes published by GymApp Studio appear on
+  Train with their reason, and change nothing until accepted.
 - **Backups and export:** verified local recovery copies after every change, copies to a
   folder of my choosing, checked restores, and a Strong-compatible CSV of every set.
   [The export format](docs/EXPORT_FORMAT.md) is documented for tools built on the data.
@@ -42,7 +48,7 @@ Start with [the training rulebook](docs/TRAINING_RULEBOOK.md): every number the 
 defined there. [The decisions](docs/DECISIONS.md) explain the constraints, and
 [the JEFIT export notes](docs/JEFIT_EXPORT.md) cover the import format and its traps. In code,
 [`TrainingMath`](GymApp/Domain/TrainingMath.swift) implements the rulebook and
-[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered. Phases 0–3 are planned
+[`Load`](GymApp/Domain/Load.swift) stores weights exactly as entered. Every phase is planned
 card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds the live status.
 
 ## Status
@@ -55,7 +61,17 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 2 | Workout screen | done |
 | 3 | History and analytics (lean) | done |
 | 4 | Import, export and backups | done |
-| 5 | On the phone | code done; [install on the phone](docs/PHONE_SETUP.md) next |
+| 5 | On the phone ([setup](docs/PHONE_SETUP.md)) | done, installed |
+| 6 | The phone side of the studio | done |
+
+## GymApp Studio
+
+A separate offline Mac program in [studio/](studio/README.md) reads the phone's backups and
+does the heavy analysis: plateau and weak-point checks, next targets, a rule lab that replays
+progression rules against the history, marimo notebooks, and an optional question box backed
+by Claude or a local model. Rules are proven there before they move into the app, and its
+suggestions reach the phone through the backup folder. [The plan](docs/STUDIO_PLAN.md) has
+the design and the decisions behind it.
 
 ## The constraints this repo is shaped around
 
@@ -121,12 +137,13 @@ GymApp/Domain/       Load, SetType, exercise types, TrainingMath (the rulebook i
 GymApp/Database/     schema, records, AppDatabase
 GymApp/Import/       JEFIT reader, importer, import screen
 GymApp/Library/      bundled library and exercise-map loading
-GymApp/Services/     rest-timer notifications
+GymApp/Services/     rest-timer notifications, recovery copies, Apple Health, studio inbox
 GymApp/Data/         queries and writes for exercises, programs, workouts and summaries
 GymApp/Features/     settings, exercise library, programs and workout screens
 GymApp/Resources/    data bundled with the app: exercise library, JEFIT exercise map
 GymAppTests/         unit tests (Swift Testing) and import fixtures
 tools/               JEFIT parsing, exercise classification, library build, reference importer
 third_party/         free-exercise-db, public domain
+studio/              GymApp Studio: Python analysis server, web interface, Mac launcher
 docs/                brief, decisions, roadmap, rulebook, export notes, specs, handoff
 ```

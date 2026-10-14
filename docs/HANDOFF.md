@@ -27,11 +27,11 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 6.7.** Every card in phases 0–5 is done. What remains needs the phone:
-follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
+**Next card: none.** Phases 0–6 are done; the next step is a code review of phase 6. What
+remains needs the phone or the Mac by hand: the device checklist below.
 
-Phases 3 (lean), 4 and 5 were specified and built card by card on 12 October. 153 tests pass. Judgement
-calls are under *Open questions*.
+Phase 6 was specified and built on 14 October (cards 6.1–6.7); 173 app tests and 59 studio
+tests pass. Judgement calls are under *Open questions*.
 
 ### Device checklist (from PHONE_SETUP.md)
 - [ ] Rest alert with the phone locked and music playing
@@ -40,6 +40,9 @@ calls are under *Open questions*.
 - [ ] Restore from that backup
 - [ ] Expiry banner via `-signingExpiry 1`, and the real date on day six
 - [ ] Reinstall after 7 days keeps the data
+- [ ] Settings → Apple Health → Connect, allow steps and weight; Progress shows steps (6.2)
+- [ ] Train shows "Studio suggestions (1)" (the Barbell Bench Press target copied over the cable); accept it, start Full Body 1 and see "Studio: 52.5 kg × 10" with Fill sets (6.3)
+- [ ] Move the backup folder to iCloud Drive so the studio can publish suggestions without the cable (6.3)
 
 ## Cards
 
@@ -99,7 +102,7 @@ calls are under *Open questions*.
 - [x] 6.4 Tap a chart point
 - [x] 6.5 Recovery and movement patterns
 - [x] 6.6 Recaps
-- [ ] 6.7 Phase close
+- [x] 6.7 Phase close
 
 ## Requested after phase 2
 
@@ -116,6 +119,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **6.7**: Phase 6 closed. 173 app tests and 59 studio tests pass; the final build is installed on the phone. README covers the new features and GymApp Studio; HANDOFF lists the phone checks still to do by hand (Apple Health, accepting the cabled suggestion, moving the backup folder to iCloud Drive) and the phase's judgement calls.
 - **6.6**: History has a Recaps button: this month, last month and a Year in training page for each year since 2022 with workouts, time, volume, sets, records set, most trained muscle, longest weekly streak and a by-month chart linking to each month. RecapQueries builds on HistoryQueries.items, ProgressQueries.muscles and ProgressQueries.recentRecords, so the totals match History and Progress. 2025 on the real history: 115 workouts, 503 records, matching an independent count from the studio's rulebook (204 heaviest, 299 e1RM). A year takes about 4 s on the simulator because every exercise's record history is replayed; a spinner shows meanwhile.
 - **6.5**: Progress gains a Recovery card (hard sets of the last 72 hours per muscle, each weighted linearly by time since, on the body map from fresh to worked, plus a list) and a Movement patterns card (squat, hinge, horizontal and vertical push and pull: weekly best e1RM change over 8 weeks). The hard-set rule is now SummaryQueries.isHard, shared by the weekly muscle counts and recovery. Pattern change is measured from each lift's first trained week in the window rather than the 8 weeks before it: the owner's training restarted on 1 Oct after a gap since May, so the earlier baseline was empty; spec updated. BodyMapView takes a colour function.
 - **6.4**: Tapping the exercise progress chart selects the closest session (ExerciseStats.nearest) and shows its date, the metric value and its sets under the chart, linking to the workout. A tap gesture over the plot is used rather than chartXSelection, which inside a scroll view only responds to a long press. Checked in the simulator on Barbell Squat.
@@ -174,6 +178,9 @@ card should know.
 ## Open questions
 
 - **Body map regions (3.5):** the MIT artwork has no separate lats/middle back region (both shade 'upper-back') and no outer-hip region (abductors shade the glutes, which hold gluteus medius). Its source names for the inner-thigh regions are swapped; both are mapped to adductors. Revisit if more precise artwork is wanted.
+- **Suggestion targets and migrations (6.3):** the spec named migration v3 for `studioDecision`; v3 was already card 6.2's `healthDay`, so it is v4. The app also reads `GymApp-suggestions.json` from its own Documents folder so the cable works without iCloud.
+- **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
+- **Recap speed (6.6):** a year takes about 4 s on the simulator because records replay every exercise's history. Caching records would fix it if it bothers on the phone.
 - **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
 
 Questions a card raised that the spec did not answer. Do not guess; record them here and
