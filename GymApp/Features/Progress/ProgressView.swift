@@ -11,6 +11,8 @@ final class ProgressModel {
     private(set) var records: [RecentRecord] = []
     private(set) var weights: [(date: String, kg: Double)] = []
     private(set) var steps: StepsSummary?
+    private(set) var recovery: [(muscle: Muscle, sets: Double)] = []
+    private(set) var patterns: [PatternTrend] = []
     private(set) var settings = AppSettings()
     private(set) var loaded = false
 
@@ -31,9 +33,11 @@ final class ProgressModel {
                     try ProgressQueries.muscles(db, from: lastStart, to: start),
                     try ProgressQueries.recentRecords(db),
                     try ProgressQueries.bodyWeights(db),
-                    try ProgressQueries.steps(db, now: now, weekStartsOn: settings.weekStartsOn))
+                    try ProgressQueries.steps(db, now: now, weekStartsOn: settings.weekStartsOn),
+                    try ProgressQueries.recovery(db, now: now),
+                    try ProgressQueries.patterns(db, now: now, weekStartsOn: settings.weekStartsOn))
         }) else { return }
-        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps) = result
+        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns) = result
         loaded = true
     }
 
@@ -57,6 +61,8 @@ struct ProgressTab: View {
                 VStack(alignment: .leading, spacing: 16) {
                     weekly
                     muscles
+                    recovery
+                    patterns
                     recentRecords
                     bodyWeight
                     stepsCard
@@ -152,6 +158,64 @@ struct ProgressTab: View {
                 }
             }
             Text("Hard sets: 1 per primary muscle, ½ per secondary. Shaded band: 10–20 a week.")
+                .font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    // MARK: Recovery (card 6.5)
+
+    private var recovery: some View {
+        let sets = Dictionary(uniqueKeysWithValues: model.recovery.map { ($0.muscle, $0.sets) })
+        return card("Recovery · last 72 hours") {
+            BodyMapView(sets: sets) { RecoveryBand($0).color }.frame(height: 260)
+            HStack(spacing: 8) {
+                ForEach(RecoveryBand.allCases, id: \.self) { band in
+                    HStack(spacing: 3) {
+                        RoundedRectangle(cornerRadius: 2).fill(band.color).frame(width: 10, height: 10)
+                        Text(band.label).font(.caption2).foregroundStyle(.secondary)
+                    }
+                }
+            }
+            if model.recovery.isEmpty {
+                Text("Every muscle is fresh: no hard sets in the last 72 hours.").font(.subheadline).foregroundStyle(.secondary)
+            }
+            ForEach(model.recovery, id: \.muscle) { m in
+                HStack {
+                    Text(m.muscle.displayName).font(.subheadline)
+                    Spacer()
+                    Text(RecoveryBand(m.sets).label).font(.caption).foregroundStyle(.secondary)
+                    Text(Load.format((m.sets * 10).rounded() / 10)).font(.caption.monospacedDigit()).frame(width: 34, alignment: .trailing)
+                }
+            }
+            Text("Hard sets weighted by time since: a set counts fully when done and nothing after 72 hours.")
+                .font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    // MARK: Movement patterns (card 6.5)
+
+    private var patterns: some View {
+        card("Movement patterns · 8 weeks") {
+            if model.patterns.isEmpty {
+                Text("Patterns appear once a squat, hinge, push or pull lift is trained.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+            }
+            ForEach(model.patterns) { trend in
+                HStack(spacing: 12) {
+                    Text(trend.pattern.displayName).font(.subheadline).frame(width: 120, alignment: .leading)
+                    Chart(trend.weeks, id: \.start) { w in
+                        LineMark(x: .value("Week", w.start), y: .value("Change", w.change * 100)).foregroundStyle(Theme.accent)
+                        PointMark(x: .value("Week", w.start), y: .value("Change", w.change * 100)).foregroundStyle(Theme.accent).symbolSize(12)
+                    }
+                    .chartXAxis(.hidden)
+                    .chartYAxis(.hidden)
+                    .chartXScale(domain: (model.patterns.flatMap { $0.weeks.map(\.start) }.min() ?? .now)...(model.patterns.flatMap { $0.weeks.map(\.start) }.max() ?? .now))
+                    .frame(height: 32)
+                    Text(trend.weeks.last.map { String(format: "%+.1f%%", $0.change * 100) } ?? "–")
+                        .font(.subheadline.monospacedDigit()).frame(width: 64, alignment: .trailing)
+                }
+            }
+            Text("Each week's best estimated 1RM against the lift's first week in the window, averaged over the pattern's lifts.")
                 .font(.caption2).foregroundStyle(.secondary)
         }
     }

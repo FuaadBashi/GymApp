@@ -78,10 +78,15 @@ nonisolated enum SummaryQueries {
 
     /// Hard sets per muscle (rulebook §6): 1 per primary, 0.5 per secondary, for each completed
     /// set that is neither a warm-up nor a drop row (a drop row belongs to the set before it).
+    /// Rulebook §6: a hard set is a completed set that is neither a warm-up nor a drop row.
+    static func isHard(_ set: WorkoutSetRecord) -> Bool {
+        set.completedAt != nil && set.type != .warmUp && set.type != .drop
+    }
+
     static func muscles(_ lines: [WorkoutSummary.ExerciseLine]) -> [(muscle: Muscle, sets: Double)] {
         var counts: [Muscle: Double] = [:]
         for line in lines {
-            let hard = line.sets.filter { $0.completedAt != nil && $0.type != .warmUp && $0.type != .drop }.count
+            let hard = line.sets.filter(isHard).count
             guard hard > 0 else { continue }
             for m in line.exercise.primaryMuscles { counts[m, default: 0] += Double(hard) }
             for m in line.exercise.secondaryMuscles { counts[m, default: 0] += Double(hard) * 0.5 }

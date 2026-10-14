@@ -58,8 +58,38 @@ enum SetBand: CaseIterable {
     }
 }
 
+/// Card 6.5: recency-weighted hard sets of the last 72 hours.
+enum RecoveryBand: CaseIterable {
+    case fresh, recovering, worked
+
+    init(_ sets: Double) {
+        switch sets {
+        case ..<0.5: self = .fresh
+        case ..<3: self = .recovering
+        default: self = .worked
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .fresh: Color(white: 0.28)
+        case .recovering: Color.orange.opacity(0.5)
+        case .worked: .orange
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .fresh: "Fresh"
+        case .recovering: "Recovering"
+        case .worked: "Worked"
+        }
+    }
+}
+
 struct BodyMapView: View {
     let sets: [Muscle: Double]
+    var color: (Double) -> Color = { SetBand($0).color }
 
     var body: some View {
         if let map = BodyMap.bundled {
@@ -77,13 +107,13 @@ struct BodyMapView: View {
                 let dx = (size.width - map.viewBox[0] * scale) / 2
                 for region in map.figures[key] ?? [] {
                     let total = region.muscles.compactMap(Muscle.init(rawValue:)).map { sets[$0] ?? 0 }.max() ?? 0
-                    let color = region.muscles.isEmpty ? Color(white: 0.2) : SetBand(total).color
+                    let fill = region.muscles.isEmpty ? Color(white: 0.2) : color(total)
                     for polygon in region.polygons where polygon.count > 2 {
                         var path = Path()
                         path.move(to: CGPoint(x: dx + polygon[0][0] * scale, y: polygon[0][1] * scale))
                         for p in polygon.dropFirst() { path.addLine(to: CGPoint(x: dx + p[0] * scale, y: p[1] * scale)) }
                         path.closeSubpath()
-                        context.fill(path, with: .color(color))
+                        context.fill(path, with: .color(fill))
                     }
                 }
             }

@@ -66,7 +66,9 @@ and sets under the chart, with a link to the workout (JEFIT parity).
 - **Recovery**: per muscle, the hard sets of the last 72 hours weighted by time since (100%
   fresh after 72 h, linear), shown as the body map coloured fresh → worked, plus a list.
 - **Movement patterns**: weekly best e1RM change for squat, hinge, horizontal push, vertical
-  push, horizontal pull and vertical pull, over the last 8 weeks.
+  push, horizontal pull and vertical pull, over the last 8 weeks. Each lift is measured from
+  its first trained week in the window (so a return from a break still shows), and the
+  pattern is the mean of its lifts.
 
 ## Card 6.6: Recaps
 

@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 6.5.** Every card in phases 0–5 is done. What remains needs the phone:
+**Next card: 6.6.** Every card in phases 0–5 is done. What remains needs the phone:
 follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
 
 Phases 3 (lean), 4 and 5 were specified and built card by card on 12 October. 153 tests pass. Judgement
@@ -97,7 +97,7 @@ calls are under *Open questions*.
 - [x] 6.2 Steps and weight from Apple Health
 - [x] 6.3 Studio suggestions inbox
 - [x] 6.4 Tap a chart point
-- [ ] 6.5 Recovery and movement patterns
+- [x] 6.5 Recovery and movement patterns
 - [ ] 6.6 Recaps
 - [ ] 6.7 Phase close
 
@@ -116,6 +116,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **6.5**: Progress gains a Recovery card (hard sets of the last 72 hours per muscle, each weighted linearly by time since, on the body map from fresh to worked, plus a list) and a Movement patterns card (squat, hinge, horizontal and vertical push and pull: weekly best e1RM change over 8 weeks). The hard-set rule is now SummaryQueries.isHard, shared by the weekly muscle counts and recovery. Pattern change is measured from each lift's first trained week in the window rather than the 8 weeks before it: the owner's training restarted on 1 Oct after a gap since May, so the earlier baseline was empty; spec updated. BodyMapView takes a colour function.
 - **6.4**: Tapping the exercise progress chart selects the closest session (ExerciseStats.nearest) and shows its date, the metric value and its sets under the chart, linking to the workout. A tap gesture over the plot is used rather than chartXSelection, which inside a scroll view only responds to a long press. Checked in the simulator on Barbell Squat.
 - **6.3**: The studio drafts suggestions (next targets for the active program; on a plateau a deload target, a swap to a close variant and the weak-point note) and free-text notes, and publishes GymApp-suggestions.json beside the loaded backup. Ids are stable per exercise and session, so decided items are not offered again. The app reads the file from the backup folder and from its own Documents (cable delivery), shows Studio suggestions (n) on Train, and stores each decision in studioDecision (migration v4: v3 was already healthDay). An accepted target shows above that exercise's sets in the next workout with Fill sets, until a finished workout with the exercise starts after acceptance; a swap goes through ProgramWrites.updateItem; decisions are written back to GymApp-suggestion-decisions.json. Target loads may be negative (assistance). Verified in the simulator (card, detail, accept, decisions file). Device: the Barbell Bench Press target was copied to the phone's Documents; accepting it there is the owner's check.
 - **6.2**: HealthKit read access (steps, body mass) with the entitlement and usage string; permission is asked only from Settings → Apple Health. Migration v3 adds healthDay as specified; the last 365 days are upserted whenever the app becomes active. BodyQueries.weights merges Health and typed weights, typed winning on the same day, so body-weight volume uses scale weights. RecoveryStore.inspect accepts any leading run of Schema.versions. Progress has a steps card. The studio reads healthDay when present and shows steps on Overview. Device: built and installed; connecting Health needs the owner's tap on the phone.
