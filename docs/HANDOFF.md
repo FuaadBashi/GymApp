@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.7.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 7.8.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -108,7 +108,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 7.4 Fixing sets easily
 - [x] 7.5 The end screen
 - [x] 7.6 Supersets
-- [ ] 7.7 Warm-up builder
+- [x] 7.7 Warm-up builder
 - [ ] 7.8 Goals and standards
 - [ ] 7.9 Reports in the app
 - [ ] 7.10 Phase close
@@ -143,6 +143,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.7**: Each loaded exercise's workout menu has a Warm-up sets toggle. On builds the ramp before the first unlogged working set from its load and unit (TrainingMath.warmUpRamp, rulebook §3a): the strength ramp for the day's first exercise when it is a barbell squat, hinge or horizontal push, the short ramp otherwise, rounded to the exercise's learnt step; off removes only unlogged warm-ups. The choice is remembered on the day item (migration v6, dayExercise.warmUps) and applied when the next workout starts from that day.
 - **7.6**: Migration v5 adds supersetGroup and supersetRestSeconds (default 0) to dayExercise and workoutExercise; starting a workout copies them. 'Superset with…' and 'Remove from superset' are on the day editor's row menu and the workout card's menu (a group left with one member ends). Logging a member with a later member still planned sets only the member rest (none by default); the round's last member gets its normal rest, and selection moves to the next member with a planned set, round after round, then on to the next exercise. Tested for a pair, a group of three and ungrouping.
 - **7.5**: The end screen compares with the last time this day was done (else the last workout): duration, total lifted, sets and records tiles with the change, a body map of today's muscles, and every exercise with its sets, last time's sets, e1RM and volume change, and a volt or gold highlight and badge for the best it reached (§5a, via the shared ExerciseStats.statuses). Tapping an exercise opens the workout's edit page to fix or delete sets; the screen reloads on return. Back to workout calls WorkoutWrites.reopen (clears endedAt, refused while another workout is open) and returns to the workout screen. records() is now its own function so the previous workout's count can be shown.
 - **7.4**: Logged sets show a pencil; selecting one shows Unlog and Delete beside the editor, so a mistyped set is fixed in place instead of only through the long-press menu. Edits save immediately; records, banners and badges follow because they are derived. A test confirms correcting 590 kg to 59 kg removes the records it had made from recentRecords and the summary.

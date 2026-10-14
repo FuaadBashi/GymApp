@@ -32,6 +32,7 @@ nonisolated enum WorkoutWrites {
                                            supersetGroup: item.supersetGroup, supersetRestSeconds: item.supersetRestSeconds)
             try we.insert(db)
             try prefill(db, workout: workout, workoutExercise: we, settings: settings)
+            if item.warmUps { try setWarmUps(db, workoutExerciseId: we.id, on: true, remember: false) }
         }
         return workout
     }
@@ -210,6 +211,36 @@ nonisolated enum WorkoutWrites {
         workout.restDurationSeconds = nil
         try workout.update(db)
         return workout
+    }
+
+    /// Card 7.7: builds or removes the warm-up ramp before the first working set. Off removes
+    /// only unlogged warm-ups. `remember` stores the choice on the day item for next time.
+    static func setWarmUps(_ db: Database, workoutExerciseId: String, on: Bool, remember: Bool = true) throws {
+        guard let we = try WorkoutExerciseRecord.fetchOne(db, key: workoutExerciseId),
+              let exercise = try ExerciseRecord.fetchOne(db, key: we.exerciseId) else { throw WorkoutError.notFound }
+        try db.execute(sql: "DELETE FROM workoutSet WHERE workoutExerciseId = ? AND type = 'warmUp' AND completedAt IS NULL", arguments: [we.id])
+        if remember, let dayItem = we.dayExerciseId {
+            try db.execute(sql: "UPDATE dayExercise SET warmUps = ? WHERE id = ?", arguments: [on, dayItem])
+        }
+        let sets = try WorkoutSetRecord.filter(Column("workoutExerciseId") == we.id).order(Column("position")).fetchAll(db)
+        if on, [.total, .perHand, .perSide].contains(exercise.loadMode),
+           let working = sets.first(where: { $0.type != .warmUp && $0.completedAt == nil }), let load = working.loadHundredths, load > 0 {
+            let workingValue = Double(load) / 100
+            let loads = try ExerciseQueries.sessions(db, exerciseId: exercise.id).flatMap(\.sets)
+                .filter { $0.unit == working.unit }.compactMap { $0.loadHundredths.map { Double($0) / 100 } }
+            let first = try WorkoutExerciseRecord.filter(Column("workoutId") == we.workoutId).order(Column("position")).fetchOne(db)?.id == we.id
+            let strength = first && exercise.equipment == .barbell && [.squat, .hinge, .horizontalPush].contains(exercise.movementPattern)
+            let ramp = TrainingMath.warmUpRamp(workingKg: workingValue, strength: strength, step: TrainingMath.step(loads: loads),
+                                               bar: PlateMath.bar(for: exercise.equipment, unit: working.unit), unit: working.unit)
+            let insertAt = sets.firstIndex { $0.id == working.id } ?? 0
+            for var set in sets[insertAt...] { set.position += ramp.count; try set.update(db) }
+            for (i, w) in ramp.enumerated() {
+                try WorkoutSetRecord(id: UUID().uuidString, workoutExerciseId: we.id, position: insertAt + i,
+                                     loadHundredths: Int((w.kg * 100).rounded()), unit: working.unit, reps: w.reps, type: .warmUp,
+                                     completedAt: nil, rpe: nil, externalId: nil).insert(db)
+            }
+        }
+        try renumberSets(db, workoutExerciseId: we.id)
     }
 
     /// Card 7.5: Back from the end screen makes a finished workout unfinished again, so it can

@@ -190,6 +190,14 @@ final class ActiveWorkoutModel {
         if currentItemId == itemId { select(itemId: itemId) }
     }
 
+    func setWarmUps(_ itemId: String, on: Bool) async {
+        await change { try WorkoutWrites.setWarmUps($0, workoutExerciseId: itemId, on: on) }
+        if on, let first = snapshot?.items.first(where: { $0.id == itemId })?.plannedSets.first {
+            currentItemId = itemId
+            selectedSetId = first.id
+        }
+    }
+
     func superset(_ itemId: String, with otherId: String) async {
         await change { try WorkoutWrites.superset($0, workoutExerciseId: itemId, with: otherId) }
     }

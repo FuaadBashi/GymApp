@@ -98,6 +98,12 @@ struct ExerciseCard: View {
             Spacer()
             Menu {
                 Button("Swap exercise", systemImage: "arrow.triangle.2.circlepath") { onAction(.swap) }
+                if [.total, .perHand, .perSide].contains(item.exercise.loadMode) {
+                    let hasWarmUps = item.sets.contains { $0.type == .warmUp && $0.completedAt == nil }
+                    Toggle(isOn: Binding(get: { hasWarmUps }, set: { on in Task { await model.setWarmUps(item.id, on: on) } })) {
+                        Label("Warm-up sets", systemImage: "flame")
+                    }
+                }
                 Menu("Superset with…", systemImage: "link") {
                     ForEach(model.snapshot?.items.filter { $0.id != item.id } ?? []) { other in
                         Button(other.exercise.name) { Task { await model.superset(item.id, with: other.id) } }

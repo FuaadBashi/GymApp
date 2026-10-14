@@ -116,4 +116,22 @@ nonisolated enum TrainingMath {
             return (r, (kg * 100).rounded() / 100)
         }
     }
+
+    // MARK: Card 7.7 Warm-ups
+
+    /// Rulebook §3a: warm-up sets before `workingKg`, in the working set's unit. Strength ramp:
+    /// the bar × 10 (only from 30 kg / 65 lb up), 50% × 5, 70% × 3, 85% × 1. Short ramp:
+    /// 50% × 8, 80% × 3. Loads round to the nearest `step`; a load not above the one before,
+    /// not below the working load's step, or not above zero is dropped.
+    static func warmUpRamp(workingKg: Double, strength: Bool, step: Double, bar: Double, unit: WeightUnit = .kg) -> [(kg: Double, reps: Int)] {
+        let percents: [(Double, Int)] = strength ? [(0.5, 5), (0.7, 3), (0.85, 1)] : [(0.5, 8), (0.8, 3)]
+        var out: [(kg: Double, reps: Int)] = []
+        if strength, bar > 0, workingKg >= (unit == .kg ? 30 : 65) { out.append((bar, 10)) }
+        for (p, reps) in percents {
+            let kg = ((workingKg * p / step).rounded() * step * 100).rounded() / 100
+            guard kg > 0, (kg < workingKg), (kg > (out.last?.kg ?? 0)), !(strength && kg <= bar) else { continue }
+            out.append((kg, reps))
+        }
+        return out
+    }
 }

@@ -59,6 +59,16 @@ These annotations do not change the existing calculation rules: 60 kg × 8 at MR
 still uses 8 actual reps and 480 kg of volume, not 9 inferred reps. Notes and labels
 belong to that particular set/session and are not copied into a new workout as facts.
 
+## §3a Warm-up ramps
+
+Built on request per exercise (card 7.7) before the first unlogged working set, from that
+set's load and unit. The day's first exercise, when it is a barbell squat, hinge or
+horizontal push, gets the **strength ramp**: the bar × 10 (only when working at 30 kg / 65 lb
+or more), then 50% × 5, 70% × 3, 85% × 1. Every other loaded exercise gets the **short ramp**:
+50% × 8, 80% × 3. Loads round to the nearest step the exercise moves in (§5a's learnt step,
+default 2.5); a load that doesn't climb, reaches the working load, or is at or below the bar
+in the strength ramp is dropped. Warm-ups are `warmUp` sets, so they never count (§3).
+
 ## §4 Estimated 1RM
 
 - Epley: `load × (1 + reps / 30)`. One rep gives the load itself.

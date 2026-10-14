@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -55,6 +55,10 @@ nonisolated enum Schema {
                 try db.execute(sql: "ALTER TABLE \(table) ADD COLUMN supersetGroup TEXT")
                 try db.execute(sql: "ALTER TABLE \(table) ADD COLUMN supersetRestSeconds INTEGER NOT NULL DEFAULT 0 CHECK (supersetRestSeconds BETWEEN 0 AND 900)")
             }
+        }
+        migrator.registerMigration("v6") { db in
+            // Card 7.7: whether a day item builds warm-up sets when a workout starts.
+            try db.execute(sql: "ALTER TABLE dayExercise ADD COLUMN warmUps INTEGER NOT NULL DEFAULT 0 CHECK (warmUps IN (0,1))")
         }
         return migrator
     }
