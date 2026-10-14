@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.10.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 8.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -37,9 +37,10 @@ owner's answers (features first, then studio, then visual polish).
 - [ ] Restore from that backup
 - [ ] Expiry banner via `-signingExpiry 1`, and the real date on day six
 - [ ] Reinstall after 7 days keeps the data
-- [ ] Settings → Apple Health → Connect, allow steps and weight; Progress shows steps (6.2)
-- [ ] Train shows "Studio suggestions (1)" (the Barbell Bench Press target copied over the cable); accept it, start Full Body 1 and see "Studio: 52.5 kg × 10" with Fill sets (6.3)
-- [ ] Move the backup folder to iCloud Drive so the studio can publish suggestions without the cable (6.3)
+- [x] Settings → Apple Health → Connect, allow steps and weight; Progress shows steps (6.2, 14 Oct: 362 days of steps)
+- [x] Train shows "Studio suggestions (1)"; accepted on the phone; "Studio: 52.5 kg × 10" with Fill sets shows in Full Body 1 (6.3, checked on a copy of the phone's data in the simulator)
+- [ ] Phase 7 on the phone: a best banner during a real session, a superset, the warm-up toggle, Settings → Profile and a goal
+- [x] Move the backup folder to iCloud Drive so the studio can publish suggestions without the cable (6.3, 14 Oct: iCloud Drive/GymApp Backups)
 
 ## Cards
 
@@ -111,7 +112,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 7.7 Warm-up builder
 - [x] 7.8 Goals and standards
 - [x] 7.9 Reports in the app
-- [ ] 7.10 Phase close
+- [x] 7.10 Phase close
 
 ### Phase 8: Studio reports, data health and the planner ([spec](specs/08-studio-reports-planner.md))
 - [ ] 8.1 Weekly and monthly reports
@@ -143,6 +144,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.10**: Phase 7 closed. 195 tests pass. Checked in the simulator on a copy of the phone's database: the accepted Studio target line with Fill sets, a gold 'Best in a month' banner on Barbell Bench Press (70 kg e1RM against October's 66.7 after the May–October break), the hint line (best 93.3, 12-month best 74), the beat-my-best sheet with the day's 5–6 range and a learnt 2 kg step, the end screen compared with 7 Oct's Full Body 1, and Back reopening the workout. The set row now keeps the badge on the set number's corner and the edit pencil beside Previous, after the first layout squeezed the set number. Installed on the phone; migrations v5 and v6 ran and the backup that follows succeeded.
 - **7.9**: The app reads GymApp-reports.json (a list of {id, kind week|month, title, from, to, headline, sections [{title, lines}]}, format fixed here for card 8.1) from the backup folder and Documents with the suggestions, keeping the newer file. Progress has a Reports button: weeks and months listed newest first, each opening to its sections. Bad reports are skipped, not fatal.
 - **7.8**: Settings has a Profile section (sex, birth year, height). Each loaded lift's Progress page has a Goal card (target e1RM stored as entered; gap to the best; projected month with a range from a saturating fit e1RM = a − b·e^(−t/c) over the last 12 months, coarse then fine search over c; not enough data under 6 sessions over 8 weeks; 'not reachable at the current rate' above the ceiling) and, for barbell lifts in the table, a Standards card: percentile among gym lifters of the same sex and weight class with a plain band and a 'Powered by FitnessVolt' link. FitnessVolt's licence was confirmed as CC BY 4.0; tools/build_strength_standards.py fetches the gym population (needs a User-Agent; Python's default is refused). The bundled tables have no age adjustment, recorded in the spec.
 - **7.7**: Each loaded exercise's workout menu has a Warm-up sets toggle. On builds the ramp before the first unlogged working set from its load and unit (TrainingMath.warmUpRamp, rulebook §3a): the strength ramp for the day's first exercise when it is a barbell squat, hinge or horizontal push, the short ramp otherwise, rounded to the exercise's learnt step; off removes only unlogged warm-ups. The choice is remembered on the day item (migration v6, dayExercise.warmUps) and applied when the next workout starts from that day.

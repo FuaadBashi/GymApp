@@ -20,12 +20,9 @@ struct SetRow: View {
                 Text(label)
                     .font(.subheadline.weight(.semibold).monospacedDigit())
                     .foregroundStyle(set.type == .warmUp || set.type == .drop ? Theme.note : .primary)
-                if let best { BestBadge(status: best) }
-                if done && !isSelected {
-                    // Card 7.4: logged sets say they can be edited; tapping the row opens the editor.
-                    Image(systemName: "pencil").font(.caption2).foregroundStyle(.tertiary)
-                        .accessibilityLabel("Edit")
-                }
+                    .overlay(alignment: .topTrailing) {
+                        if let best { BestBadge(status: best).offset(x: 12, y: -6) }
+                    }
                 if set.type == .failed {
                     Text("F").font(.caption2.bold()).foregroundStyle(.white)
                         .padding(.horizontal, 3).background(.red, in: .rect(cornerRadius: 3))
@@ -33,11 +30,18 @@ struct SetRow: View {
             }
             .frame(width: SetColumns.set, alignment: .leading)
 
-            Text(previous.map { SetFormat.short($0, loadMode: loadMode) } ?? "—")
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.secondary)
-                .lineLimit(1).minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: 6) {
+                Text(previous.map { SetFormat.short($0, loadMode: loadMode) } ?? "—")
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.7)
+                if done && !isSelected {
+                    // Card 7.4: logged sets say they can be edited; tapping the row opens the editor.
+                    Image(systemName: "pencil").font(.caption2).foregroundStyle(.tertiary)
+                        .accessibilityLabel("Edit")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if loadMode != .repsOnly {
                 Text(SetColumns.load(set, loadMode: loadMode))

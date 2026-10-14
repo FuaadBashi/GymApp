@@ -14,12 +14,18 @@ in-app and matching a Python reference importer row for row).
 - **Workout:** list and focus modes, prefill from the day's last session, every set saved
   immediately, resume after the app is killed, rest alerts and a lock-screen countdown, a
   mini-player, swaps, a plate calculator, and a summary with volume, records and muscles.
-  Reps left (Max, 1, 2, 3) is one tap under each set.
+  Reps left (Max, 1, 2, 3) is one tap under each set. Bests are flagged as they happen
+  (all-time, or best in 1/6/12 months after a break), each set shows what it would take to
+  beat the best, supersets rotate with rest only after the round, a warm-up ramp can be
+  switched on per exercise, and the end screen compares every lift with last time.
 - **History:** a month calendar and every workout since 2022 by week; each workout opens to
   its sets and figures and can be corrected, with every figure recomputing.
 - **Exercises:** search and filters, a progress chart (estimated 1RM, heaviest, volume) where
   tapping a point shows that session, records with dates, history, notes and offline
   demonstrations.
+- **Goals and standards:** a target estimated 1RM per lift with a projected date from your
+  own curve, and where barbell lifts sit among gym lifters of your sex and weight (data
+  Powered by FitnessVolt, CC BY 4.0).
 - **Recaps:** this month, last month and a "Year in training" page for every year since 2022.
 - **Progress:** 12 weeks of volume, sessions and time; sets per muscle on a body map; recovery
   over the last 72 hours; movement-pattern strength trends; recent records; body weight and
@@ -63,6 +69,9 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 4 | Import, export and backups | done |
 | 5 | On the phone ([setup](docs/PHONE_SETUP.md)) | done, installed |
 | 6 | The phone side of the studio | done |
+| 7 | Records, the workout flow and goals | done |
+| 8 | Studio reports, data health, planner | specified |
+| 9 | Visual polish | specified |
 
 ## GymApp Studio
 
