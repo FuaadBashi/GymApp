@@ -62,6 +62,25 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                 }
+                Section {
+                    Picker("Sex", selection: $model.settings.sex) {
+                        Text("Not set").tag("")
+                        Text("Male").tag("male")
+                        Text("Female").tag("female")
+                    }
+                    Picker("Born", selection: $model.settings.birthYear) {
+                        Text("Not set").tag(0)
+                        ForEach((1940...2012).reversed(), id: \.self) { Text(String($0)).tag($0) }
+                    }
+                    Picker("Height", selection: $model.settings.heightCm) {
+                        Text("Not set").tag(0)
+                        ForEach(140...215, id: \.self) { Text("\($0) cm").tag($0) }
+                    }
+                } header: {
+                    Text("Profile")
+                } footer: {
+                    Text("Used for strength standards on each lift's Progress page. Body weight comes from your entries or Apple Health. Kept on this phone.")
+                }
                 Section("Calendar") {
                     Picker("Week starts on", selection: $model.settings.weekStartsOn) {
                         Text("Sunday").tag(WeekStart.sunday)

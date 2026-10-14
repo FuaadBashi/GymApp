@@ -32,7 +32,7 @@ struct ExerciseDetailView: View {
                     .pickerStyle(.segmented)
                     switch section {
                     case .progress: ExerciseProgressView(db: model.db, points: model.points, records: model.records, loadMode: exercise.loadMode,
-                                                          sessions: model.sessions)
+                                                          sessions: model.sessions, exercise: exercise)
                     case .history: history(exercise)
                     case .notes: notesList
                     case .about:

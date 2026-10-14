@@ -8,6 +8,7 @@ struct ExerciseProgressView: View {
     let records: ExerciseRecords
     let loadMode: LoadMode
     var sessions: [ExerciseSession] = []
+    var exercise: ExerciseRecord? = nil
     @State private var metric = Metric.e1RM
     @State private var range = Range.all
     @State private var selectedId: String?
@@ -41,6 +42,7 @@ struct ExerciseProgressView: View {
                     .font(.subheadline).foregroundStyle(.secondary)
             } else {
                 chart
+                if let exercise, hasLoadRecords { GoalStandardsView(db: db, exercise: exercise, points: points) }
                 recordsList
             }
         }
