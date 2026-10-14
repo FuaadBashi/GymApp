@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, ask, progression, suggestions, watch
+from . import analysis, ask, progression, reports, suggestions, watch
 from .data import History
 from .lab import NotebookLab
 
@@ -39,6 +39,8 @@ class State:
         self.settings = self._load_settings()
         self.folders: Optional[list[Path]] = None
         self.load_error = None
+        self.reports: list = []
+        self.reports_info: dict = {}
         self.snapshot = None
         self.fingerprint = None
 
@@ -93,6 +95,16 @@ class State:
             self.history, self.path, self.loaded_at = h, path, datetime.now(timezone.utc)
             self.snapshot, self.fingerprint = snapshot, fingerprint
             self.load_error = None
+        self.refresh_reports()
+
+    def refresh_reports(self) -> None:
+        """Card 8.1: rebuild every report and write them beside the loaded backup."""
+        try:
+            built = reports.build(self.history, self.settings)
+            info = reports.write(built, self.path.parent)
+            self.reports, self.reports_info = built, {**info, "error": None}
+        except (OSError, ValueError) as error:
+            self.reports_info = {"error": f"Reports could not be written: {error}"}
 
     def try_load(self, path: Path) -> bool:
         try:
@@ -339,6 +351,24 @@ def suggestions_folder() -> Path:
     studio reads it from iCloud Drive."""
     state.require()
     return state.path.parent
+
+
+@app.get("/api/reports")
+def get_reports():
+    state.require()
+    return {"folder": str(state.path.parent / reports.FOLDER), "info": state.reports_info,
+            "reports": [{"id": r.id, "kind": r.kind, "title": r.title, "headline": r.headline,
+                         "from": r.start.date().isoformat()} for r in reversed(state.reports)]}
+
+
+@app.get("/api/reports/{report_id}")
+def get_report(report_id: str):
+    state.require()
+    for r in state.reports:
+        if r.id == report_id:
+            return {**r.app_dict(), "markdown": r.markdown(), "figures": {k: v for k, v in r.figures.items() if k != "muscles"},
+                    "muscles": r.figures.get("muscles", {})}
+    raise HTTPException(404, "No such report")
 
 
 @app.get("/api/suggestions")

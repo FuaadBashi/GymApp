@@ -451,6 +451,32 @@ const SETTING_HELP = {
   default_rep_range: ["Default rep range", "Used for exercises that aren't in the program."],
   week_starts_monday: ["Week starts Monday", "Otherwise Sunday, like the app's default."],
 };
+// Reports (card 8.1)
+
+pages.reports = async (id) => {
+  const d = await api("reports");
+  const chosen = id || d.reports[0]?.id;
+  main.innerHTML = `<h1>Reports</h1>
+    <p class="sub">Every completed week and month. Markdown copies are in <code>${esc(d.folder)}</code>${d.info.error ? ` <span class="orange">${esc(d.info.error)}</span>` : ""}; the phone shows the last 26 weeks and 12 months.</p>
+    <div class="grid g3"><div class="card"><div class="seg" id="kind"><button data-v="week" class="on">Weeks</button><button data-v="month">Months</button></div>
+      <div class="list" id="rlist" style="margin-top:12px;max-height:70vh;overflow:auto"></div></div>
+      <div class="card span2" id="rdetail"><div class="empty">No reports yet.</div></div></div>`;
+  let kind = d.reports.find(r => r.id === chosen)?.kind || "week";
+  const list = () => {
+    [...$("#kind").children].forEach(b => b.classList.toggle("on", b.dataset.v === kind));
+    $("#rlist").innerHTML = d.reports.filter(r => r.kind === kind).map(r => `
+      <a class="row" href="#/reports/${encodeURIComponent(r.id)}"><div class="grow"><div class="t">${esc(r.title)}</div><div class="s">${esc(r.headline)}</div></div></a>`).join("");
+  };
+  $("#kind").onclick = e => { if (e.target.dataset.v) { kind = e.target.dataset.v; list(); } };
+  list();
+  if (!chosen) return;
+  const r = await api("reports/" + encodeURIComponent(chosen));
+  $("#rdetail").innerHTML = `<h2>${esc(r.title)}</h2><p class="sub">${esc(r.headline)}</p>
+    ${r.sections.map(sec => `<h3 style="margin-top:16px">${esc(sec.title)}</h3><ul>${sec.lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul>`).join("")}
+    <button id="copymd" style="margin-top:14px">Copy as Markdown</button>`;
+  $("#copymd").onclick = () => navigator.clipboard.writeText(r.markdown);
+};
+
 // Suggestions (card 6.3)
 
 pages.suggestions = async () => {

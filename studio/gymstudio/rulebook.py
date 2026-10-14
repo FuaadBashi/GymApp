@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Iterable, Optional
 
 KG_PER_LB = 0.45359237
@@ -104,3 +105,44 @@ def e1rm_marzagao(kg: float, reps: int) -> float:
 
 def e1rm_brzycki(kg: float, reps: int) -> float:
     return kg if reps <= 1 else kg * 36 / (37 - reps)
+
+
+# §5a: time-window bests (TrainingMath.bestStatus / eligibleWindows)
+
+BEST_WINDOWS = ((12, 365), (6, 182), (1, 30))
+BREAK_DAYS = 30
+
+
+def eligible_windows(history: list[tuple], at) -> list[tuple[int, float]]:
+    """Windows a set at `at` could earn, longest first: none unless training broke off for
+    BREAK_DAYS since the all-time best was last reached; only windows whose best is below
+    the all-time best. `history` is [(datetime, e1rm)]."""
+    earlier = sorted((h for h in history if h[0] <= at), key=lambda h: h[0])
+    if not earlier:
+        return []
+    all_time = max(e for _, e in earlier)
+    best_date = [d for d, e in earlier if all_time - e <= 0.01][-1]
+    since = [d for d, _ in earlier if d >= best_date] + [at]
+    if not any((b - a).total_seconds() >= BREAK_DAYS * 86400 for a, b in zip(since, since[1:])):
+        return []
+    out = []
+    for months, days in BEST_WINDOWS:
+        frm = at - timedelta(days=days)
+        window = [e for d, e in earlier if d >= frm]
+        if window and all_time - max(window) > 0.01:
+            out.append((months, max(window)))
+    return out
+
+
+def best_status(e1rm: float, history: list[tuple], at) -> tuple:
+    """('all_time', beat) | ('window', months, beat) | ('none',)."""
+    earlier = [e for d, e in history if d <= at]
+    if not earlier:
+        return ("none",)
+    all_time = max(earlier)
+    if e1rm - all_time > 0.01:
+        return ("all_time", all_time)
+    for months, best in eligible_windows(history, at):
+        if e1rm - best > 0.01:
+            return ("window", months, best)
+    return ("none",)

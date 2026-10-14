@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 8.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 8.2.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -115,7 +115,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 7.10 Phase close
 
 ### Phase 8: Studio reports, data health and the planner ([spec](specs/08-studio-reports-planner.md))
-- [ ] 8.1 Weekly and monthly reports
+- [x] 8.1 Weekly and monthly reports
 - [ ] 8.2 Data health
 - [ ] 8.3 Fix suggestions on the phone
 - [ ] 8.4 Program planner
@@ -144,6 +144,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **8.1**: gymstudio/reports.py builds a report for every completed week and month with workouts: totals and change against the period before, bests by the §5a rule (ported to rulebook.best_status, tested against the app's cases), sets per muscle against the band, plateaus among the program's lifts, program days done (following each day's copy lineage), body weight and steps, and next targets on the newest week. Reports rebuild on every backup load and are written as Markdown in <backup folder>/Reports (only changed files rewritten) and as GymApp-reports.json (last 26 weeks and 12 months) for the app. A Reports page lists weeks and months with a copy-as-Markdown button. Month totals match the app's Recaps (Jan–Mar 2025: 19/135,174, 20/151,962, 18/110,124). 164 reports from the real history in under a second.
 - **7.10**: Phase 7 closed. 195 tests pass. Checked in the simulator on a copy of the phone's database: the accepted Studio target line with Fill sets, a gold 'Best in a month' banner on Barbell Bench Press (70 kg e1RM against October's 66.7 after the May–October break), the hint line (best 93.3, 12-month best 74), the beat-my-best sheet with the day's 5–6 range and a learnt 2 kg step, the end screen compared with 7 Oct's Full Body 1, and Back reopening the workout. The set row now keeps the badge on the set number's corner and the edit pencil beside Previous, after the first layout squeezed the set number. Installed on the phone; migrations v5 and v6 ran and the backup that follows succeeded.
 - **7.9**: The app reads GymApp-reports.json (a list of {id, kind week|month, title, from, to, headline, sections [{title, lines}]}, format fixed here for card 8.1) from the backup folder and Documents with the suggestions, keeping the newer file. Progress has a Reports button: weeks and months listed newest first, each opening to its sections. Bad reports are skipped, not fatal.
 - **7.8**: Settings has a Profile section (sex, birth year, height). Each loaded lift's Progress page has a Goal card (target e1RM stored as entered; gap to the best; projected month with a range from a saturating fit e1RM = a − b·e^(−t/c) over the last 12 months, coarse then fine search over c; not enough data under 6 sessions over 8 weeks; 'not reachable at the current rate' above the ceiling) and, for barbell lifts in the table, a Standards card: percentile among gym lifters of the same sex and weight class with a plain band and a 'Powered by FitnessVolt' link. FitnessVolt's licence was confirmed as CC BY 4.0; tools/build_strength_standards.py fetches the gym population (needs a User-Agent; Python's default is refused). The bundled tables have no age adjustment, recorded in the spec.
