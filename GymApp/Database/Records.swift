@@ -64,6 +64,8 @@ nonisolated struct DayExerciseRecord: Codable, Identifiable, Hashable, Fetchable
     var restSeconds: Int
     var note: String?
     var externalId: String?
+    var supersetGroup: String? = nil
+    var supersetRestSeconds: Int = 0
 }
 
 nonisolated struct WorkoutRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {
@@ -94,6 +96,8 @@ nonisolated struct WorkoutExerciseRecord: Codable, Identifiable, Hashable, Fetch
     var restSeconds: Int
     var note: String?
     var externalId: String?
+    var supersetGroup: String? = nil
+    var supersetRestSeconds: Int = 0
 }
 
 nonisolated struct WorkoutSetRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {

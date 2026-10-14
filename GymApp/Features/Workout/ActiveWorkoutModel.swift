@@ -190,6 +190,14 @@ final class ActiveWorkoutModel {
         if currentItemId == itemId { select(itemId: itemId) }
     }
 
+    func superset(_ itemId: String, with otherId: String) async {
+        await change { try WorkoutWrites.superset($0, workoutExerciseId: itemId, with: otherId) }
+    }
+
+    func unsuperset(_ itemId: String) async {
+        await change { try WorkoutWrites.unsuperset($0, workoutExerciseId: itemId) }
+    }
+
     func removeExercise(_ itemId: String) async {
         await change { try WorkoutWrites.removeExercise($0, workoutExerciseId: itemId) }
         if currentItemId == itemId { selectFirstPlanned() }
@@ -255,6 +263,20 @@ final class ActiveWorkoutModel {
         guard let items = snapshot?.items, let index = items.firstIndex(where: { $0.id == itemId }) else {
             selectFirstPlanned()
             return
+        }
+        // Card 7.6: in a superset, the next member with a planned set, round after round.
+        if let group = items[index].workoutExercise.supersetGroup {
+            let members = items.filter { $0.workoutExercise.supersetGroup == group }
+            if let at = members.firstIndex(where: { $0.id == items[index].id }) {
+                for offset in 1...members.count {
+                    let member = members[(at + offset) % members.count]
+                    if let next = member.plannedSets.first {
+                        currentItemId = member.id
+                        selectedSetId = next.id
+                        return
+                    }
+                }
+            }
         }
         if let next = items[index].plannedSets.first {
             currentItemId = items[index].id

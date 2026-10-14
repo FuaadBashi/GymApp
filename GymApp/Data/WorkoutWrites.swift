@@ -28,7 +28,8 @@ nonisolated enum WorkoutWrites {
             let we = WorkoutExerciseRecord(id: UUID().uuidString, workoutId: workout.id, exerciseId: item.exerciseId,
                                            position: position, dayExerciseId: item.id, targetSets: item.targetSets,
                                            repMin: item.repMin, repMax: item.repMax, restSeconds: item.restSeconds,
-                                           note: nil, externalId: nil)
+                                           note: nil, externalId: nil,
+                                           supersetGroup: item.supersetGroup, supersetRestSeconds: item.supersetRestSeconds)
             try we.insert(db)
             try prefill(db, workout: workout, workoutExercise: we, settings: settings)
         }
@@ -40,9 +41,51 @@ nonisolated enum WorkoutWrites {
               let we = try WorkoutExerciseRecord.fetchOne(db, key: set.workoutExerciseId) else { throw WorkoutError.notFound }
         set.completedAt = now
         try set.update(db)
-        if we.restSeconds > 0 {
+        // Card 7.6: inside a superset only the round's end gets the full rest.
+        let rest = try nextMemberWithPlannedSet(db, after: we) == nil ? we.restSeconds : we.supersetRestSeconds
+        if rest > 0 {
             try db.execute(sql: "UPDATE workout SET restEndsAt = ?, restDurationSeconds = ? WHERE id = ?",
-                           arguments: [now.addingTimeInterval(TimeInterval(we.restSeconds)), Double(we.restSeconds), we.workoutId])
+                           arguments: [now.addingTimeInterval(TimeInterval(rest)), Double(rest), we.workoutId])
+        } else if we.supersetGroup != nil {
+            try db.execute(sql: "UPDATE workout SET restEndsAt = NULL, restDurationSeconds = NULL WHERE id = ?", arguments: [we.workoutId])
+        }
+    }
+
+    /// Card 7.6: the next member of `we`'s superset, in position order after it, that still has
+    /// a planned set. Nil outside a superset or when `we` ends the round.
+    static func nextMemberWithPlannedSet(_ db: Database, after we: WorkoutExerciseRecord) throws -> WorkoutExerciseRecord? {
+        guard let group = we.supersetGroup else { return nil }
+        let later = try WorkoutExerciseRecord.filter(Column("workoutId") == we.workoutId && Column("supersetGroup") == group
+                                                     && Column("position") > we.position).order(Column("position")).fetchAll(db)
+        for member in later {
+            let planned = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM workoutSet WHERE workoutExerciseId = ? AND completedAt IS NULL",
+                                           arguments: [member.id]) ?? 0
+            if planned > 0 { return member }
+        }
+        return nil
+    }
+
+    /// Card 7.6: puts `workoutExerciseId` in a superset with `otherId`, joining the other's
+    /// group if it has one.
+    static func superset(_ db: Database, workoutExerciseId: String, with otherId: String) throws {
+        guard var a = try WorkoutExerciseRecord.fetchOne(db, key: workoutExerciseId),
+              var b = try WorkoutExerciseRecord.fetchOne(db, key: otherId), a.workoutId == b.workoutId, a.id != b.id else { throw WorkoutError.notFound }
+        let group = b.supersetGroup ?? a.supersetGroup ?? UUID().uuidString
+        a.supersetGroup = group
+        b.supersetGroup = group
+        try a.update(db)
+        try b.update(db)
+    }
+
+    /// Card 7.6: takes an exercise out of its superset; a group left with one member ends.
+    static func unsuperset(_ db: Database, workoutExerciseId: String) throws {
+        guard var we = try WorkoutExerciseRecord.fetchOne(db, key: workoutExerciseId), let group = we.supersetGroup else { return }
+        we.supersetGroup = nil
+        try we.update(db)
+        let left = try WorkoutExerciseRecord.filter(Column("workoutId") == we.workoutId && Column("supersetGroup") == group).fetchAll(db)
+        if left.count == 1, var last = left.first {
+            last.supersetGroup = nil
+            try last.update(db)
         }
     }
 

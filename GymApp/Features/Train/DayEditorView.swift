@@ -46,6 +46,23 @@ struct DayEditorView: View {
                     ForEach(card.detail.items) { item in
                         Button { editingItem = item } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                // Card 7.6
+                                Menu("Superset with…", systemImage: "link") {
+                                    ForEach(card.detail.items.filter { $0.id != item.id }) { other in
+                                        Button(other.exercise.name) {
+                                            let a = item.id, b = other.id
+                                            model.write { try ProgramWrites.superset($0, itemId: a, with: b) }
+                                        }
+                                    }
+                                }
+                                if item.dayExercise.supersetGroup != nil {
+                                    Button("Remove from superset", systemImage: "link.badge.plus") {
+                                        let id = item.id
+                                        model.write { try ProgramWrites.unsuperset($0, itemId: id) }
+                                    }
+                                }
+                            }
                     }
                     .onMove { from, to in
                         guard let source = from.first else { return }
@@ -127,7 +144,12 @@ struct DayEditorView: View {
 
     private func itemRow(_ item: DayItem, lastTime: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(item.exercise.name).font(.headline)
+            HStack {
+                Text(item.exercise.name).font(.headline)
+                if item.dayExercise.supersetGroup != nil {
+                    Label("Superset", systemImage: "link").font(.caption.weight(.semibold)).foregroundStyle(Theme.accent)
+                }
+            }
             Text("\(item.dayExercise.targetSets) × \(item.dayExercise.repMin == item.dayExercise.repMax ? "\(item.dayExercise.repMin)" : "\(item.dayExercise.repMin)–\(item.dayExercise.repMax)") · rest \(RestFormat.clock(item.dayExercise.restSeconds))")
                 .font(.subheadline).foregroundStyle(.secondary)
             if let lastTime {

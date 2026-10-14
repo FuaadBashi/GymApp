@@ -114,6 +114,29 @@ nonisolated enum ProgramWrites {
         try item.update(db)
     }
 
+    /// Card 7.6: puts a day item in a superset with another, joining the other's group.
+    static func superset(_ db: Database, itemId: String, with otherId: String) throws {
+        guard var a = try DayExerciseRecord.fetchOne(db, key: itemId), var b = try DayExerciseRecord.fetchOne(db, key: otherId),
+              a.dayId == b.dayId, a.id != b.id else { return }
+        let group = b.supersetGroup ?? a.supersetGroup ?? UUID().uuidString
+        a.supersetGroup = group
+        b.supersetGroup = group
+        try a.update(db)
+        try b.update(db)
+    }
+
+    /// Card 7.6: takes a day item out of its superset; a group left with one member ends.
+    static func unsuperset(_ db: Database, itemId: String) throws {
+        guard var item = try DayExerciseRecord.fetchOne(db, key: itemId), let group = item.supersetGroup else { return }
+        item.supersetGroup = nil
+        try item.update(db)
+        let left = try DayExerciseRecord.filter(Column("dayId") == item.dayId && Column("supersetGroup") == group).fetchAll(db)
+        if left.count == 1, var last = left.first {
+            last.supersetGroup = nil
+            try last.update(db)
+        }
+    }
+
     static func removeItem(_ db: Database, itemId: String) throws {
         guard let item = try DayExerciseRecord.fetchOne(db, key: itemId) else { return }
         try item.delete(db)

@@ -49,12 +49,22 @@ struct ExerciseCard: View {
         }
     }
 
+    /// Card 7.6: "Superset with Row" above a member's name.
+    private var supersetLabel: some View {
+        let others = model.snapshot?.items.filter {
+            $0.id != item.id && $0.workoutExercise.supersetGroup == item.workoutExercise.supersetGroup
+        }.map(\.exercise.name) ?? []
+        return Label("Superset with \(others.joined(separator: ", "))", systemImage: "link")
+            .font(.caption.weight(.semibold)).foregroundStyle(Theme.accent).lineLimit(1)
+    }
+
     // MARK: Collapsed
 
     private var collapsed: some View {
         Button { model.select(itemId: item.id) } label: {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 4) {
+                    if item.workoutExercise.supersetGroup != nil { supersetLabel }
                     Text(item.exercise.name).font(.headline).foregroundStyle(.primary)
                     if let previous = item.previous {
                         Text("Previous: " + SetFormat.line(previous.sets, loadMode: loadMode))
@@ -81,12 +91,21 @@ struct ExerciseCard: View {
     @ViewBuilder private var expanded: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 6) {
+                if item.workoutExercise.supersetGroup != nil { supersetLabel }
                 Text(item.exercise.name).font(.title3.bold())
                 MuscleTags(muscles: item.exercise.primaryMuscles)
             }
             Spacer()
             Menu {
                 Button("Swap exercise", systemImage: "arrow.triangle.2.circlepath") { onAction(.swap) }
+                Menu("Superset with…", systemImage: "link") {
+                    ForEach(model.snapshot?.items.filter { $0.id != item.id } ?? []) { other in
+                        Button(other.exercise.name) { Task { await model.superset(item.id, with: other.id) } }
+                    }
+                }
+                if item.workoutExercise.supersetGroup != nil {
+                    Button("Remove from superset", systemImage: "link.badge.plus") { Task { await model.unsuperset(item.id) } }
+                }
                 Button("History", systemImage: "clock.arrow.circlepath") { onAction(.history) }
                 if [.barbell, .ezBar, .smith].contains(item.exercise.equipment) {
                     Button("Plate calculator", systemImage: "circle.grid.2x1") { onAction(.plates) }

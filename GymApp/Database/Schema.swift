@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -47,6 +47,14 @@ nonisolated enum Schema {
                 )
                 """)
             try db.execute(sql: "CREATE INDEX studioDecision_exercise ON studioDecision(exerciseId, decidedAt)")
+        }
+        migrator.registerMigration("v5") { db in
+            // Card 7.6: supersets. Members share a group id; the rest between members is
+            // supersetRestSeconds, and the last member's own rest follows the round.
+            for table in ["dayExercise", "workoutExercise"] {
+                try db.execute(sql: "ALTER TABLE \(table) ADD COLUMN supersetGroup TEXT")
+                try db.execute(sql: "ALTER TABLE \(table) ADD COLUMN supersetRestSeconds INTEGER NOT NULL DEFAULT 0 CHECK (supersetRestSeconds BETWEEN 0 AND 900)")
+            }
         }
         return migrator
     }
