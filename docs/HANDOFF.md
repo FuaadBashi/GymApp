@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 10.3.** Phases 0–9 are done and reviewed. Phase 10 (demonstrations, form cues,
+**Next card: 10.4.** Phases 0–9 are done and reviewed. Phase 10 (demonstrations, form cues,
 the exercise page, the studio's look) was specified on 14 October and waits for the go-ahead.
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -146,6 +146,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **10.3**: The demonstration area now shows, in order: the bundled video, else the two-pose pictures as a loop (1.2 s hold, 0.4 s crossfade, on a white plate because the drawings and photos have white backgrounds; still with a Start/End toggle under Reduce Motion), else 'No demonstration for this exercise yet'. Close equivalents say what the picture shows, and every picture carries its author, source and licence. The Demos provenance file is DEMOS-PROVENANCE.md because bundled resources are flattened and the media folder already has a PROVENANCE.md. Checked in the simulator on Cable Lat Pulldown (Wide Grip).
 - **10.2**: tools/demo_map.json maps 138 logged exercises to the picture of the same movement on the same or close equipment, with a note when it is a close equivalent; ambiguous names are left out. Coverage of logged exercises: 160 of 193 (82.9%), 22 by video and 138 by pictures. Three first choices had no images upstream and were remapped (barbell rows to wger's drawing, incline curl to the alternating version, calf raises to the barbell version).
 - **10.1**: tools/build_demos.py builds GymApp/Resources/Demos (13.8 MB) from licensed sources only: Everkinetic two-pose illustrations (CC BY-SA 4.0, pinned commit) and wger images with a named licence and author. The planned free-exercise-db photos were dropped because their source cannot be verified (decision 14 updated); the owner chose licensed-only. Everkinetic stores poses in src/images-web by slug (some spelt bicep) and some only in dist/png by number; the script handles both. One wger image was an animated WebP made of delta frames, so only full-canvas frames are used. Two wger images in a commercial 3D-render style without an author were left out.
 - **Review of phases 7–9**: six fixes. Muscle counts read sets directly instead of building full summaries (the 2025 recap went from 5–10 s to about 2 s, same figures). Moving an exercise between supersets ends a group left with one member. A goal already reached says so before the data check. Studio week and month boundaries are computed from local calendar dates, so they stay at midnight across clock changes. The beat-my-best table works in the set's own unit. Lists and forms use the near-black base.

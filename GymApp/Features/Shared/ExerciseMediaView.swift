@@ -37,9 +37,64 @@ struct ExerciseMediaView: View {
             .onDisappear { playback.stop() }
             .onChange(of: reduceMotion) { playback.motionPreferenceChanged(reduceMotion) }
             .onChange(of: exercise.id) { playback.reset() }
+        } else if case .pictures(let asset, let note) = Demonstration.resolve(exercise) {
+            PoseLoopView(asset: asset, note: note, exerciseName: exercise.name)
         } else {
-            Label("Exact demonstration not available yet", systemImage: "photo")
+            Label("No demonstration for this exercise yet", systemImage: "photo")
                 .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// Card 10.3: two poses, rest and effort, held 1.2 s each with a 0.4 s crossfade, on a light
+/// plate so line drawings read on the dark app. Under Reduce Motion it stays still with a
+/// toggle between the poses.
+struct PoseLoopView: View {
+    let asset: DemoAsset
+    let note: String?
+    let exerciseName: String
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pose = 0
+
+    private var images: [UIImage] { asset.urls.compactMap { UIImage(contentsOfFile: $0.path) } }
+
+    var body: some View {
+        let images = images
+        VStack(alignment: .leading, spacing: 6) {
+            ZStack {
+                Color.white   // the drawings and photos have white backgrounds
+                ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                    Image(uiImage: image).resizable().scaledToFit().padding(10)
+                        .opacity(index == pose % max(images.count, 1) ? 1 : 0)
+                }
+            }
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .accessibilityElement()
+            .accessibilityLabel("Demonstration of \(exerciseName), \(pose % 2 == 0 ? "start" : "end") position")
+            .task(id: reduceMotion) {
+                guard images.count > 1, !reduceMotion else { return }
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: .seconds(1.2))
+                    withAnimation(.easeInOut(duration: 0.4)) { pose += 1 }
+                }
+            }
+            if reduceMotion, images.count > 1 {
+                Picker("Position", selection: Binding(get: { pose % 2 }, set: { pose = $0 })) {
+                    Text("Start").tag(0)
+                    Text("End").tag(1)
+                }
+                .pickerStyle(.segmented)
+            }
+            if let note {
+                Text("Shows: \(note)").font(.caption).foregroundStyle(.secondary)
+            }
+            HStack(spacing: 6) {
+                Text((asset.kind == "photo" ? "Photo: " : "Illustration: ") + asset.author)
+                if let source = URL(string: asset.source) { Link("Source", destination: source) }
+                if let licence = URL(string: asset.licenseURL) { Link(asset.license, destination: licence) }
+            }
+            .font(.caption2).foregroundStyle(.secondary)
         }
     }
 }
