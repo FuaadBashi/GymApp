@@ -8,6 +8,7 @@ struct SetRow: View {
     let previous: WorkoutSetRecord?
     let loadMode: LoadMode
     let isSelected: Bool
+    var best: TrainingMath.BestStatus? = nil
     let onSelect: () -> Void
     let onToggle: () -> Void
 
@@ -19,6 +20,7 @@ struct SetRow: View {
                 Text(label)
                     .font(.subheadline.weight(.semibold).monospacedDigit())
                     .foregroundStyle(set.type == .warmUp || set.type == .drop ? Theme.note : .primary)
+                if let best { BestBadge(status: best) }
                 if set.type == .failed {
                     Text("F").font(.caption2.bold()).foregroundStyle(.white)
                         .padding(.horizontal, 3).background(.red, in: .rect(cornerRadius: 3))

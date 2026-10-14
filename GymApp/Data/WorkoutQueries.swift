@@ -18,6 +18,7 @@ nonisolated struct WorkoutSnapshot: Equatable {
 
     var completedSetCount: Int
     var totalSetCount: Int
+    var bests: [String: TrainingMath.BestStatus] = [:]   // card 7.2: set id → status
 }
 
 nonisolated enum WorkoutQueries {
@@ -45,7 +46,29 @@ nonisolated enum WorkoutQueries {
         }
         let all = items.flatMap(\.sets)
         return WorkoutSnapshot(workout: workout, items: items,
-                               completedSetCount: all.filter { $0.completedAt != nil }.count, totalSetCount: all.count)
+                               completedSetCount: all.filter { $0.completedAt != nil }.count, totalSetCount: all.count,
+                               bests: try bests(db, items: items))
+    }
+
+    /// Card 7.2 (rulebook §5a): the best status of every logged set in the workout, each judged
+    /// against the exercise's finished history and the sets logged before it in this workout.
+    static func bests(_ db: Database, items: [WorkoutSnapshot.Item]) throws -> [String: TrainingMath.BestStatus] {
+        var out: [String: TrainingMath.BestStatus] = [:]
+        for exerciseId in Set(items.map(\.exercise.id)) {
+            let mine = items.filter { $0.exercise.id == exerciseId }
+            guard let loadMode = mine.first?.exercise.loadMode, loadMode != .bodyweightPlus, loadMode != .repsOnly else { continue }
+            var history = ExerciseStats.e1RMHistory(try ExerciseQueries.sessions(db, exerciseId: exerciseId), loadMode: loadMode)
+            let logged = mine.flatMap(\.sets).filter { $0.completedAt != nil }.sorted { $0.completedAt! < $1.completedAt! }
+            for set in logged {
+                guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths, let done = set.completedAt,
+                      let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                else { continue }
+                let status = TrainingMath.bestStatus(e1RM: e, history: history, at: done)
+                if status != .none { out[set.id] = status }
+                history.append((done, e))
+            }
+        }
+        return out
     }
 
     /// The workout's day and the days it was copied from, when last time should prefer them.

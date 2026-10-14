@@ -129,6 +129,7 @@ struct ExerciseCard: View {
             ForEach(Array(item.sets.enumerated()), id: \.element.id) { index, set in
                 SetRow(set: set, label: labels[index], previous: previousSets[safe: index], loadMode: loadMode,
                        isSelected: model.selectedSetId == set.id,
+                       best: model.snapshot?.bests[set.id],
                        onSelect: { model.select(setId: set.id) },
                        onToggle: { Task { set.completedAt == nil ? await model.log(set.id) : await model.unlog(set.id) } })
                     .contextMenu {

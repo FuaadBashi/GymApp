@@ -169,3 +169,34 @@ struct ActiveWorkoutModelTests {
     }
 
 }
+
+/// Card 7.2: best banners and badges.
+@MainActor
+struct BestBannerTests {
+    let db = try! AppDatabase.inMemory()
+
+    @Test func loggingABestShowsABannerAndUnloggingClearsTheBadge() async throws {
+        try await db.writer.write { db in
+            try TestData.exercise(db, id: "bench", name: "Bench")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-7 * 86_400), exercises: [("bench", [(50, 10)])])
+        }
+        let model = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        try await model.start(dayId: nil)
+        await model.addExercise("bench")
+        let item = try #require(model.snapshot?.items.first)
+        let set = try #require(item.sets.first)
+        await model.update(set.id, edit: SetEdit(loadHundredths: 5500, unit: .kg, reps: 10, type: .working))
+        await model.log(set.id)
+        #expect(model.banner?.status == .allTime(beat: TrainingMath.e1RM(kg: 50, reps: 10)))
+        #expect(model.snapshot?.bests[set.id] != nil)
+        // A second set below the first one's new best is not a best.
+        let second = try #require(model.snapshot?.items.first?.sets[1])
+        await model.update(second.id, edit: SetEdit(loadHundredths: 5000, unit: .kg, reps: 10, type: .working))
+        model.dismissBanner()
+        await model.log(second.id)
+        #expect(model.banner == nil && model.snapshot?.bests[second.id] == nil)
+
+        await model.unlog(set.id)
+        #expect(model.snapshot?.bests[set.id] == nil)
+    }
+}

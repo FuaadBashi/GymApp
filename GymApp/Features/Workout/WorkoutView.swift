@@ -28,6 +28,21 @@ struct WorkoutView: View {
             }
         }
         .background(Theme.background)
+        .overlay(alignment: .top) {
+            if let banner = model.banner {
+                BestBannerView(banner: banner) { model.dismissBanner() }
+                    .padding(.horizontal, 16).padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(duration: 0.35), value: model.banner)
+        .sensoryFeedback(trigger: model.banner) { _, new in
+            switch new?.status {
+            case .allTime: .success
+            case .window: .impact(weight: .light)
+            default: nil
+            }
+        }
         .sheet(isPresented: $addingExercise) {
             WorkoutExercisePicker(title: "Add exercise") { id in Task { await model.addExercise(id) } }
         }

@@ -14,6 +14,8 @@ final class ActiveWorkoutModel {
     var focusMode = false
     var isPresented = false      // full-screen workout showing
     private(set) var justFinishedWorkoutId: String?
+    /// Card 7.2: the in-screen banner for a set that just made a best.
+    private(set) var banner: BestBanner?
     var lastError: String?
 
     let db: AppDatabase
@@ -96,8 +98,32 @@ final class ActiveWorkoutModel {
     func log(_ setId: String) async {
         let itemId = snapshot?.items.first { $0.sets.contains { $0.id == setId } }?.id
         guard await change({ try WorkoutWrites.logSet($0, setId: setId, now: .now) }) != nil else { return }
+        showBanner(for: setId)
         advance(from: itemId)
     }
+
+    struct BestBanner: Identifiable, Equatable {
+        let id = UUID()
+        var status: TrainingMath.BestStatus
+        var exerciseName: String
+        var e1RM: Double
+    }
+
+    private func showBanner(for setId: String) {
+        guard let status = snapshot?.bests[setId],
+              let item = snapshot?.items.first(where: { $0.sets.contains { $0.id == setId } }),
+              let set = item.sets.first(where: { $0.id == setId }), let load = set.loadHundredths,
+              let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: item.exercise.loadMode)
+        else { return }
+        let banner = BestBanner(status: status, exerciseName: item.exercise.name, e1RM: e)
+        self.banner = banner
+        Task {
+            try? await Task.sleep(for: .seconds(3))
+            if self.banner?.id == banner.id { self.banner = nil }
+        }
+    }
+
+    func dismissBanner() { banner = nil }
 
     func unlog(_ setId: String) async {
         guard await change({ try WorkoutWrites.unlogSet($0, setId: setId) }) != nil else { return }

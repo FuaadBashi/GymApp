@@ -8,6 +8,8 @@ enum Theme {
     static let card = Color(white: 0.11)
     static let row = Color(white: 0.16)
     static let note = Color(red: 0.98, green: 0.83, blue: 0.38)
+    /// Card 7.2: 1/6/12-month bests; volt (`accent`) marks all-time bests.
+    static let gold = Color(red: 1.0, green: 0.76, blue: 0.22)
     static let upper = Color(red: 0.45, green: 0.66, blue: 1.0)
     static let lower = Color(red: 1.0, green: 0.62, blue: 0.35)
     static let core = Color(red: 0.75, green: 0.55, blue: 1.0)
