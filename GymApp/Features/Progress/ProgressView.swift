@@ -117,6 +117,7 @@ struct ProgressTab: View {
                 AxisMarks(values: .stride(by: .weekOfYear, count: 4)) { _ in AxisValueLabel(format: .dateTime.day().month(.abbreviated)) }
             }
             .frame(height: 90)
+            .drawIn()
             .accessibilityLabel("\(title) per week, this week \(format(current))")
         }
     }
@@ -216,6 +217,7 @@ struct ProgressTab: View {
                     .chartYAxis(.hidden)
                     .chartXScale(domain: (model.patterns.flatMap { $0.weeks.map(\.start) }.min() ?? .now)...(model.patterns.flatMap { $0.weeks.map(\.start) }.max() ?? .now))
                     .frame(height: 32)
+                    .drawIn()
                     Text(trend.weeks.last.map { String(format: "%+.1f%%", $0.change * 100) } ?? "–")
                         .font(.subheadline.monospacedDigit()).frame(width: 64, alignment: .trailing)
                 }
@@ -267,6 +269,7 @@ struct ProgressTab: View {
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
                 .frame(height: 140)
+                .drawIn()
                 if let last = points.last {
                     Text("Latest \(Load.format((last.1 * 10).rounded() / 10)) \(unit.rawValue)").font(.subheadline.monospacedDigit())
                 }
@@ -291,6 +294,7 @@ struct ProgressTab: View {
                     AxisMarks(values: .stride(by: .day, count: 7)) { _ in AxisValueLabel(format: .dateTime.day().month(.abbreviated)) }
                 }
                 .frame(height: 110)
+                .drawIn()
                 HStack(alignment: .firstTextBaseline) {
                     if let avg = steps.dailyAverage {
                         Text("\(avg.formatted()) a day").font(.subheadline.monospacedDigit())

@@ -77,6 +77,7 @@ struct RecapView: View {
             }
             .chartXAxis { AxisMarks(values: .stride(by: .month, count: 2)) { _ in AxisValueLabel(format: .dateTime.month(.narrow)) } }
             .frame(height: 120)
+            .drawIn()
             ForEach(r.months.filter { $0.workouts > 0 }) { m in
                 NavigationLink {
                     RecapView(db: db, kind: .month(m.start))

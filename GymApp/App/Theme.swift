@@ -121,3 +121,27 @@ struct RollingNumber<V: Equatable>: ViewModifier {
 extension View {
     func rollingNumber<V: Equatable>(_ value: V) -> some View { modifier(RollingNumber(value: value)) }
 }
+
+/// Card 9.4: a chart sweeps in from the left the first time it appears, unless Reduce Motion
+/// is on.
+struct DrawIn: ViewModifier {
+    @State private var drawn = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func body(content: Content) -> some View {
+        content
+            .mask(alignment: .leading) {
+                GeometryReader { geo in
+                    Rectangle().frame(width: (drawn || reduceMotion) ? geo.size.width : 0)
+                }
+            }
+            .onAppear {
+                guard !drawn else { return }
+                if reduceMotion { drawn = true } else { withAnimation(.easeOut(duration: 0.7)) { drawn = true } }
+            }
+    }
+}
+
+extension View {
+    func drawIn() -> some View { modifier(DrawIn()) }
+}

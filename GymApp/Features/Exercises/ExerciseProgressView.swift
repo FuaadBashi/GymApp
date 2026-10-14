@@ -77,7 +77,14 @@ struct ExerciseProgressView: View {
                     if let selected, selected.workoutId == p.workoutId {
                         RuleMark(x: .value("Date", p.date)).foregroundStyle(.secondary.opacity(0.5))
                         PointMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
-                            .foregroundStyle(.white).symbolSize(90)
+                            .foregroundStyle(.white).symbolSize(110)
+                            // Card 9.4: the tapped point lifts with its value.
+                            .annotation(position: .top, spacing: 6) {
+                                Text("\(Load.format((p.value * 10).rounded() / 10)) kg")
+                                    .font(Theme.number(.caption, weight: .bold))
+                                    .padding(.horizontal, 8).padding(.vertical, 4)
+                                    .background(Theme.raised, in: Capsule())
+                            }
                     }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
@@ -95,9 +102,11 @@ struct ExerciseProgressView: View {
                             })
                     }
                 }
+                .animation(.snappy(duration: 0.25), value: selectedId)
                 .onChange(of: metric) { selectedId = nil }
                 .onChange(of: range) { selectedId = nil }
                 .frame(height: 220)
+                .drawIn()
                 .accessibilityLabel("\(metric.rawValue) over time, \(data.count) sessions, latest \(Load.format((data.last!.value * 10).rounded() / 10)) kg")
                 if let selected {
                     selectedSession(selected)
