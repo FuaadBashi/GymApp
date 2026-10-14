@@ -90,6 +90,7 @@ private struct StudioSuggestionDetail: View {
         case .target: "Accepting shows this target above the exercise's sets in your next workout, with a button to fill them."
         case .swap: "Accepting replaces the exercise in that program day. Past workouts are unchanged."
         case .note: "Accepting marks it as read. Nothing else changes."
+        case .fix: "Accepting corrects that one logged set. Nothing is deleted, and records update to match."
         }
     }
 
@@ -114,6 +115,7 @@ extension StudioSuggestion.Kind {
         case .target: "Next target"
         case .swap: "Exercise swap"
         case .note: "Note"
+        case .fix: "Data fix"
         }
     }
 }

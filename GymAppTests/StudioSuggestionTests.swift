@@ -118,3 +118,44 @@ struct StudioReportTests {
         #expect(throws: (any Error).self) { try StudioReports.parse(Data("{}".utf8)) }
     }
 }
+
+/// Card 8.3: fix suggestions correct one set.
+struct FixSuggestionTests {
+    let db = try! AppDatabase.inMemory()
+
+    private func fix(_ setId: String, weight: Double = 59) throws -> StudioSuggestion {
+        let json = """
+        [{"id": "f1", "created": "2026-10-14T09:00:00Z", "kind": "fix", "title": "Row 590 → 59", "detail": "", "reason": "slip",
+          "rule": "data_health", "exerciseId": "bench", "change": {"setId": "\(setId)", "weight": \(weight), "unit": "kg", "reps": 8}}]
+        """
+        return try #require(try StudioSuggestions.parse(Data(json.utf8)).first)
+    }
+
+    @Test func acceptingAFixChangesOnlyThatSet() throws {
+        try db.writer.write { db in
+            try TestData.exercise(db, id: "bench")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(1), exercises: [("bench", [(59, 8), (590, 8)])])
+        }
+        let ids = try db.reader.read { try String.fetchAll($0, sql: "SELECT id FROM workoutSet ORDER BY loadHundredths") }
+        try db.writer.write { try StudioSuggestions.accept($0, try fix(ids[1]), now: TestData.day(5)) }
+        let loads = try db.reader.read { try Int.fetchAll($0, sql: "SELECT loadHundredths FROM workoutSet ORDER BY id") }
+        #expect(loads.sorted() == [5900, 5900])
+        #expect(try db.reader.read { try StudioDecisionRecord.fetchOne($0, key: "f1") }?.kind == .fix)
+    }
+
+    @Test func aFixForAMissingSetIsRefusedAndNotRecorded() throws {
+        try db.writer.write { _ = try TestData.exercise($0, id: "bench") }
+        #expect(throws: StudioSuggestions.Failure.notFound) {
+            try db.writer.write { try StudioSuggestions.accept($0, try fix("gone"), now: TestData.day(5)) }
+        }
+        #expect(try db.reader.read { try StudioDecisionRecord.fetchCount($0) } == 0)
+    }
+
+    @Test func migrationV7KeepsEarlierDecisions() throws {
+        let queue = try DatabaseQueue()
+        try Schema.migrator.migrate(queue, upTo: "v6")
+        try queue.write { try $0.execute(sql: "INSERT INTO studioDecision (suggestionId, kind, decision, decidedAt, title) VALUES ('t', 'note', 'accepted', '2026-10-14 10:00:00.000', 'x')") }
+        try Schema.migrator.migrate(queue)
+        #expect(try queue.read { try String.fetchAll($0, sql: "SELECT suggestionId FROM studioDecision") } == ["t"])
+    }
+}

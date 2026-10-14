@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 8.3.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 8.4.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -117,7 +117,7 @@ owner's answers (features first, then studio, then visual polish).
 ### Phase 8: Studio reports, data health and the planner ([spec](specs/08-studio-reports-planner.md))
 - [x] 8.1 Weekly and monthly reports
 - [x] 8.2 Data health
-- [ ] 8.3 Fix suggestions on the phone
+- [x] 8.3 Fix suggestions on the phone
 - [ ] 8.4 Program planner
 - [ ] 8.5 Phase close
 
@@ -144,7 +144,8 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
-- **8.2**: gymstudio/health.py finds likely typos: loads far from the lift's neighbouring sessions (6 MADs and at least 2× or ½ the median) with a proposed correction (decimal slip, kg/lb slip, mistyped digit), reps over 50, big jumps against the recent best, and near-duplicate exercise names. The first pass on the real history gave 140 load flags, mostly empty-bar sets and comebacks; requiring the 2× ratio, skipping light sets without a likely correction and measuring jumps against the best of the last three sessions brought it to 18 (9 with a fix, e.g. Leverage Machine Iso Row 903 → 90.3 kg), 21 jumps and 3 names. A Data health page lists them; ticked fixes are published as  suggestions (setId, weight, unit, reps) alongside whatever is already waiting.
+- **8.3**: The app accepts fix suggestions: the title shows the exercise, date and old to new values, and Accept corrects that one finished set through WorkoutWrites.updateSet, keeping its type; nothing is deleted and records recompute. A fix for a set that no longer exists is refused and not recorded. Migration v7 rebuilds studioDecision (SQLite cannot alter a CHECK) to allow the fix kind, keeping every earlier decision.
+- **8.2**: gymstudio/health.py finds likely typos: loads far from the lift's neighbouring sessions (6 MADs and at least 2× or ½ the median) with a proposed correction (decimal slip, kg/lb slip, mistyped digit), reps over 50, big jumps against the recent best, and near-duplicate exercise names. The first pass on the real history gave 140 load flags, mostly empty-bar sets and comebacks; requiring the 2× ratio, skipping light sets without a likely correction and measuring jumps against the best of the last three sessions brought it to 18 (9 with a fix, e.g. Leverage Machine Iso Row 903 → 90.3 kg), 21 jumps and 3 names. A Data health page lists them; ticked fixes are published as fix suggestions (setId, weight, unit, reps) alongside whatever is already waiting.
 - **8.1**: gymstudio/reports.py builds a report for every completed week and month with workouts: totals and change against the period before, bests by the §5a rule (ported to rulebook.best_status, tested against the app's cases), sets per muscle against the band, plateaus among the program's lifts, program days done (following each day's copy lineage), body weight and steps, and next targets on the newest week. Reports rebuild on every backup load and are written as Markdown in <backup folder>/Reports (only changed files rewritten) and as GymApp-reports.json (last 26 weeks and 12 months) for the app. A Reports page lists weeks and months with a copy-as-Markdown button. Month totals match the app's Recaps (Jan–Mar 2025: 19/135,174, 20/151,962, 18/110,124). 164 reports from the real history in under a second.
 - **7.10**: Phase 7 closed. 195 tests pass. Checked in the simulator on a copy of the phone's database: the accepted Studio target line with Fill sets, a gold 'Best in a month' banner on Barbell Bench Press (70 kg e1RM against October's 66.7 after the May–October break), the hint line (best 93.3, 12-month best 74), the beat-my-best sheet with the day's 5–6 range and a learnt 2 kg step, the end screen compared with 7 Oct's Full Body 1, and Back reopening the workout. The set row now keeps the badge on the set number's corner and the edit pencil beside Previous, after the first layout squeezed the set number. Installed on the phone; migrations v5 and v6 ran and the backup that follows succeeded.
 - **7.9**: The app reads GymApp-reports.json (a list of {id, kind week|month, title, from, to, headline, sections [{title, lines}]}, format fixed here for card 8.1) from the backup folder and Documents with the suggestions, keeping the newer file. Progress has a Reports button: weeks and months listed newest first, each opening to its sections. Bad reports are skipped, not fatal.

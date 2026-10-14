@@ -4,15 +4,17 @@ import GRDB
 /// Card 6.3: one item of `GymApp-suggestions.json`, written by GymApp Studio into the backup
 /// folder. Nothing changes in the app until a suggestion is accepted.
 nonisolated struct StudioSuggestion: Codable, Identifiable, Equatable, Sendable {
-    enum Kind: String, Codable, Sendable { case target, swap, note }
+    enum Kind: String, Codable, Sendable { case target, swap, note, fix }
 
     /// `target`: weight × reps for the next session. `swap`: replace `from` with `to` in a day.
+    /// `fix` (card 8.3): correct logged set `setId` to weight × reps.
     nonisolated struct Change: Codable, Equatable, Sendable {
         var weight: Double?
         var unit: WeightUnit?
         var reps: Int?
         var from: String?
         var to: String?
+        var setId: String?
     }
 
     var id: String
@@ -39,6 +41,10 @@ nonisolated struct StudioSuggestion: Codable, Identifiable, Equatable, Sendable 
             guard let c = change, let from = c.from, let to = c.to, from != to else { return false }
             return dayId != nil
         case .note:
+            return true
+        case .fix:
+            guard let c = change, c.setId?.isEmpty == false, let w = c.weight, w.isFinite, w >= 0, c.unit != nil,
+                  let reps = c.reps, reps >= 0 else { return false }
             return true
         }
     }
@@ -107,6 +113,11 @@ nonisolated enum StudioSuggestions {
             }
         case .note:
             break
+        case .fix:
+            // Card 8.3: the set is corrected in place, never deleted; records recompute.
+            guard let id = s.change?.setId, let set = try WorkoutSetRecord.fetchOne(db, key: id),
+                  let unit = s.change?.unit, let reps = s.change?.reps, let hundredths = s.loadHundredths else { throw Failure.notFound }
+            try WorkoutWrites.updateSet(db, setId: set.id, edit: SetEdit(loadHundredths: hundredths, unit: unit, reps: reps, type: set.type))
         }
         try record(db, s, .accepted, now: now)
     }

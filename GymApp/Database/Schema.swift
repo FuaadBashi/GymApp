@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -59,6 +59,28 @@ nonisolated enum Schema {
         migrator.registerMigration("v6") { db in
             // Card 7.7: whether a day item builds warm-up sets when a workout starts.
             try db.execute(sql: "ALTER TABLE dayExercise ADD COLUMN warmUps INTEGER NOT NULL DEFAULT 0 CHECK (warmUps IN (0,1))")
+        }
+        migrator.registerMigration("v7") { db in
+            // Card 8.3: decisions on `fix` suggestions. SQLite can't change a CHECK, so the
+            // table is rebuilt with every row kept.
+            try db.execute(sql: """
+                CREATE TABLE studioDecisionNew (
+                  suggestionId TEXT PRIMARY KEY NOT NULL CHECK (length(suggestionId) > 0),
+                  kind TEXT NOT NULL CHECK (kind IN ('target','swap','note','fix')),
+                  decision TEXT NOT NULL CHECK (decision IN ('accepted','dismissed')),
+                  decidedAt TEXT NOT NULL,
+                  title TEXT NOT NULL,
+                  exerciseId TEXT,
+                  loadHundredths INTEGER,
+                  unit TEXT CHECK (unit IN ('kg','lb')),
+                  reps INTEGER CHECK (reps > 0),
+                  CHECK ((loadHundredths IS NULL) = (unit IS NULL))
+                );
+                INSERT INTO studioDecisionNew SELECT suggestionId, kind, decision, decidedAt, title, exerciseId, loadHundredths, unit, reps FROM studioDecision;
+                DROP TABLE studioDecision;
+                ALTER TABLE studioDecisionNew RENAME TO studioDecision;
+                CREATE INDEX studioDecision_exercise ON studioDecision(exerciseId, decidedAt);
+                """)
         }
         return migrator
     }
