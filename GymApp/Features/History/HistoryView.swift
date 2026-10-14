@@ -37,6 +37,11 @@ struct HistoryView: View {
                     }
                 }
                 .navigationTitle("History")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink { RecapsView(db: model.db) } label: { Label("Recaps", systemImage: "rectangle.stack") }
+                    }
+                }
                 .navigationDestination(for: String.self) { id in
                     WorkoutDetailView(db: model.db, workoutId: id)
                 }
