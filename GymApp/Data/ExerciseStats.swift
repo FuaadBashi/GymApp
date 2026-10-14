@@ -23,6 +23,12 @@ nonisolated struct ExerciseRecords: Equatable {
     var repRecords: [Mark]            // most reps at each distinct load, heaviest load first
 }
 
+/// §5a: the all-time best estimated 1RM and the best of each window, for hints (card 7.3).
+nonisolated struct BestMarks: Equatable {
+    var allTime: Double?
+    var windows: [Int: Double]        // months → best in that window
+}
+
 /// Card 3.4: an exercise's progress over time, and its records (rulebook §5). Derived on read
 /// from finished sessions, so correcting a set changes them.
 nonisolated enum ExerciseStats {
@@ -41,6 +47,30 @@ nonisolated enum ExerciseStats {
     /// Card 6.4: the session closest in time to a tapped date on the chart.
     static func nearest<P>(_ points: [P], to date: Date, at: (P) -> Date) -> P? {
         points.min { abs(at($0).timeIntervalSince(date)) < abs(at($1).timeIntervalSince(date)) }
+    }
+
+    /// §5a: every counted set's estimated 1RM with when it was done, oldest first. Sets that
+    /// can't set a record (§5) are left out.
+    static func e1RMHistory(_ sessions: [ExerciseSession], loadMode: LoadMode) -> [(date: Date, e1RM: Double)] {
+        sessions.flatMap { session in
+            session.sets.compactMap { set -> (date: Date, e1RM: Double)? in
+                guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths, set.reps > 0,
+                      let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                else { return nil }
+                return (set.completedAt ?? session.workout.startedAt, e)
+            }
+        }
+        .sorted { $0.date < $1.date }
+    }
+
+    static func marks(_ history: [(date: Date, e1RM: Double)], at date: Date) -> BestMarks {
+        let earlier = history.filter { $0.date <= date }
+        var windows: [Int: Double] = [:]
+        for window in TrainingMath.bestWindows {
+            let from = date.addingTimeInterval(-Double(window.days) * 86_400)
+            windows[window.months] = earlier.filter { $0.date >= from }.map(\.e1RM).max()
+        }
+        return BestMarks(allTime: earlier.map(\.e1RM).max(), windows: windows)
     }
 
     /// Ties keep the earliest date: that is when the record was set.

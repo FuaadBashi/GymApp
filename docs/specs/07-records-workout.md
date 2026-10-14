@@ -10,9 +10,9 @@ Decisions this phase rests on:
   shown as records, without badges.
 - **Time-window bests** follow JEFIT: a set is first checked against the all-time best
   (volt). If it doesn't beat it, it is checked against the best of the last 1, 6 and 12
-  months, and the longest window it beats is shown (gold). A window is shown only when its
-  best is below the all-time best, so after a gap of under a month the all-time best stays
-  the mark.
+  months, and the longest window it beats is shown (gold). Windows count only after a break
+  of 30 days or more since the all-time best was reached, and only when the window's best is
+  below the all-time best; so a lift trained without a month off only shows all-time bests.
 - **Banners are in the screen**, never system notifications.
 - **Back from the end screen reopens the workout**: it becomes unfinished again, so sets can
   be added or fixed, or the workout deleted. Records recompute because they are derived.
@@ -25,13 +25,14 @@ Decisions this phase rests on:
 
 ## Card 7.1: Time-window bests
 
-- `TrainingMath.bestStatus(e1RM:history:at:)` (rulebook §5 addition, written into
-  TRAINING_RULEBOOK.md as §5a): given a set's e1RM, the exercise's earlier finished sets
-  and the set's date, return `.allTime`, `.window(months: 1 | 6 | 12)` or `.none`, with the
-  value it beat. Windows are 30, 182 and 365 days before the set. Rules as above. A tie is
-  not a best (`> 0.01 kg`, as `recentRecords`).
-- `ExerciseStats.marks(sessions:)` also returns best e1RM for each window, heaviest, most
-  reps per load and best session volume (existing records keep their definitions).
+- `TrainingMath.bestStatus(e1RM:history:at:)` (TRAINING_RULEBOOK.md §5a): given a set's
+  e1RM, the exercise's earlier counted sets as `(date, e1RM)` and the set's date, return
+  `.allTime(beat:)`, `.window(months: 12 | 6 | 1, beat:)` or `.none`. Windows are 365, 182
+  and 30 days before the set. A tie is not a best (`> 0.01 kg`, as `recentRecords`); a
+  first-ever set is `.none`.
+- `ExerciseStats.e1RMHistory(_:loadMode:)` builds that history from sessions, and
+  `ExerciseStats.marks(_:at:)` returns the all-time and per-window bests for hints (7.3).
+  Heaviest, rep PRs and session volume keep their existing definitions in `records`.
 - **Tests:** a lift trained weekly never shows a window best; after a 3-month gap, sets
   below the all-time best but above the 1-month and 6-month bests report `.window(6)`;
   after a 3-week gap the all-time best stays the mark; ties report `.none`.

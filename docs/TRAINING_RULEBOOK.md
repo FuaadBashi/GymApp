@@ -76,6 +76,23 @@ correcting a set can create or remove a PR.
 - **Rep PR:** most reps at a given load.
 - **Best session volume.**
 
+## §5a Time-window bests
+
+The personal best that badges, banners and the "beat my best" table use is the **best
+estimated 1RM** (§4, from the sets §5 counts). A newly logged set is judged against every
+earlier counted set of the exercise, including sets already logged in the same workout:
+
+1. **All-time best:** its estimated 1RM beats the best so far by more than 0.01 kg.
+2. Otherwise, **only if training broke off** for 30 days or more at some point since the
+   all-time best was last reached (including the gap up to this set), it may be a
+   **window best**: the longest of the last 12, 6 and 1 months (365, 182 and 30 days) whose
+   best is below the all-time best and which it beats by more than 0.01 kg.
+3. Otherwise it is not a best. A first-ever set has nothing to beat.
+
+So a lift trained without a month off only ever shows all-time bests, and after a long
+break the comeback earns smaller bests on the way back. Heaviest load, rep PRs and best
+session volume (§5) are still recorded; they don't drive badges.
+
 ## §6 Volume and sets per muscle
 
 - **Volume** = Σ (calculation load × reps) over volume-counting sets (§2, §3), in kg. JEFIT

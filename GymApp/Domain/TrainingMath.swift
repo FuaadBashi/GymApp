@@ -53,4 +53,41 @@ nonisolated enum TrainingMath {
             bestE1RM: counted.compactMap { displayableE1RM(kg: $0.kg, reps: $0.reps, loadMode: loadMode) }.max()
         )
     }
+
+    // MARK: §5a Time-window bests
+
+    /// §5a: what a set's estimated 1RM beat.
+    enum BestStatus: Equatable {
+        case allTime(beat: Double)
+        case window(months: Int, beat: Double)
+        case none
+    }
+
+    static let bestWindows: [(months: Int, days: Int)] = [(12, 365), (6, 182), (1, 30)]
+    static let breakDays = 30
+
+    /// §5a: the all-time best first; else, only after a break of `breakDays` or more since the
+    /// all-time best was set, the longest of the 12, 6 and 1-month windows whose best is below
+    /// the all-time best and is beaten. Ties are not bests (0.01 kg), and a first-ever set has
+    /// nothing to beat. `history` holds earlier estimated 1RMs with their dates.
+    static func bestStatus(e1RM: Double, history: [(date: Date, e1RM: Double)], at date: Date) -> BestStatus {
+        let earlier = history.filter { $0.date <= date }.sorted { $0.date < $1.date }
+        guard let allTime = earlier.map(\.e1RM).max() else { return .none }
+        if e1RM - allTime > 0.01 { return .allTime(beat: allTime) }
+
+        // When the all-time best was last reached, and whether training broke off since.
+        let bestDate = earlier.last { allTime - $0.e1RM <= 0.01 }!.date
+        let since = earlier.map(\.date).filter { $0 >= bestDate } + [date]
+        let gapSeconds = Double(breakDays) * 86_400
+        let hadBreak = zip(since, since.dropFirst()).contains { $1.timeIntervalSince($0) >= gapSeconds }
+        guard hadBreak else { return .none }
+
+        for window in bestWindows {
+            let from = date.addingTimeInterval(-Double(window.days) * 86_400)
+            guard let best = earlier.filter({ $0.date >= from }).map(\.e1RM).max(),
+                  allTime - best > 0.01, e1RM - best > 0.01 else { continue }
+            return .window(months: window.months, beat: best)
+        }
+        return .none
+    }
 }

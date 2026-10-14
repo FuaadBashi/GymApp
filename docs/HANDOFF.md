@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 7.2.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -102,7 +102,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 6.7 Phase close
 
 ### Phase 7: Records, the workout flow and goals ([spec](specs/07-records-workout.md))
-- [ ] 7.1 Time-window bests
+- [x] 7.1 Time-window bests
 - [ ] 7.2 Best banners and set badges in the workout
 - [ ] 7.3 Best hints and "beat my best"
 - [ ] 7.4 Fixing sets easily
@@ -143,6 +143,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.1**: TrainingMath.bestStatus implements rulebook §5a: an all-time best by estimated 1RM first; otherwise, only after a break of 30 days or more since the all-time best was reached, the longest 12/6/1-month window whose best is below the all-time best and is beaten. The break condition makes 'a gap of under a month keeps the all-time mark' hold for lifts trained continuously, which the window rule alone did not; spec and rulebook updated. First-ever sets and ties are not bests. ExerciseStats.e1RMHistory and marks supply the history and per-window bests for 7.2 and 7.3.
 - **6.7**: Phase 6 closed. 173 app tests and 59 studio tests pass; the final build is installed on the phone. README covers the new features and GymApp Studio; HANDOFF lists the phone checks still to do by hand (Apple Health, accepting the cabled suggestion, moving the backup folder to iCloud Drive) and the phase's judgement calls.
 - **6.6**: History has a Recaps button: this month, last month and a Year in training page for each year since 2022 with workouts, time, volume, sets, records set, most trained muscle, longest weekly streak and a by-month chart linking to each month. RecapQueries builds on HistoryQueries.items, ProgressQueries.muscles and ProgressQueries.recentRecords, so the totals match History and Progress. 2025 on the real history: 115 workouts, 503 records, matching an independent count from the studio's rulebook (204 heaviest, 299 e1RM). A year takes about 4 s on the simulator because every exercise's record history is replayed; a spinner shows meanwhile.
 - **6.5**: Progress gains a Recovery card (hard sets of the last 72 hours per muscle, each weighted linearly by time since, on the body map from fresh to worked, plus a list) and a Movement patterns card (squat, hinge, horizontal and vertical push and pull: weekly best e1RM change over 8 weeks). The hard-set rule is now SummaryQueries.isHard, shared by the weekly muscle counts and recovery. Pattern change is measured from each lift's first trained week in the window rather than the 8 weeks before it: the owner's training restarted on 1 Oct after a gap since May, so the earlier baseline was empty; spec updated. BodyMapView takes a colour function.
