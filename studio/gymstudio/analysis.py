@@ -434,4 +434,17 @@ def overview(h: History, s: Settings, today: Optional[datetime] = None) -> dict:
             "this_week": {"workouts": len(week_workouts), "volume_kg": round(sum(stats.workout_volume_kg(h, w.id) for w in week_workouts))},
             "consistency": consistency(h, s, 26, today), "plateaus": plateaus, "next_targets": targets,
             "balance": balance(h, s, 28, today), "breaks": breaks(h, s)[-5:],
-            "last_workout": history_rows(h)[0] if h.workouts else None}
+            "last_workout": history_rows(h)[0] if h.workouts else None,
+            "steps": steps_summary(h, today), "body_weight": h.body_weights[-1] if h.body_weights else None}
+
+
+def steps_summary(h: History, today: Optional[datetime] = None, days: int = 30) -> Optional[dict]:
+    """Daily steps from Apple Health over the last `days` days, as the app's Progress card."""
+    today = today or now_utc()
+    end = today.astimezone().date()
+    start = (end - timedelta(days=days - 1)).isoformat()
+    rows = [(d, n) for d, n in h.steps if start <= d <= end.isoformat()]
+    if not rows:
+        return None
+    return {"days": [{"date": d, "steps": n} for d, n in rows],
+            "daily_average": round(sum(n for _, n in rows) / len(rows))}

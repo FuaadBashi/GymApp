@@ -10,6 +10,7 @@ final class ProgressModel {
     private(set) var lastWeekMuscles: [(muscle: Muscle, sets: Double)] = []
     private(set) var records: [RecentRecord] = []
     private(set) var weights: [(date: String, kg: Double)] = []
+    private(set) var steps: StepsSummary?
     private(set) var settings = AppSettings()
     private(set) var loaded = false
 
@@ -29,9 +30,10 @@ final class ProgressModel {
                     try ProgressQueries.muscles(db, from: start, to: .distantFuture),
                     try ProgressQueries.muscles(db, from: lastStart, to: start),
                     try ProgressQueries.recentRecords(db),
-                    try ProgressQueries.bodyWeights(db))
+                    try ProgressQueries.bodyWeights(db),
+                    try ProgressQueries.steps(db, now: now, weekStartsOn: settings.weekStartsOn))
         }) else { return }
-        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights) = result
+        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps) = result
         loaded = true
     }
 
@@ -57,6 +59,7 @@ struct ProgressTab: View {
                     muscles
                     recentRecords
                     bodyWeight
+                    stepsCard
                 }
                 .padding(16)
             }
@@ -68,6 +71,7 @@ struct ProgressTab: View {
             }
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }
+            .onReceive(NotificationCenter.default.publisher(for: HealthService.didSync)) { _ in Task { await model.reload() } }
             .onChange(of: workout.justFinishedWorkoutId) { Task { await model.reload() } }
         }
     }
@@ -200,6 +204,35 @@ struct ProgressTab: View {
             }
             Button("Add weight", systemImage: "plus") { addingWeight = true }
                 .buttonStyle(.bordered)
+        }
+    }
+
+    // MARK: Steps
+
+    @ViewBuilder
+    private var stepsCard: some View {
+        if let steps = model.steps, !steps.days.isEmpty {
+            card("Steps · last 30 days") {
+                let points = steps.days.compactMap { d in DayString.date(d.day).map { ($0, d.steps) } }
+                Chart(points, id: \.0) { p in
+                    BarMark(x: .value("Day", p.0, unit: .day), y: .value("Steps", p.1))
+                        .foregroundStyle(Theme.accent.opacity(0.7))
+                }
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .day, count: 7)) { _ in AxisValueLabel(format: .dateTime.day().month(.abbreviated)) }
+                }
+                .frame(height: 110)
+                HStack(alignment: .firstTextBaseline) {
+                    if let avg = steps.dailyAverage {
+                        Text("\(avg.formatted()) a day").font(.subheadline.monospacedDigit())
+                    }
+                    Spacer()
+                    if let this = steps.thisWeek {
+                        let change = steps.lastWeek.flatMap { $0 > 0 ? String(format: "%+.0f%%", Double(this - $0) / Double($0) * 100) : nil } ?? "–"
+                        Text("This week \(this.formatted())/day · vs last \(change)").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            }
         }
     }
 

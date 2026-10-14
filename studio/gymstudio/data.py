@@ -148,11 +148,20 @@ class History:
         for s in sessions.values():
             if s.sets:
                 self.workouts[s.workout_id].sessions.append(s)
-        self.body_weights = [
-            (r["date"], rulebook.to_kg(r["weightHundredths"], r["weightUnit"]))
-            for r in db.execute("SELECT date, weightHundredths, weightUnit FROM bodyEntry "
-                                "WHERE weightHundredths IS NOT NULL ORDER BY date")
-        ]
+        # Typed and Apple Health weights merged as BodyQueries.weights does: a typed entry wins
+        # on a day with both. healthDay only exists in v3 backups.
+        has_health = db.execute("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'healthDay'").fetchone() is not None
+        by_day: dict[str, float] = {}
+        self.steps: list[tuple[str, int]] = []
+        if has_health:
+            for r in db.execute("SELECT date, steps, weightHundredths, weightUnit FROM healthDay ORDER BY date"):
+                if r["weightHundredths"] is not None:
+                    by_day[r["date"]] = rulebook.to_kg(r["weightHundredths"], r["weightUnit"])
+                if r["steps"] is not None:
+                    self.steps.append((r["date"], r["steps"]))
+        for r in db.execute("SELECT date, weightHundredths, weightUnit FROM bodyEntry WHERE weightHundredths IS NOT NULL"):
+            by_day[r["date"]] = rulebook.to_kg(r["weightHundredths"], r["weightUnit"])
+        self.body_weights = sorted(by_day.items())
         self.program_days = {r["id"]: dict(r) for r in db.execute("SELECT * FROM programDay")}
         self.programs = {r["id"]: dict(r) for r in db.execute("SELECT * FROM program")}
         self.day_items = [dict(r) for r in db.execute("SELECT * FROM dayExercise ORDER BY dayId, position")]

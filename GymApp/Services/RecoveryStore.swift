@@ -72,7 +72,8 @@ nonisolated final class RecoveryStore: @unchecked Sendable, TransactionObserver 
             guard try String.fetchOne(db, sql: "PRAGMA quick_check") == "ok",
                   try Row.fetchAll(db, sql: "PRAGMA foreign_key_check").isEmpty else { throw Failure.invalidBackup }
             let versions = try String.fetchAll(db, sql: "SELECT identifier FROM grdb_migrations")
-            guard Set(versions) == ["v1"] || Set(versions) == ["v1", "v2"] else { throw Failure.invalidBackup }
+            // Any leading run of known migrations: a backup from an older version is valid.
+            guard !versions.isEmpty, Set(versions) == Set(Schema.versions.prefix(versions.count)) else { throw Failure.invalidBackup }
             for table in ["exercise", "program", "programDay", "dayExercise", "workout", "workoutExercise", "workoutSet", "exerciseNote", "bodyEntry", "setting", "importRun"] {
                 guard try db.tableExists(table) else { throw Failure.invalidBackup }
             }

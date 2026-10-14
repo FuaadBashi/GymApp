@@ -124,6 +124,16 @@ nonisolated struct ExerciseNoteRecord: Codable, Identifiable, Hashable, Fetchabl
     var externalId: String?
 }
 
+nonisolated struct HealthDayRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "healthDay"
+    var date: String          // yyyy-MM-dd, local
+    var steps: Int?
+    var weightHundredths: Int?
+    var weightUnit: WeightUnit?
+    var source: String = "health"
+    var id: String { date }
+}
+
 nonisolated struct BodyEntryRecord: Codable, Identifiable, Hashable, FetchableRecord, PersistableRecord {
     static let databaseTableName = "bodyEntry"
     var id: String

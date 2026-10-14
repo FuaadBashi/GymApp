@@ -3,6 +3,9 @@ import GRDB
 
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
+    /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
+    static let versions = ["v1", "v2", "v3"]
+
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("v1") { db in
@@ -12,6 +15,19 @@ nonisolated enum Schema {
             try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN note TEXT")
             try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN repsInReserve INTEGER CHECK (repsInReserve BETWEEN 0 AND 3)")
             try db.execute(sql: "ALTER TABLE workoutSet ADD COLUMN annotations TEXT NOT NULL DEFAULT '[]'")
+        }
+        migrator.registerMigration("v3") { db in
+            // Card 6.2: daily totals read from Apple Health. One row per local day.
+            try db.execute(sql: """
+                CREATE TABLE healthDay (
+                  date TEXT PRIMARY KEY NOT NULL CHECK (length(date) = 10),
+                  steps INTEGER CHECK (steps >= 0),
+                  weightHundredths INTEGER CHECK (weightHundredths > 0),
+                  weightUnit TEXT CHECK (weightUnit IN ('kg','lb')),
+                  source TEXT NOT NULL DEFAULT 'health',
+                  CHECK ((weightHundredths IS NULL) = (weightUnit IS NULL))
+                )
+                """)
         }
         return migrator
     }

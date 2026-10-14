@@ -42,7 +42,7 @@ struct SchemaTests {
             try String.fetchAll($0, sql: "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'grdb%' AND name NOT LIKE 'sqlite%' ORDER BY name")
         }
         #expect(tables == ["bodyEntry", "dayExercise", "exercise", "exerciseNote", "importRun", "program",
-                           "programDay", "setting", "workout", "workoutExercise", "workoutSet"])
+                           "programDay", "setting", "workout", "workoutExercise", "workoutSet", "healthDay"].sorted())
     }
 
     @Test func anExerciseRoundTripsWithMusclesStoredAsJSON() throws {

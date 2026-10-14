@@ -69,3 +69,42 @@ class SyntheticTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# Migration v3 (card 6.2), as GymApp/Database/Schema.swift creates it.
+HEALTH_DAY = """
+CREATE TABLE healthDay (
+  date TEXT PRIMARY KEY NOT NULL CHECK (length(date) = 10),
+  steps INTEGER CHECK (steps >= 0),
+  weightHundredths INTEGER CHECK (weightHundredths > 0),
+  weightUnit TEXT CHECK (weightUnit IN ('kg','lb')),
+  source TEXT NOT NULL DEFAULT 'health',
+  CHECK ((weightHundredths IS NULL) = (weightUnit IS NULL))
+)"""
+
+
+class HealthDayTests(unittest.TestCase):
+    def test_v3_backup_merges_weights_and_loads_steps(self):
+        from datetime import datetime, timezone
+        from gymstudio.analysis import steps_summary
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "b.sqlite"
+            build(path)
+            db = sqlite3.connect(path)
+            db.execute(HEALTH_DAY)
+            db.executemany("INSERT INTO healthDay (date,steps,weightHundredths,weightUnit) VALUES (?,?,?,?)",
+                           [("2026-01-01", 5000, 8800, "kg"), ("2026-01-03", 7000, 8900, "kg"), ("2026-01-04", None, None, None)])
+            db.commit(); db.close()
+            h = History(path)
+            # The typed 90 kg on 1 Jan wins over Health's 88.
+            self.assertEqual(h.body_weights, [("2026-01-01", 90.0), ("2026-01-03", 89.0)])
+            self.assertEqual(h.steps, [("2026-01-01", 5000), ("2026-01-03", 7000)])
+            s = steps_summary(h, datetime(2026, 1, 10, 12, tzinfo=timezone.utc))
+            self.assertEqual(s["daily_average"], 6000)
+            self.assertEqual(len(s["days"]), 2)
+
+    def test_older_backup_has_no_steps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "b.sqlite"
+            build(path)
+            self.assertEqual(History(path).steps, [])

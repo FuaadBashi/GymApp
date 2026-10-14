@@ -6,6 +6,7 @@ struct RootView: View {
     @State private var workout: ActiveWorkoutModel
     @State private var launchReport: LaunchReport?
     @State private var tab = RootView.initialTab
+    @Environment(\.scenePhase) private var scenePhase
 
     init(db: AppDatabase) {
         self.db = db
@@ -38,6 +39,10 @@ struct RootView: View {
                 await workout.resumeIfNeeded()
                 SigningExpiry.scheduleReminder(expiry: SigningExpiry.current())
                 await importFromLaunchArgument()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                // Launch counts too: the scene becomes active once at start.
+                if phase == .active { Task { try? await HealthService.shared.sync(into: db) } }
             }
     }
 

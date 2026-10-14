@@ -86,7 +86,10 @@ pages.overview = async () => {
         <a class="row" href="#/exercises/${encodeURIComponent(p.id)}"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${p.sessions} sessions · last ${day(p.last_done)}</div></div>${statusChip("plateau")}</a>`).join("")}</div>`
         : `<div class="empty">No plateaus: every lift you trained in the last 3 weeks went up, or is rebuilding after a break.</div>`}</div>
       <div class="card"><h2>Breaks</h2><table><tr><th>From</th><th>Days</th></tr>${o.breaks.map(x => `<tr><td>${day(x.from)}</td><td>${x.days}</td></tr>`).join("")}</table></div>
-    </div>`;
+    </div>
+    ${o.steps ? `<div class="card" style="margin-top:16px"><h2>Steps · last 30 days</h2>
+      <p class="sub">${fmt(o.steps.daily_average)} a day from Apple Health${o.body_weight ? ` · body weight ${fmt(o.body_weight[1], 1)} kg on ${day(o.body_weight[0])}` : ""}</p>
+      <div class="chart" id="steps"></div></div>` : ""}`;
   $("#targets").innerHTML = o.next_targets.map(t => `
     <a class="card target" href="#/exercises/${encodeURIComponent(t.id)}">
       <div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="font-size:13px">${esc(t.name)}</span>${statusChip(t.kind)}</div>
@@ -98,6 +101,12 @@ pages.overview = async () => {
     xAxis: axis({ type: "category", data: o.consistency.weeks.map(dayShort) }),
     yAxis: axis({ type: "value", minInterval: 1 }),
     series: [{ type: "bar", data: o.consistency.sessions, itemStyle: { color: VOLT, borderRadius: [4, 4, 0, 0] } }],
+  });
+  if (o.steps) chart($("#steps"), {
+    xAxis: axis({ type: "category", data: o.steps.days.map(d => dayShort(d.date)) }),
+    yAxis: axis({ type: "value" }),
+    tooltip: { trigger: "axis" },
+    series: [{ type: "bar", data: o.steps.days.map(d => d.steps), itemStyle: { color: VOLT, borderRadius: [3, 3, 0, 0] } }],
   });
   const ratios = [["Push : pull", b.push_pull.ratio], ["Upper : lower", b.upper_lower.ratio], ["Quads : hams", b.quads_hamstrings.ratio], ["Chest : back", b.chest_back.ratio]];
   chart($("#balance"), {

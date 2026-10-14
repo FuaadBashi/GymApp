@@ -9,6 +9,21 @@ nonisolated struct WeekTotals: Identifiable, Equatable {
     var id: Date { start }
 }
 
+/// Card 6.2: the Progress steps card.
+nonisolated struct StepsSummary: Equatable {
+    var days: [(day: String, steps: Int)]
+    /// Mean over the days in `days` that have a count.
+    var dailyAverage: Int?
+    /// Daily averages for this week so far and the whole of last week.
+    var thisWeek: Int?
+    var lastWeek: Int?
+
+    static func == (a: StepsSummary, b: StepsSummary) -> Bool {
+        a.days.map(\.day) == b.days.map(\.day) && a.days.map(\.steps) == b.days.map(\.steps)
+            && a.dailyAverage == b.dailyAverage && a.thisWeek == b.thisWeek && a.lastWeek == b.lastWeek
+    }
+}
+
 nonisolated struct RecentRecord: Identifiable, Equatable {
     var exercise: ExerciseRecord
     var kind: WorkoutSummary.Record.Kind
@@ -88,9 +103,29 @@ nonisolated enum ProgressQueries {
     }
 
     /// Body weights, oldest first, in kg.
+    /// Typed and Apple Health weights together (BodyQueries.weights).
     static func bodyWeights(_ db: Database) throws -> [(date: String, kg: Double)] {
-        try BodyEntryRecord.filter(Column("weightHundredths") != nil).order(Column("date")).fetchAll(db)
-            .compactMap { e in e.weightHundredths.map { (e.date, Load(hundredths: $0, unit: e.weightUnit).kg) } }
+        try BodyQueries.weights(db).map { ($0.day, $0.kg) }
+    }
+
+    /// Daily steps for the last 30 days ending today, with averages. Days without a count
+    /// are left out rather than counted as zero.
+    static func steps(_ db: Database, now: Date, weekStartsOn: WeekStart) throws -> StepsSummary {
+        let calendar = HistoryQueries.calendar(weekStartsOn)
+        let today = calendar.startOfDay(for: now)
+        let thisStart = HistoryQueries.weekStart(of: now, weekStartsOn: weekStartsOn)
+        let lastStart = calendar.date(byAdding: .weekOfYear, value: -1, to: thisStart) ?? thisStart
+        let from = min(calendar.date(byAdding: .day, value: -29, to: today) ?? today, lastStart)
+        let all = try BodyQueries.steps(db, since: DayString.from(from)).filter { $0.day <= DayString.from(today) }
+        func average(_ list: [(day: String, steps: Int)]) -> Int? {
+            list.isEmpty ? nil : Int((Double(list.map(\.steps).reduce(0, +)) / Double(list.count)).rounded())
+        }
+        let first30 = DayString.from(calendar.date(byAdding: .day, value: -29, to: today) ?? today)
+        let days = all.filter { $0.day >= first30 }
+        let this = DayString.from(thisStart), last = DayString.from(lastStart)
+        return StepsSummary(days: days, dailyAverage: average(days),
+                            thisWeek: average(all.filter { $0.day >= this }),
+                            lastWeek: average(all.filter { $0.day >= last && $0.day < this }))
     }
 
     /// One weight per day: a second entry the same day replaces the first's weight.
