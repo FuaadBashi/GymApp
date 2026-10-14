@@ -17,12 +17,15 @@ struct WorkoutView: View {
             if let snapshot = model.snapshot {
                 WorkoutHeader(snapshot: snapshot, confirmingFinish: $confirmingFinish,
                               onAdd: { addingExercise = true }, onDiscard: { confirmingDiscard = true })
-                if model.focusMode {
-                    FocusView(onAction: perform)
-                } else {
-                    list(snapshot)
+                Group {
+                    if model.focusMode {
+                        FocusView(onAction: perform)
+                    } else {
+                        list(snapshot)
+                    }
                 }
-                WorkoutBottomBar()
+                // Card 9.1: the bar floats over the content so its glass has something to show.
+                .safeAreaInset(edge: .bottom, spacing: 0) { WorkoutBottomBar() }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }

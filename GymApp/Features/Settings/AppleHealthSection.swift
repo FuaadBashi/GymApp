@@ -25,7 +25,7 @@ struct AppleHealthSection: View {
                     .disabled(working)
             }
             if let error {
-                Text(error).font(.footnote).foregroundStyle(.red)
+                Text(error).font(.footnote).foregroundStyle(Theme.danger)
             }
         } header: {
             Text("Apple Health")

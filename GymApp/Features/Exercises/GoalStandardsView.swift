@@ -44,7 +44,7 @@ struct GoalStandardsView: View {
             }
             if let goal {
                 let target = goal.kg
-                Text("Est. 1RM \(BestHintLine.kg(target))").font(.title3.bold().monospacedDigit())
+                Text("Est. 1RM \(BestHintLine.kg(target))").font(Theme.number(.title3, weight: .bold))
                 if let best {
                     Text(best >= target ? "Reached: your best is \(BestHintLine.kg(best))" : "\(BestHintLine.kg(target - best)) to go from \(BestHintLine.kg(best))")
                         .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)

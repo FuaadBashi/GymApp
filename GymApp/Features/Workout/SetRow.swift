@@ -25,7 +25,7 @@ struct SetRow: View {
                     }
                 if set.type == .failed {
                     Text("F").font(.caption2.bold()).foregroundStyle(.white)
-                        .padding(.horizontal, 3).background(.red, in: .rect(cornerRadius: 3))
+                        .padding(.horizontal, 3).background(Theme.danger, in: .rect(cornerRadius: 3))
                 }
             }
             .frame(width: SetColumns.set, alignment: .leading)
@@ -78,7 +78,7 @@ struct SetRow: View {
         if done, let previous, let order = SetComparison.compare(set, previous, loadMode: loadMode) {
             switch order {
             case .orderedDescending: Image(systemName: "arrow.up").foregroundStyle(Theme.accent)
-            case .orderedAscending: Image(systemName: "arrow.down").foregroundStyle(.orange)
+            case .orderedAscending: Image(systemName: "arrow.down").foregroundStyle(Theme.warning)
             case .orderedSame: Text("=").foregroundStyle(.secondary)
             }
         } else {

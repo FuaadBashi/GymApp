@@ -41,8 +41,7 @@ final class HistoryViewModel {
 
     /// A stable colour per program day; grey for workouts with no current day.
     func color(for dayId: String?) -> Color {
-        guard let dayId, let index = dayOrder.firstIndex(of: dayId) else { return .gray }
-        let palette: [Color] = [Theme.accent, Theme.upper, Theme.lower, Theme.core, .pink, .teal, .yellow, .mint]
-        return palette[index % palette.count]
+        guard let dayId, let index = dayOrder.firstIndex(of: dayId) else { return Theme.neutral }
+        return Theme.dayPalette[index % Theme.dayPalette.count]
     }
 }

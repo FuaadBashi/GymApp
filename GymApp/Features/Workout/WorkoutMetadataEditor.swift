@@ -36,7 +36,7 @@ struct WorkoutMetadataEditor: View {
                 Section("Note") { TextEditor(text: $draft.note).frame(minHeight: 140) }
                 Section {
                     Text(error ?? (saving ? "Saving…" : "Saved locally"))
-                        .font(.caption).foregroundStyle(error == nil ? Color.secondary : .orange)
+                        .font(.caption).foregroundStyle(error == nil ? Color.secondary : Theme.warning)
                     if error != nil { Button("Retry save") { save() } }
                 }
             }

@@ -119,7 +119,7 @@ struct WorkoutDetailView: View {
                             .foregroundStyle(set.type == .warmUp || set.type == .drop ? Theme.note : .primary)
                             .frame(width: 28, alignment: .leading)
                         Text(SetFormat.short(set, loadMode: line.exercise.loadMode)).font(.body.monospacedDigit())
-                        if set.type == .failed { Text("failed").font(.caption).foregroundStyle(.red) }
+                        if set.type == .failed { Text("failed").font(.caption).foregroundStyle(Theme.danger) }
                         Spacer()
                         if let e = TrainingMath.displayableE1RM(kg: SetFormat.kg(set), reps: set.reps, loadMode: line.exercise.loadMode),
                            set.type != .warmUp {
@@ -156,7 +156,7 @@ struct WorkoutDetailView: View {
     private func tile(_ title: String, _ value: String, _ caption: String? = nil) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(.title2.bold().monospacedDigit()).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(Theme.number(.title2, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
             Text(caption ?? " ").font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

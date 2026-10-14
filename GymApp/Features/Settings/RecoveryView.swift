@@ -52,9 +52,9 @@ struct RecoveryView: View {
                 dateRow("External copy checked", status.externalAt)
                 if status.externalPending {
                     Label("External backup pending", systemImage: "exclamationmark.icloud")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Theme.warning)
                 }
-                if let error = status.error { Text(error).font(.footnote).foregroundStyle(.orange) }
+                if let error = status.error { Text(error).font(.footnote).foregroundStyle(Theme.warning) }
                 Button("Choose backup folder…") { pickMode = .folder; picking = .folder }
                 Button("Back up now / retry") { run {
                     guard let store = db.recovery else { return }

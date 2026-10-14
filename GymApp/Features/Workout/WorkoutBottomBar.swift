@@ -15,10 +15,12 @@ struct WorkoutBottomBar: View {
                 action
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 10)
-        .padding(.bottom, 6)
-        .background(.bar)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        // Card 9.1: a floating control, so Liquid Glass; the content under it stays opaque.
+        .glassEffect(.regular, in: .rect(cornerRadius: 30))
+        .padding(.horizontal, 10)
+        .padding(.bottom, 4)
         .sensoryFeedback(.success, trigger: logged)
         .sensoryFeedback(.warning, trigger: restEnded)
         .task(id: model.snapshot?.workout.restEndsAt) {

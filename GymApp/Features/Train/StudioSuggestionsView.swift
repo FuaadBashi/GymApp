@@ -78,7 +78,7 @@ private struct StudioSuggestionDetail: View {
                 Button("Accept", systemImage: "checkmark") { decide(accept: true) }.disabled(working)
                 Button("Dismiss", systemImage: "xmark", role: .destructive) { decide(accept: false) }.disabled(working)
             } footer: {
-                if let error { Text(error).foregroundStyle(.red) }
+                if let error { Text(error).foregroundStyle(Theme.danger) }
             }
         }
         .navigationTitle(suggestion.kind.label)

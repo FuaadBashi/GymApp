@@ -39,11 +39,11 @@ enum SetBand: CaseIterable {
 
     var color: Color {
         switch self {
-        case .none: Color(white: 0.28)
+        case .none: Theme.idle
         case .low: Theme.accent.opacity(0.3)
         case .building: Theme.accent.opacity(0.6)
         case .target: Theme.accent
-        case .high: .orange
+        case .high: Theme.warning
         }
     }
 
@@ -72,9 +72,9 @@ enum RecoveryBand: CaseIterable {
 
     var color: Color {
         switch self {
-        case .fresh: Color(white: 0.28)
-        case .recovering: Color.orange.opacity(0.5)
-        case .worked: .orange
+        case .fresh: Theme.idle
+        case .recovering: Theme.warning.opacity(0.5)
+        case .worked: Theme.warning
         }
     }
 
@@ -107,7 +107,7 @@ struct BodyMapView: View {
                 let dx = (size.width - map.viewBox[0] * scale) / 2
                 for region in map.figures[key] ?? [] {
                     let total = region.muscles.compactMap(Muscle.init(rawValue:)).map { sets[$0] ?? 0 }.max() ?? 0
-                    let fill = region.muscles.isEmpty ? Color(white: 0.2) : color(total)
+                    let fill = region.muscles.isEmpty ? Theme.inert : color(total)
                     for polygon in region.polygons where polygon.count > 2 {
                         var path = Path()
                         path.move(to: CGPoint(x: dx + polygon[0][0] * scale, y: polygon[0][1] * scale))

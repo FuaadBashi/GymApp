@@ -176,9 +176,9 @@ private struct SigningExpiryBanner: View {
                 EmptyView()
             case .expiringSoon(let date):
                 banner("This install expires \(date.formatted(.dateTime.weekday(.wide).hour().minute())). Reinstall from Xcode to keep training without interruption.",
-                       color: .orange)
+                       color: Theme.warning)
             case .expired:
-                banner("This install has expired. Reinstall from Xcode; your data is kept.", color: .red)
+                banner("This install has expired. Reinstall from Xcode; your data is kept.", color: Theme.danger)
             }
         }
     }

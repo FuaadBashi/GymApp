@@ -86,7 +86,7 @@ struct SummaryView: View {
             if !s.muscles.isEmpty {
                 section("Muscles trained") {
                     BodyMapView(sets: Dictionary(uniqueKeysWithValues: s.muscles.map { ($0.muscle, $0.sets) })) { sets in
-                        sets < 0.5 ? Color(white: 0.24) : Theme.accent.opacity(min(1, 0.3 + sets / 6))
+                        sets < 0.5 ? Theme.idle : Theme.accent.opacity(min(1, 0.3 + sets / 6))
                     }
                     .frame(height: 220)
                     FlowLayout(spacing: 6) {
@@ -113,7 +113,7 @@ struct SummaryView: View {
                 Text("Tap an exercise to fix or delete a set.").font(.caption2).foregroundStyle(.secondary)
             }
 
-            if let saveError { Text(saveError).font(.caption).foregroundStyle(.orange) }
+            if let saveError { Text(saveError).font(.caption).foregroundStyle(Theme.warning) }
             section("How did it feel?") {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
@@ -166,7 +166,7 @@ struct SummaryView: View {
 
     private func changeChip(_ label: String, _ value: Double, unit: String) -> some View {
         let rounded = (value * 10).rounded() / 10
-        let color: Color = rounded > 0 ? Theme.accent : rounded < 0 ? .orange : .secondary
+        let color: Color = rounded > 0 ? Theme.accent : rounded < 0 ? Theme.warning : .secondary
         return Text("\(label) \(rounded > 0 ? "+" : "")\(Load.format(rounded))\(unit)")
             .font(.caption.weight(.semibold).monospacedDigit()).foregroundStyle(color)
     }
@@ -180,7 +180,7 @@ struct SummaryView: View {
     private func tile(_ title: String, _ value: String, _ caption: String? = nil) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(.title2.bold().monospacedDigit()).lineLimit(1).minimumScaleFactor(0.6)
+            Text(value).font(Theme.number(.title2, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
             Text(caption ?? " ").font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

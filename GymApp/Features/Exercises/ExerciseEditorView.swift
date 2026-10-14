@@ -31,7 +31,7 @@ struct ExerciseEditorView: View {
                     TextField("Name", text: $draft.name)
                         .onChange(of: draft.name) { nameError = nil }
                 } footer: {
-                    if let nameError { Text(nameError).foregroundStyle(.red) }
+                    if let nameError { Text(nameError).foregroundStyle(Theme.danger) }
                 }
                 Section {
                     Picker("Equipment", selection: $draft.equipment) {

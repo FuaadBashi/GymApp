@@ -29,7 +29,7 @@ struct PlateCalculatorView: View {
                     }
                     if result.shortBy > 0 {
                         Text("Closest: \(Load.format(result.achieved)) \(unit.rawValue) (\(Load.format(result.shortBy)) \(unit.rawValue) short)")
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(Theme.warning)
                     }
                 } else if available != nil {
                     Text("Less than the bar (\(Load.format(bar)) \(unit.rawValue)).").foregroundStyle(.secondary)
@@ -53,25 +53,17 @@ struct PlateCalculatorView: View {
     private func plates(_ perSide: [Double]) -> some View {
         let biggest = (available ?? []).max() ?? 25
         return HStack(spacing: 3) {
-            Capsule().fill(Color.gray).frame(width: 36, height: 10)
+            Capsule().fill(Theme.neutral).frame(width: 36, height: 10)
             ForEach(Array(perSide.enumerated()), id: \.offset) { _, plate in
                 RoundedRectangle(cornerRadius: 4)
                     .fill(color(plate))
                     .frame(width: 16, height: 40 + 100 * plate / biggest)
                     .overlay(Text(Load.format(plate)).font(.system(size: 8, weight: .bold)).rotationEffect(.degrees(-90)).fixedSize())
             }
-            Capsule().fill(Color.gray).frame(width: 20, height: 10)
+            Capsule().fill(Theme.neutral).frame(width: 20, height: 10)
         }
         .frame(height: 150)
     }
 
-    private func color(_ plate: Double) -> Color {
-        switch (unit, plate) {
-        case (.kg, 25...), (.lb, 45...): .red
-        case (.kg, 20...), (.lb, 35...): .blue
-        case (.kg, 15...), (.lb, 25...): .yellow
-        case (.kg, 10...), (.lb, 10...): .green
-        default: Color(white: 0.6)
-        }
-    }
+    private func color(_ plate: Double) -> Color { Theme.plate(plate, unit: unit) }
 }

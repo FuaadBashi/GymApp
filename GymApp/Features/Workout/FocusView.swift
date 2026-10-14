@@ -75,7 +75,7 @@ struct FocusView: View {
                                    let order = SetComparison.compare(s, previous, loadMode: item.exercise.loadMode) {
                                     switch order {
                                     case .orderedDescending: Image(systemName: "arrow.up").foregroundStyle(Theme.accent)
-                                    case .orderedAscending: Image(systemName: "arrow.down").foregroundStyle(.orange)
+                                    case .orderedAscending: Image(systemName: "arrow.down").foregroundStyle(Theme.warning)
                                     case .orderedSame: Text("=").foregroundStyle(.secondary)
                                     }
                                 }
