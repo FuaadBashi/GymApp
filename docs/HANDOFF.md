@@ -27,8 +27,8 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 10.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
-owner's answers (features first, then studio, then visual polish).
+**Next card: 10.1.** Phases 0–9 are done and reviewed. Phase 10 (demonstrations, form cues,
+the exercise page, the studio's look) was specified on 14 October and waits for the go-ahead.
 
 ### Device checklist (from PHONE_SETUP.md)
 - [ ] Rest alert with the phone locked and music playing
