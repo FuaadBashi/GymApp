@@ -63,6 +63,25 @@ nonisolated enum ExerciseStats {
         .sorted { $0.date < $1.date }
     }
 
+    /// §5a for a run of sets in order: each judged against `history` and the sets before it.
+    /// Returns the statuses that are bests, and the history with the sets appended.
+    static func statuses(_ sets: [WorkoutSetRecord], history: [(date: Date, e1RM: Double)], loadMode: LoadMode,
+                         fallbackDate: Date) -> (bests: [String: TrainingMath.BestStatus], history: [(date: Date, e1RM: Double)]) {
+        var history = history
+        var out: [String: TrainingMath.BestStatus] = [:]
+        guard loadMode != .bodyweightPlus, loadMode != .repsOnly else { return (out, history) }
+        for set in sets.sorted(by: { ($0.completedAt ?? fallbackDate) < ($1.completedAt ?? fallbackDate) }) {
+            guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths,
+                  let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+            else { continue }
+            let done = set.completedAt ?? fallbackDate
+            let status = TrainingMath.bestStatus(e1RM: e, history: history, at: done)
+            if status != .none { out[set.id] = status }
+            history.append((done, e))
+        }
+        return (out, history)
+    }
+
     static func marks(_ history: [(date: Date, e1RM: Double)], at date: Date) -> BestMarks {
         let earlier = history.filter { $0.date <= date }
         var windows: [Int: Double] = [:]

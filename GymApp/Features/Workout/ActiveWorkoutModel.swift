@@ -74,6 +74,15 @@ final class ActiveWorkoutModel {
         justFinishedWorkoutId = finished?.id
     }
 
+    /// Card 7.5: back from the end screen to the workout, unfinished again.
+    func reopen(_ workoutId: String) async {
+        guard await write({ try WorkoutWrites.reopen($0, workoutId: workoutId) }) != nil else { return }
+        justFinishedWorkoutId = nil
+        await reload(workoutId: workoutId)
+        selectFirstPlanned()
+        isPresented = true
+    }
+
     func discard() async {
         guard let id = snapshot?.workout.id else { return }
         guard await write({ try WorkoutWrites.discard($0, workoutId: id) }) != nil else { return }

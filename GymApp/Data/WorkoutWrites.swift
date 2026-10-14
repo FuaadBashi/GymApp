@@ -169,6 +169,17 @@ nonisolated enum WorkoutWrites {
         return workout
     }
 
+    /// Card 7.5: Back from the end screen makes a finished workout unfinished again, so it can
+    /// be continued, finished again or deleted. Refused while another workout is in progress.
+    static func reopen(_ db: Database, workoutId: String) throws {
+        guard var workout = try WorkoutRecord.fetchOne(db, key: workoutId) else { throw WorkoutError.notFound }
+        guard try WorkoutRecord.filter(Column("endedAt") == nil && Column("id") != workoutId).fetchCount(db) == 0 else {
+            throw WorkoutError.alreadyInProgress
+        }
+        workout.endedAt = nil
+        try workout.update(db)
+    }
+
     static func discard(_ db: Database, workoutId: String) throws {
         _ = try WorkoutRecord.deleteOne(db, key: workoutId)
     }

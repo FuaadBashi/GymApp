@@ -72,17 +72,12 @@ nonisolated enum WorkoutQueries {
             let mine = items.filter { $0.exercise.id == exerciseId }
             guard let loadMode = mine.first?.exercise.loadMode, loadMode != .bodyweightPlus, loadMode != .repsOnly else { continue }
             let sessions = try ExerciseQueries.sessions(db, exerciseId: exerciseId)
-            var history = ExerciseStats.e1RMHistory(sessions, loadMode: loadMode)
             let loads = sessions.flatMap(\.sets).compactMap { set in set.loadHundredths.map { Load(hundredths: $0, unit: set.unit).kg } }
-            let logged = mine.flatMap(\.sets).filter { $0.completedAt != nil }.sorted { $0.completedAt! < $1.completedAt! }
-            for set in logged {
-                guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths, let done = set.completedAt,
-                      let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
-                else { continue }
-                let status = TrainingMath.bestStatus(e1RM: e, history: history, at: done)
-                if status != .none { out[set.id] = status }
-                history.append((done, e))
-            }
+            let logged = mine.flatMap(\.sets).filter { $0.completedAt != nil }
+            let run = ExerciseStats.statuses(logged, history: ExerciseStats.e1RMHistory(sessions, loadMode: loadMode),
+                                             loadMode: loadMode, fallbackDate: now)
+            out.merge(run.bests) { a, _ in a }
+            let history = run.history
             let window = TrainingMath.eligibleWindows(history: history, at: now).first
             hints[exerciseId] = .init(allTime: history.map(\.e1RM).max(), windowMonths: window?.months,
                                       windowBest: window?.best, step: TrainingMath.step(loads: loads))

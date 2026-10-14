@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: 7.5.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+**Next card: 7.6.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
 owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
@@ -106,7 +106,7 @@ owner's answers (features first, then studio, then visual polish).
 - [x] 7.2 Best banners and set badges in the workout
 - [x] 7.3 Best hints and "beat my best"
 - [x] 7.4 Fixing sets easily
-- [ ] 7.5 The end screen
+- [x] 7.5 The end screen
 - [ ] 7.6 Supersets
 - [ ] 7.7 Warm-up builder
 - [ ] 7.8 Goals and standards
@@ -143,6 +143,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **7.5**: The end screen compares with the last time this day was done (else the last workout): duration, total lifted, sets and records tiles with the change, a body map of today's muscles, and every exercise with its sets, last time's sets, e1RM and volume change, and a volt or gold highlight and badge for the best it reached (§5a, via the shared ExerciseStats.statuses). Tapping an exercise opens the workout's edit page to fix or delete sets; the screen reloads on return. Back to workout calls WorkoutWrites.reopen (clears endedAt, refused while another workout is open) and returns to the workout screen. records() is now its own function so the previous workout's count can be shown.
 - **7.4**: Logged sets show a pencil; selecting one shows Unlog and Delete beside the editor, so a mistyped set is fixed in place instead of only through the long-press menu. Edits save immediately; records, banners and badges follow because they are derived. A test confirms correcting 590 kg to 59 kg removes the records it had made from recentRecords and the summary.
 - **7.3**: Under the selected set: its estimated 1RM, the all-time best and, when the §5a break rule makes one eligible, the longest window best below it. Tapping opens a sheet with the lightest load per rep in the exercise's range (else the settings default) that beats the best, in the exercise's learnt step (TrainingMath.step: most common gap between loads used, else 2.5 kg); tapping a row fills the set, and a button opens the exercise history. The window rule now lives in TrainingMath.eligibleWindows, shared by the status and the hint. The table and filled loads are in kg.
 - **7.2**: The workout snapshot carries each logged set's best status (WorkoutQueries.bests: finished history plus sets logged earlier in the workout). Logging a best shows an in-screen banner for 3 s (volt trophy for all-time, gold clock for a window best) with a success or light haptic, and the set row keeps a badge; unlogging or editing re-evaluates. Theme.gold added.

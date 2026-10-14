@@ -73,3 +73,42 @@ struct SummaryTests {
         #expect(try db.reader.read { try BodyQueries.weightKg($0, onOrBefore: TestData.day(0)) } == nil)
     }
 }
+
+/// Card 7.5: the end screen's comparison and reopening.
+struct EndScreenTests {
+    let db = try! AppDatabase.inMemory()
+
+    @Test func comparesWithTheSameDayFirstAndMarksBests() throws {
+        let (dayId, today) = try db.writer.write { db -> (String, WorkoutRecord) in
+            try TestData.exercise(db, id: "bench")
+            let p = try TestData.program(db)
+            let d = try TestData.day(db, programId: p.id, name: "A", position: 0, items: ["bench"])
+            try TestData.finishedWorkout(db, dayId: d.id, startedAt: TestData.day(1), exercises: [("bench", [(50, 10)])])
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(3), exercises: [("bench", [(40, 10)])])
+            let t = try TestData.finishedWorkout(db, dayId: d.id, startedAt: TestData.day(5), exercises: [("bench", [(55, 10)])])
+            return (d.id, t)
+        }
+        _ = dayId
+        let s = try db.reader.read { try SummaryQueries.summary($0, workoutId: today.id) }
+        #expect(s.previous?.workout.startedAt == TestData.day(1))
+        let line = try #require(s.exercises.first)
+        #expect(line.best == .allTime(beat: TrainingMath.e1RM(kg: 50, reps: 10)))
+        #expect(line.lastTime?.first?.loadHundredths == 5000)
+        #expect(abs((line.e1RMChange ?? 0) - (TrainingMath.e1RM(kg: 55, reps: 10) - TrainingMath.e1RM(kg: 50, reps: 10))) < 1e-9)
+        #expect(line.volumeChange == 50)
+    }
+
+    @Test func reopenThenFinishKeepsEverySetAndIsRefusedWhileAnotherIsOpen() throws {
+        let w = try db.writer.write { db -> WorkoutRecord in
+            try TestData.exercise(db, id: "bench")
+            return try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.day(1), exercises: [("bench", [(50, 10), (50, 9)])])
+        }
+        try db.writer.write { try WorkoutWrites.reopen($0, workoutId: w.id) }
+        #expect(try db.reader.read { try WorkoutQueries.inProgress($0)?.id } == w.id)
+        _ = try db.writer.write { try WorkoutWrites.finish($0, workoutId: w.id, now: TestData.day(1).addingTimeInterval(4000)) }
+        #expect(try db.reader.read { try Int.fetchOne($0, sql: "SELECT COUNT(*) FROM workoutSet") } == 2)
+
+        _ = try db.writer.write { try WorkoutWrites.start($0, dayId: nil, settings: AppSettings(), now: TestData.day(2)) }
+        #expect(throws: WorkoutError.alreadyInProgress) { try db.writer.write { try WorkoutWrites.reopen($0, workoutId: w.id) } }
+    }
+}

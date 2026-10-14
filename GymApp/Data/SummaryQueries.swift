@@ -15,7 +15,23 @@ nonisolated struct WorkoutSummary: Equatable {
         var exercise: ExerciseRecord
         var sets: [WorkoutSetRecord]
         var note: String? = nil
+        // Card 7.5: today against the last time, and the best this exercise reached today.
+        var best: TrainingMath.BestStatus? = nil
+        var bests: [String: TrainingMath.BestStatus] = [:]
+        var lastTime: [WorkoutSetRecord]? = nil
+        var e1RMChange: Double? = nil
+        var volumeChange: Double? = nil
         var id: String { exercise.id }
+    }
+
+    /// Card 7.5: the workout the summary compares with (same day lineage first, else the last
+    /// finished workout) and its totals.
+    nonisolated struct Previous: Equatable {
+        var workout: WorkoutRecord
+        var duration: TimeInterval
+        var volumeKg: Double
+        var setCount: Int
+        var records: Int
     }
 
     var workout: WorkoutRecord
@@ -26,10 +42,11 @@ nonisolated struct WorkoutSummary: Equatable {
     var records: [Record]
     var muscles: [(muscle: Muscle, sets: Double)]
     var exercises: [ExerciseLine]
+    var previous: Previous? = nil
 
     static func == (a: WorkoutSummary, b: WorkoutSummary) -> Bool {
         a.workout == b.workout && a.volumeKg == b.volumeKg && a.previousVolumeKg == b.previousVolumeKg
-            && a.records == b.records && a.exercises == b.exercises
+            && a.records == b.records && a.exercises == b.exercises && a.previous == b.previous
             && a.muscles.map(\.muscle) == b.muscles.map(\.muscle) && a.muscles.map(\.sets) == b.muscles.map(\.sets)
     }
 }
@@ -54,6 +71,59 @@ nonisolated enum SummaryQueries {
             }
         }
 
+        let records = try records(db, workout: workout, lines: lines)
+
+        // Card 7.5: compare with the same day's lineage first, else the last finished workout.
+        let days = try workout.programDayId.map { try ProgramQueries.lineage(db, dayId: $0) } ?? []
+        var previous: WorkoutSummary.Previous?
+        let before = try WorkoutRecord.filter(Column("endedAt") != nil && Column("startedAt") < workout.startedAt && Column("id") != workout.id)
+            .order(Column("startedAt").desc)
+        if let p = try (days.isEmpty ? nil : before.filter(days.contains(Column("programDayId"))).fetchOne(db)) ?? before.fetchOne(db) {
+            let pLines = try exerciseLines(db, workoutId: p.id)
+            previous = .init(workout: p, duration: (p.endedAt ?? p.startedAt).timeIntervalSince(p.startedAt),
+                             volumeKg: try volumeKg(db, workout: p, lines: pLines), setCount: hardSetCount(pLines),
+                             records: try self.records(db, workout: p, lines: pLines).count)
+        }
+
+        let bodyWeight = try BodyQueries.weightKg(db, onOrBefore: workout.startedAt)
+        let annotated = try lines.map { line -> WorkoutSummary.ExerciseLine in
+            var line = line
+            let loadMode = line.exercise.loadMode
+            let earlier = try ExerciseQueries.sessions(db, exerciseId: line.exercise.id)
+                .filter { $0.workout.id != workout.id && $0.workout.startedAt < workout.startedAt }
+            line.bests = ExerciseStats.statuses(line.sets, history: ExerciseStats.e1RMHistory(earlier, loadMode: loadMode),
+                                                loadMode: loadMode, fallbackDate: workout.startedAt).bests
+            line.best = line.bests.values.max { rank($0) < rank($1) }
+            if let last = try ExerciseQueries.lastSession(db, exerciseId: line.exercise.id, preferringDays: Set(days),
+                                                          before: workout.startedAt) {
+                line.lastTime = last.session.sets
+                let todayBest = TrainingMath.bests(SetFormat.pastSets(line.sets), loadMode: loadMode).bestE1RM
+                let lastBest = TrainingMath.bests(SetFormat.pastSets(last.session.sets), loadMode: loadMode).bestE1RM
+                if let a = todayBest, let b = lastBest { line.e1RMChange = a - b }
+                let lastWeight = try BodyQueries.weightKg(db, onOrBefore: last.session.workout.startedAt)
+                line.volumeChange = TrainingMath.volumeKg(SetFormat.pastSets(line.sets), loadMode: loadMode, bodyWeightKg: bodyWeight)
+                    - TrainingMath.volumeKg(SetFormat.pastSets(last.session.sets), loadMode: loadMode, bodyWeightKg: lastWeight)
+            }
+            return line
+        }
+
+        return WorkoutSummary(workout: workout, duration: (workout.endedAt ?? .now).timeIntervalSince(workout.startedAt),
+                              volumeKg: volume, previousVolumeKg: previousVolume,
+                              setCount: hardSetCount(lines),
+                              records: records, muscles: muscles(lines), exercises: annotated, previous: previous)
+    }
+
+    /// Orders statuses for "the best this exercise reached": all-time, then longer windows.
+    private static func rank(_ status: TrainingMath.BestStatus) -> Int {
+        switch status {
+        case .allTime: 100
+        case .window(let months, _): months
+        case .none: 0
+        }
+    }
+
+    /// Heaviest and e1RM records set by a workout against every earlier session (card 2.8).
+    static func records(_ db: Database, workout: WorkoutRecord, lines: [WorkoutSummary.ExerciseLine]) throws -> [WorkoutSummary.Record] {
         var records: [WorkoutSummary.Record] = []
         for line in lines {
             let now = TrainingMath.bests(SetFormat.pastSets(line.sets), loadMode: line.exercise.loadMode)
@@ -69,11 +139,7 @@ nonisolated enum SummaryQueries {
                 records.append(.init(exercise: line.exercise, kind: .e1RM, valueKg: a, previousKg: b))
             }
         }
-
-        return WorkoutSummary(workout: workout, duration: (workout.endedAt ?? .now).timeIntervalSince(workout.startedAt),
-                              volumeKg: volume, previousVolumeKg: previousVolume,
-                              setCount: hardSetCount(lines),
-                              records: records, muscles: muscles(lines), exercises: lines)
+        return records
     }
 
     /// Hard sets per muscle (rulebook §6): 1 per primary, 0.5 per secondary, for each completed
