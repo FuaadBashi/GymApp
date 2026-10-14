@@ -477,6 +477,40 @@ pages.reports = async (id) => {
   $("#copymd").onclick = () => navigator.clipboard.writeText(r.markdown);
 };
 
+// Data health (card 8.2)
+
+pages.health = async () => {
+  const d = await api("health");
+  const fixes = d.findings.filter(f => f.fix), checks = d.findings.filter(f => !f.fix);
+  const state = f => f.decision ? statusChip(f.decision) : f.published ? statusChip("waiting") : "";
+  const kindLabel = { load: "Load", reps: "Reps", jump: "Jump", duplicate: "Duplicate" };
+  main.innerHTML = `<h1>Data health</h1>
+    <p class="sub">Likely typos in your history. Ticked fixes go to the phone as suggestions; nothing changes until you accept one there, and the set is corrected, never deleted.</p>
+    <div class="card"><h2>Likely typos with a fix (${fixes.length})</h2>
+      ${fixes.length ? `<div class="list" id="fixes">${fixes.map(f => `
+        <label class="row" style="gap:12px;align-items:flex-start">
+          <input type="checkbox" data-id="${esc(f.id)}" ${f.published || f.decision ? "disabled" : ""} style="margin-top:4px">
+          <div class="grow"><div class="t">${esc(f.exercise)} · ${esc(f.date)}</div>
+            <div class="s">${f.current.weight} ${esc(f.current.unit)} × ${f.current.reps} → <b>${f.fix.weight} ${esc(f.fix.unit)} × ${f.fix.reps}</b></div>
+            <div class="s faint">${esc(f.reason)}</div></div>${state(f)}</label>`).join("")}</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:14px"><button class="primary" id="send">Send ticked fixes to the phone</button><span id="msg" class="faint"></span></div>`
+        : `<div class="empty">No likely typos found.</div>`}
+    </div>
+    <div class="card" style="margin-top:16px"><h2>Worth a look (${checks.length})</h2>
+      <table><tr><th>Kind</th><th>Exercise</th><th>Date</th><th>Why</th></tr>${checks.map(f => `
+        <tr><td>${kindLabel[f.kind] || f.kind}</td><td>${esc(f.exercise)}</td><td>${esc(f.date || "")}</td><td>${esc(f.reason)}</td></tr>`).join("")}</table></div>`;
+  const send = $("#send");
+  if (send) send.onclick = async () => {
+    const ids = [...document.querySelectorAll("#fixes input:checked")].map(i => i.dataset.id);
+    if (!ids.length) { $("#msg").textContent = "Tick at least one fix."; return; }
+    try {
+      const r = await api("health/publish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids }) });
+      $("#msg").textContent = `Sent ${r.published}; ${r.waiting} suggestions waiting on the phone.`;
+      setTimeout(route, 700);
+    } catch (e) { $("#msg").textContent = e.message; }
+  };
+};
+
 // Suggestions (card 6.3)
 
 pages.suggestions = async () => {

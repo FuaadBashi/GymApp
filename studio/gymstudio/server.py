@@ -21,7 +21,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import analysis, ask, progression, reports, suggestions, watch
+from . import analysis, ask, health, progression, reports, suggestions, watch
 from .data import History
 from .lab import NotebookLab
 
@@ -369,6 +369,34 @@ def get_report(report_id: str):
             return {**r.app_dict(), "markdown": r.markdown(), "figures": {k: v for k, v in r.figures.items() if k != "muscles"},
                     "muscles": r.figures.get("muscles", {})}
     raise HTTPException(404, "No such report")
+
+
+@app.get("/api/health")
+def get_health():
+    h = state.require()
+    folder = suggestions_folder()
+    decided = suggestions.decisions(folder)
+    live = {i["id"] for i in suggestions.published(folder)}
+    return {"findings": [{**f, "published": f["id"] in live, "decision": (decided.get(f["id"]) or {}).get("decision")}
+                         for f in health.findings(h)]}
+
+
+@app.post("/api/health/publish")
+def publish_fixes(values: dict, request: Request):
+    """Publishes the ticked fixes as `fix` suggestions, keeping what is already waiting."""
+    check_same_origin(request)
+    h = state.require()
+    folder = suggestions_folder()
+    wanted = set(values.get("ids") or [])
+    created = analysis.now_utc().strftime("%Y-%m-%dT%H:%M:%SZ")
+    fixes = [health.suggestion(f, created) for f in health.findings(h) if f["id"] in wanted and f["fix"]]
+    decided = suggestions.decisions(folder)
+    keep = [i for i in suggestions.published(folder) if i["id"] not in decided]
+    try:
+        written = suggestions.publish(folder, keep + fixes)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+    return {"published": len(fixes), "waiting": len(written)}
 
 
 @app.get("/api/suggestions")

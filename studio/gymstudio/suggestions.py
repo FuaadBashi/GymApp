@@ -21,7 +21,7 @@ from .data import History
 
 FILE = "GymApp-suggestions.json"
 DECISIONS = "GymApp-suggestion-decisions.json"
-KINDS = ("target", "swap", "note")
+KINDS = ("target", "swap", "note", "fix")
 
 
 def _id(*parts: str) -> str:
@@ -125,6 +125,9 @@ def validate(item: dict) -> dict:
         if not item.get("exerciseId") or c.get("unit") not in ("kg", "lb") or not isinstance(c.get("weight"), (int, float)) \
                 or not isinstance(c.get("reps"), int) or c["reps"] < 1:
             raise ValueError(f"Target {item['id']} needs an exercise, a weight, a unit and reps")
+    if item["kind"] == "fix" and (not c.get("setId") or c.get("unit") not in ("kg", "lb")
+                                  or not isinstance(c.get("weight"), (int, float)) or not isinstance(c.get("reps"), int) or c["reps"] < 0):
+        raise ValueError(f"Fix {item['id']} needs a set, a weight, a unit and reps")
     if item["kind"] == "swap" and (not item.get("dayId") or not c.get("from") or not c.get("to") or c["from"] == c["to"]):
         raise ValueError(f"Swap {item['id']} needs a day and two different exercises")
     return item

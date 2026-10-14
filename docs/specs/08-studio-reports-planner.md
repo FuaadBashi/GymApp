@@ -22,11 +22,15 @@ cards 7.9 (reports) and 8.3 (fix suggestions).
 
 ## Card 8.2: Data health
 
-- `gymstudio/health.py`: per exercise, flag sets whose load is far outside the exercise's
-  recent loads (median absolute deviation over its last 10 sessions, threshold 6 MADs),
-  with likely corrections tried in order: ×10 / ÷10 slip, kg↔lb slip, a dropped or doubled
-  digit. Also: reps over 50 on a loaded lift, a load jump above 40% session to session,
-  and exercises whose names differ only in case or punctuation.
+- `gymstudio/health.py`: per exercise, flag a set whose load is more than 6 median absolute
+  deviations (MAD, floored at 5% of the median and 1 kg) from the loads of the five sessions
+  before and five after it **and** at least double or at most half that median, with likely
+  corrections tried in order: ×10 / ÷10 slip, kg↔lb slip, a dropped or doubled digit; the
+  first landing within 1 MAD (at least 5% of the median) is proposed. A light set with no
+  likely correction is not flagged (logged empty-bar sets and comebacks look like that).
+  Also: reps over 50 on a loaded lift; a top set more than 60% above the best of the previous
+  three sessions within 30 days (to check, no fix); and exercises whose names differ only in
+  case or punctuation. On the real history: 18 load findings (9 with a fix), 21 jumps, 3 names.
 - A **Data health** page lists findings with the proposed fix; ticked fixes are published
   as suggestions of a new kind `fix` (`{setId, load, unit, reps}`).
 - **Tests:** 590 among 59s proposes 59; a real 20% PB jump is not flagged.
