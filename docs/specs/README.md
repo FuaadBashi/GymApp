@@ -12,6 +12,10 @@ rely on everything before it.
 | [03-history-analytics.md](03-history-analytics.md) | 3: history and analytics, lean | full |
 | [04-export.md](04-export.md) | 4: export, reconciled with the earlier backup work | full |
 | [05-phone.md](05-phone.md) | 5: on the phone | full |
+| [06-studio-phone.md](06-studio-phone.md) | 6: the phone side of the studio | full |
+| [07-records-workout.md](07-records-workout.md) | 7: records, the workout flow and goals | full |
+| [08-studio-reports-planner.md](08-studio-reports-planner.md) | 8: studio reports, data health, planner | full |
+| [09-polish.md](09-polish.md) | 9: visual polish | full |
 | [03-05-outline.md](03-05-outline.md) | 3–5 outline, superseded by the files above | historical |
 
 Progress is tracked in [../HANDOFF.md](../HANDOFF.md).

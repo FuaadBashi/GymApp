@@ -100,6 +100,37 @@ weight: 66 entries.
 - **The app can use that file.** Import it on the phone, and the workout screen shows "Try 52.5 kg × 8 (you hit 10, 10, 9 last time)" beside last time's values. Or the same rules move into the app later, once the tool has proven them on four years of history. Either way the rules are tested first.
 - **A first version:** progress and plateau report per exercise; weekly fractional sets per muscle against a target band; balance ratios; consistency; and double-progression next-session targets with learnt increments and a stall-triggered deload, all back-tested on the history.
 
+## 6. Follow-up research for phases 7–9 (14 October 2026)
+
+- **Warm-ups.** Controlled work supports a ramp that ends near the working load: before
+  3 × 6 at 80%, a 40% then 80% warm-up gave the fastest bench velocity, and the 80% warm-up
+  beat the 40% one in the squat (PMC7558980). The common 4–5 step percentages
+  (bar, 50, 70, 85%) are coaching convention. Hence two ramps: strength for the day's first
+  barbell lift, short (50% × 8, 80% × 3) elsewhere.
+- **Weekly volume.** Pelland et al. 2025 (Sports Medicine, 67 studies): fractional set
+  counting (indirect sets ½) fits hypertrophy best; volume helps both outcomes with
+  diminishing returns, sharply for strength (little detectable gain past ~3 fractional sets
+  a week) and gradually for hypertrophy (detectable up to roughly 30). The 10–20 band is a
+  sensible default; above 20 is not wasted for size.
+- **Projections.** Strength progress decays over time, and sex, age and starting strength
+  explain about 11% of the variation in rate (Stronger by Science, 70,117 meet results).
+  Goal dates therefore come from the lifter's own saturating curve with a range, never
+  from population averages.
+- **Standards.** Gym-logged standards (Symmetric Strength, Strength Level) run higher than
+  judged meet results (OpenPowerlifting). FitnessVolt publishes both populations
+  separately under CC BY 4.0.
+- **Supersets.** Hevy's documented model: per-exercise rest, auto-advance to the next member,
+  full rest after the group, about 30 s more than a normal rest.
+- **Deloads.** A 2026 randomised study found mid- and end-block deloads did not hurt
+  hypertrophy in untrained men; deload timing and MEV/MRV landmarks are practitioner
+  heuristics, so the planner keeps them adjustable and only proposes deloads after plateaus.
+- **Reports.** Hevy's monthly report (totals, records, calendar, muscle split against last
+  month, top exercises) is the reference; it keeps only the last month, which the studio
+  improves on by keeping every period.
+- **Design.** Liquid Glass belongs on floating navigation and controls, not content.
+  Strong dark data interfaces keep a near-black base, grey text and saturated colour for
+  data only. Polish comes from motion and haptics that mark real events.
+
 ## Sources
 
 App pages and reviews: [Hevy: sets per muscle group](https://www.hevyapp.com/features/sets-per-muscle-group-per-week/), [Hevy Pro](https://help.hevyapp.com/hc/en-us/articles/35119778922263-Hevy-Pro-Subscription-How-to-get-Pro-and-What-Does-It-Include), [Strong (App Store)](https://apps.apple.com/sg/app/id464254577), [Strong review 2026](https://www.sensai.fit/blog/strong-app-review-2026), [JEFIT (App Store)](https://apps.apple.com/app/id449810000), [Boostcamp features](https://boostcamp.app/features), [Stronglifts increments](https://support.stronglifts.com/article/71-increments), [Liftosaur docs](https://www.liftosaur.com/docs), [Gravl review 2026](https://www.sensai.fit/blog/gravl-app-review-2026), [Gravl (App Store)](https://apps.apple.com/ca/app/6450921637), [Alpha Progression guide](https://alphaprogression.com/en/blog/alpha-progression-guide), [MacroFactor smart progressions](https://help.macrofactorapp.com/en/articles/305-understanding-and-using-smart-progressions), [MacroFactor progressive overload](https://help.macrofactorapp.com/en/articles/372-what-does-progressive-overload-mean-in-macrofactor-workouts), [Fitbod: when to lift heavier](https://fitbod.me/blog/how-fitbods-ai-knows-exactly-when-you-should-lift-heavier-and-when-to-recover/), [Fitbod: how workouts are created](https://help.fitbod.me/hc/en-us/articles/360004429814-How-Fitbod-Creates-Your-Workout), [RP volume landmarks](https://rpstrength.com/training-volume-landmarks-muscle-growth/), [RP muscle emphasis](https://help.rpstrength.com/hc/en-us/articles/34825395726743-Muscle-Emphasis-Breakdown), [JuggernautAI individualisation](https://help.jtsstrength.com/en/articles/3-how-juggernautai-is-individualized-to-you), [Dr. Muscle periodisation](https://dr-muscle.com/periodization-muscle-hypertrophy/), [Arvo](https://arvo.guru/download), [AI personal trainer apps 2026](https://www.sensai.fit/blog/best-ai-personal-trainer-apps-2026), [Whoop vs Garmin](https://www.wareable.com/wearable-tech/whoop-vs-garmin), [Hevy MCP server](https://mcpservers.org/servers/chrisdoc/hevy-mcp), [Strong CSV for analysis](https://forum.intervals.icu/t/import-strong-data-weightlifting-app/5531).
@@ -107,3 +138,11 @@ App pages and reviews: [Hevy: sets per muscle group](https://www.hevyapp.com/fea
 Standards: [Strength Level](https://strengthlevel.com/), [FitnessVolt percentiles](https://fitnessvolt.com/powerlifting/calculators/percentile/).
 
 Research: [Plotkin et al. 2022](https://peerj.com/articles/14142), [Refalo et al. 2023](https://dro.deakin.edu.au/articles/journal_contribution/Influence_of_Resistance_Training_Proximity-to-Failure_on_Skeletal_Muscle_Hypertrophy_A_Systematic_Review_with_Meta-analysis/22030796), [Pelland et al. (preprint)](https://sportrxiv.org/index.php/server/preprint/view/460), [Marzagao 2026](https://arxiv.org/abs/2603.17495), [1RM equations](https://en.wikipedia.org/wiki/One-repetition_maximum), [ACWR evidence](https://pmc.ncbi.nlm.nih.gov/articles/PMC7047972), [fitness–fatigue model](https://www.arxiv.org/pdf/1612.08591).
+- PMC7558980, The role of specific warm-up during bench press and squat exercises: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7558980/
+- Pelland et al. 2025, The resistance training dose response: https://link.springer.com/article/10.1007/s40279-025-02344-w
+- Stronger by Science, How sex, strength and age affect strength gains: https://www.strongerbyscience.com/predict-strength-gains/
+- FitnessVolt strength standards data: https://fitnessvolt.com/strength-standards/strength-data
+- Symmetric Strength standards: https://symmetricstrength.com/standards
+- Hevy supersets guide: https://help.hevyapp.com/hc/en-us/articles/35650286563095-The-Complete-Guide-to-Supersets-and-Smart-Superset-Scrolling
+- Deload study, Scientific Reports 2026: https://www.nature.com/articles/s41598-026-40612-5
+- Hevy monthly report: https://www.hevyapp.com/features/monthly-report/

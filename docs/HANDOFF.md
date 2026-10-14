@@ -27,11 +27,8 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: none.** Phases 0–6 are done; the next step is a code review of phase 6. What
-remains needs the phone or the Mac by hand: the device checklist below.
-
-Phase 6 was specified and built on 14 October (cards 6.1–6.7); 173 app tests and 59 studio
-tests pass. Judgement calls are under *Open questions*.
+**Next card: 7.1.** Phases 0–6 are done. Phases 7–9 were specified on 14 October from the
+owner's answers (features first, then studio, then visual polish).
 
 ### Device checklist (from PHONE_SETUP.md)
 - [ ] Rest alert with the phone locked and music playing
@@ -103,6 +100,33 @@ tests pass. Judgement calls are under *Open questions*.
 - [x] 6.5 Recovery and movement patterns
 - [x] 6.6 Recaps
 - [x] 6.7 Phase close
+
+### Phase 7: Records, the workout flow and goals ([spec](specs/07-records-workout.md))
+- [ ] 7.1 Time-window bests
+- [ ] 7.2 Best banners and set badges in the workout
+- [ ] 7.3 Best hints and "beat my best"
+- [ ] 7.4 Fixing sets easily
+- [ ] 7.5 The end screen
+- [ ] 7.6 Supersets
+- [ ] 7.7 Warm-up builder
+- [ ] 7.8 Goals and standards
+- [ ] 7.9 Reports in the app
+- [ ] 7.10 Phase close
+
+### Phase 8: Studio reports, data health and the planner ([spec](specs/08-studio-reports-planner.md))
+- [ ] 8.1 Weekly and monthly reports
+- [ ] 8.2 Data health
+- [ ] 8.3 Fix suggestions on the phone
+- [ ] 8.4 Program planner
+- [ ] 8.5 Phase close
+
+### Phase 9: Visual polish ([spec](specs/09-polish.md))
+- [ ] 9.1 Theme and surfaces
+- [ ] 9.2 Rolling numbers
+- [ ] 9.3 Animated icons and haptics
+- [ ] 9.4 Charts that draw in
+- [ ] 9.5 Studio restyle
+- [ ] 9.6 Phase close
 
 ## Requested after phase 2
 
