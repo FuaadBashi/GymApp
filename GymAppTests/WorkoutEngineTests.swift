@@ -94,6 +94,19 @@ struct WorkoutEngineTests {
         #expect(cleared?.restEndsAt == nil && cleared?.restDurationSeconds == nil)
     }
 
+    @Test func repsLeftIsSetAndClearedWithoutTouchingNoteOrLabels() throws {
+        try db.writer.write { _ = try TestData.exercise($0, id: "bench") }
+        let set = try #require(try start(try day(["bench"])).items.first?.sets.first)
+        try db.writer.write { try WorkoutWrites.setMetadata($0, setId: set.id, note: "grip wide", reserve: nil, annotations: [.form]) }
+        try db.writer.write { try WorkoutWrites.setReserve($0, setId: set.id, reserve: 2) }
+        var saved = try #require(try db.reader.read { try WorkoutSetRecord.fetchOne($0, key: set.id) })
+        #expect(saved.repsInReserve == 2 && saved.note == "grip wide" && saved.annotations == [.form])
+        try db.writer.write { try WorkoutWrites.setReserve($0, setId: set.id, reserve: nil) }
+        saved = try #require(try db.reader.read { try WorkoutSetRecord.fetchOne($0, key: set.id) })
+        #expect(saved.repsInReserve == nil && saved.note == "grip wide")
+        #expect(throws: WorkoutError.invalidReps) { try db.writer.write { try WorkoutWrites.setReserve($0, setId: set.id, reserve: 4) } }
+    }
+
     @Test func negativeRepsAreRejected() throws {
         try db.writer.write { _ = try TestData.exercise($0, id: "bench") }
         let set = try #require(try start(try day(["bench"])).items.first?.sets.first)

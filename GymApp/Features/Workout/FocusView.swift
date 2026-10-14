@@ -38,6 +38,9 @@ struct FocusView: View {
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }, large: true)
                     .disabled(set.completedAt != nil)
+                    ReserveChips(reserve: set.repsInReserve, large: true) { value in
+                        Task { await model.setReserve(set.id, value) }
+                    }
                 }
 
                 ExerciseMediaView(exercise: item.exercise)

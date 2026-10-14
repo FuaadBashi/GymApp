@@ -104,6 +104,10 @@ final class ActiveWorkoutModel {
         selectedSetId = setId
     }
 
+    func setReserve(_ setId: String, _ reserve: Int?) async {
+        await change { try WorkoutWrites.setReserve($0, setId: setId, reserve: reserve) }
+    }
+
     func update(_ setId: String, edit: SetEdit) async {
         await change { try WorkoutWrites.updateSet($0, setId: setId, edit: edit) }
     }

@@ -27,7 +27,7 @@ later phone additions are deferred. 48 Studio tests pass. The owner authorised c
 and pushing this Studio work on 14 October. The phone status and device checklist below
 are unchanged by Studio work.
 
-**Next card: none.** Every card in phases 0–5 is done. What remains needs the phone:
+**Next card: 6.2.** Every card in phases 0–5 is done. What remains needs the phone:
 follow [PHONE_SETUP.md](PHONE_SETUP.md) and tick its device checklist below.
 
 Phases 3 (lean), 4 and 5 were specified and built card by card on 12 October. 153 tests pass. Judgement
@@ -107,6 +107,7 @@ physical-device/cloud-provider failure checks remain open.
 Newest first. One entry per card: what was done, anything surprising, anything the next
 card should know.
 
+- **6.1**: Reps left in one tap: ReserveChips (Max, 1, 2, 3) under the selected set's steppers in list and focus mode; WorkoutWrites.setReserve writes only repsInReserve (0–3), keeping note and labels; tapping the chosen chip clears it. Simulator: chip 2 on set 1 saved repsInReserve = 2 and the row shows MR −2.
 - **More demonstration clips (13 Oct)**: Wikimedia's FitnessScape set has no further usable clips, so 20 clips came from wger (all by Goulart, CC BY-SA 4.0), each checked on an eight-frame contact sheet; two rejected. Converted to 480p H.264 (about 15 MB in total), originals pinned by SHA-256 in manifest.json, table in PROVENANCE.md. ExerciseMedia is now a table and also finds a clip through an exercise's hand-checked library link, still requiring matching equipment. Coverage on the phone: 24 of 193 exercises done, 867 of 2,548 logged exercise sessions; 9 of 22 Full Body items. Not available in either source: lat pulldown, leg extension, machine lateral raise, machine fly, machine dip, seated machine row, inner chest press, preacher curl machine, incline curl, parallel bar leg raise, weight plate squat.
 - **Duplicate exercises (13 Oct)**: LIBRARY_LINKS in build_jefit_map.py adds 63 hand-checked links (115 of 199 now linked); only libraryId changed in the map and the reference expectations are identical. Imports never rewrite existing exercises, so LibrarySeeder.linkImported fills empty links (and empty instructions) at launch for JEFIT exercises only, never overriding a link. On the phone: 114 imported exercises linked; Barbell Bench Press no longer lists its library twin. Skipped on purpose: assisted machines, lookalike machines, variants with a different grip or stance, and four library entries already linked to a closer variant.
 - **Program and tonight's session (13 Oct)**: Imported the 13 Oct JEFIT export over the cable (1 new workout, 7 exercises, 14 sets; phone 469 workouts / 7,765 sets). As Fuaad asked: Full Body 1–3 filled from his JEFIT FBD 1, FBD 2 and "Cardio" days as shown in the JEFIT app (each linked by copiedFromDayId to its JEFIT day for last-time values), Machine Hip Adduction added as a custom exercise, and tonight's session retitled Full Body 3 and linked to that day. Applied through the app's pending-restore path, which keeps a safety copy of the previous data. The debug `-importJEFIT` argument now accepts a path inside the app's home, for imports over the cable.

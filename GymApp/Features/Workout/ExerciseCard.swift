@@ -149,6 +149,10 @@ struct ExerciseCard: View {
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }
                     .padding(.vertical, 4)
+                    ReserveChips(reserve: set.repsInReserve) { value in
+                        Task { await model.setReserve(set.id, value) }
+                    }
+                    .padding(.bottom, 4)
                 }
             }
         }

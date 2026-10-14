@@ -187,6 +187,13 @@ nonisolated enum WorkoutWrites {
         try set.update(db)
     }
 
+    /// Reps left in the tank (0–3) for one set, leaving its note and labels as they are.
+    static func setReserve(_ db: Database, setId: String, reserve: Int?) throws {
+        guard reserve.map({ (0...3).contains($0) }) ?? true else { throw WorkoutError.invalidReps }
+        guard try WorkoutSetRecord.fetchOne(db, key: setId) != nil else { throw WorkoutError.notFound }
+        try db.execute(sql: "UPDATE workoutSet SET repsInReserve = ? WHERE id = ?", arguments: [reserve, setId])
+    }
+
     static func setExerciseNote(_ db: Database, itemId: String, note: String?) throws {
         guard var item = try WorkoutExerciseRecord.fetchOne(db, key: itemId) else { throw WorkoutError.notFound }
         item.note = note?.isEmpty == false ? note : nil
