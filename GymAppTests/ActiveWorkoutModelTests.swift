@@ -18,7 +18,7 @@ struct ActiveWorkoutModelTests {
     let notifier = FakeNotifier()
 
     /// A day with bench (2 sets) then row (1 set), rest 90, no history.
-    private func model() async throws -> ActiveWorkoutModel {
+    fileprivate func model() async throws -> ActiveWorkoutModel {
         let dayId = try await db.writer.write { db in
             try TestData.exercise(db, id: "bench", name: "Bench")
             try TestData.exercise(db, id: "row", name: "Row")
@@ -198,5 +198,82 @@ struct BestBannerTests {
 
         await model.unlog(set.id)
         #expect(model.snapshot?.bests[set.id] == nil)
+    }
+
+}
+
+extension ActiveWorkoutModelTests {
+    // MARK: Lock-screen freeze (16 Oct 2026): a failed background read left an endless spinner.
+
+    @Test func aFailedReloadKeepsTheWorkoutOnScreen() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        try await db.writer.write { try $0.execute(sql: "ALTER TABLE workoutSet RENAME TO hidden") }
+        await model.refresh()
+        #expect(model.snapshot != nil)
+        #expect(model.lastError == nil)
+        try await db.writer.write { try $0.execute(sql: "ALTER TABLE hidden RENAME TO workoutSet") }
+        await model.log(bench.sets[0].id)
+        #expect(model.snapshot?.completedSetCount == 1)
+    }
+
+    @Test func aWorkoutRemovedElsewhereClearsTheModel() async throws {
+        let model = try await model()
+        let id = try #require(model.snapshot?.workout.id)
+        try await db.writer.write { try WorkoutWrites.discard($0, workoutId: id) }
+        await model.refresh()
+        #expect(model.snapshot == nil)
+    }
+
+    @Test func returningAfterRestEndedClearsTheRest() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.log(bench.sets[0].id)
+        let id = try #require(model.snapshot?.workout.id)
+        try await db.writer.write {
+            try $0.execute(sql: "UPDATE workout SET restEndsAt = ? WHERE id = ?", arguments: [Date.now.addingTimeInterval(-60), id])
+        }
+        await model.refresh()
+        await model.returnedToForeground()
+        #expect(model.snapshot?.workout.restEndsAt == nil)
+        #expect(notifier.scheduled == nil)
+        #expect(model.selectedSetId == bench.sets[1].id)
+    }
+
+    @Test func returningMidRestKeepsTheCountdown() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.log(bench.sets[0].id)
+        let end = try #require(model.snapshot?.workout.restEndsAt)
+        await model.returnedToForeground()
+        #expect(model.snapshot?.workout.restEndsAt == end)
+        #expect(notifier.scheduled?.date == end)
+    }
+
+    @Test func returningWithNoSnapshotResumesTheWorkout() async throws {
+        let first = try await model()
+        let id = try #require(first.snapshot?.workout.id)
+        let fresh = ActiveWorkoutModel(db: db, notifier: notifier)
+        await fresh.returnedToForeground()
+        #expect(fresh.snapshot?.workout.id == id)
+        #expect(fresh.selectedSetId == first.selectedSetId)
+    }
+
+    @Test func returningWithNoWorkoutDoesNothing() async throws {
+        let model = ActiveWorkoutModel(db: db, notifier: notifier)
+        await model.returnedToForeground()
+        #expect(model.snapshot == nil && model.lastError == nil)
+    }
+
+    @Test func loggedSetsSurviveARelaunch() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.update(bench.sets[0].id, edit: SetEdit(loadHundredths: 6250, unit: .kg, reps: 8, type: .working))
+        await model.log(bench.sets[0].id)
+        let relaunched = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        await relaunched.resumeIfNeeded()
+        let set = try #require(relaunched.snapshot?.items[0].sets[0])
+        #expect(set.completedAt != nil && set.loadHundredths == 6250 && set.reps == 8)
+        #expect(relaunched.selectedSetId == bench.sets[1].id)
     }
 }

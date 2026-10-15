@@ -102,6 +102,12 @@ final class ActiveWorkoutModel {
         await reload(workoutId: id)
     }
 
+    /// Back in the foreground: re-read the workout and clear a rest that ended while away.
+    func returnedToForeground() async {
+        guard snapshot != nil else { return await resumeIfNeeded() }
+        if let end = snapshot?.workout.restEndsAt, end <= .now { await restDidEnd() } else { await refresh() }
+    }
+
     // MARK: Sets
 
     func log(_ setId: String) async {
@@ -327,8 +333,12 @@ final class ActiveWorkoutModel {
             snapshot = try await db.reader.read { db in
                 try WorkoutQueries.snapshot(db, workoutId: workoutId, settings: try AppSettings.load(db))
             }
-        } catch {
+        } catch WorkoutError.notFound {
             snapshot = nil
+        } catch {
+            // A read can fail while the app is suspended or the phone locked; keep the last
+            // good workout on screen rather than an endless spinner. The next reload repairs it.
+            return
         }
         syncNotification()
         await syncRestActivity()

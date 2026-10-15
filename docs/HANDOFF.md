@@ -267,3 +267,5 @@ xcrun simctl install "iPhone 17 Pro Max" <path to GymApp.app>
 xcrun simctl launch "iPhone 17 Pro Max" com.fuaadshurie.GymApp
 xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean start
 ```
+
+- 16 Oct 2026, fix: the workout screen could hang on a spinner after the phone was locked during rest. A failed background read set the workout to nil and nothing retried. Reloads now keep the last good workout unless it was removed, the app reloads (and clears a finished rest) on return to the foreground, and the spinner retries. Seven regression tests in ActiveWorkoutModelTests.
