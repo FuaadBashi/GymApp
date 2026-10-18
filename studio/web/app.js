@@ -36,7 +36,9 @@ function chart(el, option) {
   c.setOption(Object.assign({
     backgroundColor: "transparent", textStyle: { color: DIM, fontFamily: "-apple-system, system-ui" },
     grid: { left: 44, right: 16, top: 24, bottom: 30 },
-    tooltip: { trigger: "axis", backgroundColor: "#1c1c1f", borderColor: LINE, textStyle: { color: "#f2f2f4" } },
+    // Card 10.7: a crosshair on every axis chart.
+    tooltip: { trigger: "axis", axisPointer: { type: "cross", lineStyle: { color: DIM, type: "dashed" }, crossStyle: { color: DIM },
+      label: { backgroundColor: "#313136", color: "#f2f2f4" } }, backgroundColor: "#1c1c1f", borderColor: LINE, textStyle: { color: "#f2f2f4" } },
   }, option));
   charts.push(c);
   return c;
@@ -53,6 +55,7 @@ async function route() {
   closeDrawer();
   const [page, ...rest] = (location.hash.slice(2) || "overview").split("/");
   document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.dataset.page === page));
+  $("#pagetitle").textContent = $(`nav a[data-page="${pages[page] ? page : "overview"}"]`)?.textContent.trim() || "";
   main.innerHTML = `<div class="empty">Loading…</div>`;
   try {
     await (pages[page] || pages.overview)(decodeURIComponent(rest.join("/")));
@@ -79,11 +82,13 @@ pages.overview = async () => {
   main.innerHTML = `
     <h1>Overview</h1>
     <p class="sub">${fmt(o.totals.workouts)} workouts and ${fmt(o.totals.sets)} sets since ${day(o.totals.since)}.</p>
-    <div class="grid g4">
-      <div class="card tile"><div class="k">This week</div><div class="v">${o.this_week.workouts}</div><div class="c">${fmt(o.this_week.volume_kg)} kg volume</div></div>
-      <div class="card tile"><div class="k">Streak</div><div class="v">${o.consistency.current_streak_weeks} wk</div><div class="c">${o.consistency.average_per_week} sessions / week, last 26 weeks</div></div>
-      <div class="card tile"><div class="k">Plateaus</div><div class="v ${o.plateaus.length ? "orange" : ""}">${o.plateaus.length}</div><div class="c">3 weeks without a weight increase</div></div>
-      <div class="card tile"><div class="k">Last workout</div><div class="v" style="font-size:20px">${esc(o.last_workout?.title || "–")}</div><div class="c">${o.last_workout ? day(o.last_workout.date) + " · " + fmt(o.last_workout.volume_kg) + " kg" : ""}</div></div>
+    <div class="hero">
+      <div><div class="label">Workouts this week</div><div class="big">${o.this_week.workouts}<small>${fmt(o.this_week.volume_kg)} kg</small></div></div>
+      <div class="facts">
+        <div><b>${o.consistency.current_streak_weeks} wk</b>streak · ${o.consistency.average_per_week}/wk avg</div>
+        <div><b class="${o.plateaus.length ? "orange" : ""}">${o.plateaus.length}</b>plateaus</div>
+        <div><b>${esc(o.last_workout?.title || "–")}</b>${o.last_workout ? day(o.last_workout.date) : "no workouts yet"}</div>
+      </div>
     </div>
     <div id="custom-metrics" class="grid g4" style="margin-top:16px">${custom.metrics.map(m => `<div class="card tile"><div class="k">${esc(m.name)}</div><div class="v">${fmt(m.value)}</div><div class="c">${esc(m.unit)}${m.stale ? " · older snapshot" : ""}</div><p class="sub">${esc(m.description)}</p></div>`).join("")}</div>
     <h2 style="margin-top:26px">Next session · double progression</h2>
@@ -643,6 +648,44 @@ pages.settings = async () => {
   $("#delkey").onclick = () => putKey("");
   $("#reload").onclick = async () => { await api("reload", { method: "POST" }); exerciseIndex = null; refreshStatus(); };
 };
+
+// Card 10.7: the command palette (⌘K): pages and exercises, arrow keys and Return.
+let paletteItems = [], paletteSel = 0;
+async function openPalette() {
+  $("#palette").classList.remove("hidden");
+  $("#palette-q").value = "";
+  drawPalette();
+  $("#palette-q").focus();
+  try { exerciseIndex = exerciseIndex || await api("exercises"); drawPalette(); } catch { /* pages still work */ }
+}
+function closePalette() { $("#palette").classList.add("hidden"); }
+function drawPalette() {
+  const q = $("#palette-q").value.toLowerCase();
+  const navPages = [...document.querySelectorAll("nav a")].map(a => ({ t: a.textContent.trim(), s: "Page", href: a.getAttribute("href") }));
+  const exercises = (exerciseIndex || []).map(e => ({ t: e.name, s: `${e.sessions} sessions`, href: "#/exercises/" + encodeURIComponent(e.id) }));
+  paletteItems = [...navPages, ...exercises].filter(i => i.t.toLowerCase().includes(q)).slice(0, 40);
+  paletteSel = Math.min(paletteSel, Math.max(0, paletteItems.length - 1));
+  $("#palette-list").innerHTML = paletteItems.map((i, n) => `<a class="row ${n === paletteSel ? "sel" : ""}" role="option" href="${i.href}" data-n="${n}">
+    <div class="grow"><div class="t">${esc(i.t)}</div></div><span class="s">${esc(i.s)}</span></a>`).join("") || `<div class="empty">Nothing matches.</div>`;
+  $("#palette-list .sel")?.scrollIntoView({ block: "nearest" });
+}
+$("#palette-q").addEventListener("input", () => { paletteSel = 0; drawPalette(); });
+$("#palette-list").addEventListener("click", closePalette);
+$("#palette").addEventListener("click", e => { if (e.target.id === "palette") closePalette(); });
+$("#palette-open").addEventListener("click", openPalette);
+document.addEventListener("keydown", e => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openPalette(); return; }
+  if (e.key === "Escape") { closePalette(); closeDrawer(); return; }
+  if ($("#palette").classList.contains("hidden")) return;
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    paletteSel = (paletteSel + (e.key === "ArrowDown" ? 1 : -1) + paletteItems.length) % Math.max(1, paletteItems.length);
+    drawPalette();
+  } else if (e.key === "Enter" && paletteItems[paletteSel]) {
+    location.hash = paletteItems[paletteSel].href.slice(1);
+    closePalette();
+  }
+});
 
 refreshStatus();
 setInterval(refreshStatus, 30000);

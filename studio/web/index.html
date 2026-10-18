@@ -9,24 +9,30 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand"><span class="dot"></span> GymApp <b>Studio</b></div>
+    <div class="brand">GymApp <b>Studio</b></div>
     <nav>
-      <a href="#/overview" data-page="overview"><span>◉</span> Overview</a>
-      <a href="#/exercises" data-page="exercises"><span>▲</span> Exercises</a>
-      <a href="#/muscles" data-page="muscles"><span>◆</span> Muscles</a>
-      <a href="#/history" data-page="history"><span>☰</span> History</a>
-      <a href="#/lab" data-page="lab"><span>⚗</span> Rule lab</a>
-      <a href="#/notebooks" data-page="notebooks"><span>⌘</span> Notebooks</a>
-      <a href="#/ask" data-page="ask"><span>✦</span> Ask</a>
-      <a href="#/reports" data-page="reports"><span>▤</span> Reports</a>
-      <a href="#/planner" data-page="planner"><span>▦</span> Planner</a>
-      <a href="#/suggestions" data-page="suggestions"><span>➜</span> Suggestions</a>
-      <a href="#/health" data-page="health"><span>✚</span> Data health</a>
-      <a href="#/settings" data-page="settings"><span>⚙</span> Settings</a>
+      <a href="#/overview" data-page="overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg> Overview</a>
+      <a href="#/exercises" data-page="exercises"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg> Exercises</a>
+      <a href="#/muscles" data-page="muscles"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2"/><path d="M12 7v6m0 0-4 7m4-7 4 7M7 10h10"/></svg> Muscles</a>
+      <a href="#/history" data-page="history"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4m8-4v4"/></svg> History</a>
+      <a href="#/lab" data-page="lab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg> Rule lab</a>
+      <a href="#/notebooks" data-page="notebooks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg> Notebooks</a>
+      <a href="#/ask" data-page="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg> Ask</a>
+      <a href="#/reports" data-page="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/></svg> Reports</a>
+      <a href="#/planner" data-page="planner"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12"/></svg> Planner</a>
+      <a href="#/suggestions" data-page="suggestions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5V16h8v-2.5A6 6 0 0 0 12 3z"/></svg> Suggestions</a>
+      <a href="#/health" data-page="health"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/></svg> Data health</a>
+      <a href="#/settings" data-page="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2m10-10 2-2"/></svg> Settings</a>
     </nav>
     <div class="backup" id="backup">Looking for a backup…</div>
   </aside>
-  <main id="main"></main>
+  <div class="content">
+    <header class="toolbar"><span id="pagetitle"></span><button id="palette-open" title="Go to a page or exercise">Search <kbd>⌘K</kbd></button></header>
+    <main id="main"></main>
+  </div>
+  <div id="palette" class="palette hidden" role="dialog" aria-label="Go to"><div class="box">
+    <input id="palette-q" type="text" placeholder="Go to a page or exercise" autocomplete="off" aria-label="Go to a page or exercise">
+    <div id="palette-list" class="list" role="listbox"></div></div></div>
   <div id="drawer" class="drawer hidden"></div>
   <script src="/app.js"></script>
 </body>
