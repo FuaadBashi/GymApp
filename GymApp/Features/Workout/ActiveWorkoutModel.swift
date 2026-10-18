@@ -12,6 +12,7 @@ final class ActiveWorkoutModel {
     var currentItemId: String?   // the card that is open
     var selectedSetId: String?   // the row the editor and Log button act on
     var focusMode = false
+    var dismissedCues: Set<String> = []   // card 10.5: exercise ids whose cue strip was dismissed this workout
     var isPresented = false      // full-screen workout showing
     private(set) var justFinishedWorkoutId: String?
     /// Card 7.2: the in-screen banner for a set that just made a best.
@@ -53,6 +54,7 @@ final class ActiveWorkoutModel {
                 await notifier.requestPermission()
             }
             justFinishedWorkoutId = nil
+            dismissedCues = []
             await reload(workoutId: workout.id)
             selectFirstPlanned()
             isPresented = true

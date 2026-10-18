@@ -32,6 +32,7 @@ struct FocusView: View {
                             .font(.headline).foregroundStyle(Theme.accent)
                     }
                 }
+                CueStrip(exerciseId: item.exercise.id)
 
                 if let set {
                     SetEditor(set: set, exercise: item.exercise, onChange: { edit in

@@ -276,4 +276,12 @@ extension ActiveWorkoutModelTests {
         #expect(set.completedAt != nil && set.loadHundredths == 6250 && set.reps == 8)
         #expect(relaunched.selectedSetId == bench.sets[1].id)
     }
+
+    @Test func dismissedCuesResetForTheNextWorkout() async throws {
+        let model = try await model()
+        model.dismissedCues.insert("bench")
+        await model.discard()
+        try await model.start(dayId: nil)
+        #expect(model.dismissedCues.isEmpty)
+    }
 }

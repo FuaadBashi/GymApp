@@ -129,6 +129,8 @@ struct ExerciseCard: View {
             }
         }
 
+        CueStrip(exerciseId: item.exercise.id)
+
         if let note = item.exercise.stickyNote {
             Button(action: editNote) {
                 Label(note, systemImage: "pin.fill")
