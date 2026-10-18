@@ -37,6 +37,7 @@ struct ExerciseDetailView: View {
                     case .notes: notesList
                     case .about:
                         ExerciseMediaView(exercise: exercise)
+                        FormCuesView(db: model.db, exerciseId: exercise.id)
                         about(exercise)
                     }
                 }

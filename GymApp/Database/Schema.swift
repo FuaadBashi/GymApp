@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -80,6 +80,25 @@ nonisolated enum Schema {
                 DROP TABLE studioDecision;
                 ALTER TABLE studioDecisionNew RENAME TO studioDecision;
                 CREATE INDEX studioDecision_exercise ON studioDecision(exerciseId, decidedAt);
+                """)
+        }
+        migrator.registerMigration("v8") { db in
+            // Card 10.4: form cues. formCueSeed marks an exercise as seeded from its library
+            // instructions, so a deleted library cue is never seeded back.
+            try db.execute(sql: """
+                CREATE TABLE formCue (
+                  id TEXT PRIMARY KEY NOT NULL,
+                  exerciseId TEXT NOT NULL REFERENCES exercise(id) ON DELETE CASCADE,
+                  kind TEXT NOT NULL CHECK (kind IN ('setup','movement','mistake')),
+                  text TEXT NOT NULL CHECK (length(trim(text)) > 0),
+                  position INTEGER NOT NULL CHECK (position >= 0),
+                  showOnOpen INTEGER NOT NULL DEFAULT 0 CHECK (showOnOpen IN (0,1)),
+                  source TEXT NOT NULL CHECK (source IN ('library','owner'))
+                );
+                CREATE INDEX formCue_exercise ON formCue(exerciseId, position);
+                CREATE TABLE formCueSeed (
+                  exerciseId TEXT PRIMARY KEY NOT NULL REFERENCES exercise(id) ON DELETE CASCADE
+                );
                 """)
         }
         return migrator
