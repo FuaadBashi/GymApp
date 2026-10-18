@@ -53,6 +53,8 @@ Progress is tracked in [../HANDOFF.md](../HANDOFF.md).
    ```
 
    It must end in `** TEST SUCCEEDED **` with no new warnings in files the card touched.
+   `tools/check.sh` runs these tests, the studio tests and the repository checks (no private
+   files tracked, no attribution) in one go.
    Then update HANDOFF.md (tick the card, add a short session note) and commit:
    `git add -A && git commit -m "<card id>: <what changed, plain sentence>"`.
 

@@ -20,9 +20,11 @@ in-app and matching a Python reference importer row for row).
   switched on per exercise, and the end screen compares every lift with last time.
 - **History:** a month calendar and every workout since 2022 by week; each workout opens to
   its sets and figures and can be corrected, with every figure recomputing.
-- **Exercises:** search and filters, a progress chart (estimated 1RM, heaviest, volume) where
-  tapping a point shows that session, records with dates, history, notes and offline
-  demonstrations.
+- **Exercises:** search and filters; each page opens with an offline demonstration (a video,
+  or two openly licensed poses shown as a slow loop, for 83% of the exercises I have logged),
+  then form cues seeded from the library and editable, then the best estimated 1RM as the
+  one headline figure, a progress chart where tapping a point shows that session, records
+  with dates, history and notes. Chosen cues appear under the exercise during a workout.
 - **Goals and standards:** a target estimated 1RM per lift with a projected date from your
   own curve, and where barbell lifts sit among gym lifters of your sex and weight (data
   Powered by FitnessVolt, CC BY 4.0).
@@ -43,7 +45,7 @@ means for each phase.
 <p>
 <img src="docs/screenshots/workout-list.png" width="200" alt="Workout in list mode">
 <img src="docs/screenshots/history.png" width="200" alt="History tab with month calendar">
-<img src="docs/screenshots/exercise-progress.png" width="200" alt="Exercise progress chart and records">
+<img src="docs/screenshots/10.6-exercise-after-top.png" width="200" alt="Exercise page with demonstration and form cues">
 <img src="docs/screenshots/progress.png" width="200" alt="Progress tab with muscle map">
 </p>
 
@@ -72,13 +74,15 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 7 | Records, the workout flow and goals | done |
 | 8 | Studio reports, data health, planner | done |
 | 9 | Visual polish | done |
+| 10 | Demonstrations, form cues, the exercise page, the studio's look | done |
 
 ## GymApp Studio
 
 A separate offline Mac program in [studio/](studio/README.md) reads the phone's backups and
 does the heavy analysis: plateau and weak-point checks, next targets, a rule lab that replays
 progression rules against the history, weekly and monthly reports, a typo finder, a block
-planner, marimo notebooks, and an optional question box backed by Claude or a local model. Rules are proven there before they move into the app, and its
+planner, marimo notebooks, and an optional question box backed by Claude or a local model.
+It has a sidebar, a toolbar and a ⌘K palette for pages and exercises. Rules are proven there before they move into the app, and its
 suggestions reach the phone through the backup folder. [The plan](docs/STUDIO_PLAN.md) has
 the design and the decisions behind it.
 
