@@ -41,6 +41,7 @@ struct ExerciseProgressView: View {
                 Text("No finished sessions yet. Progress appears after the first one.")
                     .font(.subheadline).foregroundStyle(.secondary)
             } else {
+                hero
                 chart
                 if let exercise, hasLoadRecords { GoalStandardsView(db: db, exercise: exercise, points: points) }
                 recordsList
@@ -115,8 +116,6 @@ struct ExerciseProgressView: View {
                 }
             }
         }
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
     }
 
     /// Card 6.4: the tapped session's date and sets, with a link to the workout.
@@ -146,9 +145,9 @@ struct ExerciseProgressView: View {
 
     private var recordsList: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("RECORDS").font(.caption.weight(.bold)).foregroundStyle(.secondary)
-            if let m = records.heaviest { row("Heaviest", "\(Load.format(m.valueKg)) kg × \(m.reps ?? 0)", m) }
-            if let m = records.bestE1RM { row("Best est. 1RM", "\(Load.format((m.valueKg * 10).rounded() / 10)) kg", m) }
+            Text("Records").font(.headline)
+            if let m = records.heaviest { row("Heaviest", "\(Load.format(m.valueKg)) kg × \(m.reps ?? 0)", m); Divider() }
+            if let m = records.bestE1RM { row("Best est. 1RM", "\(Load.format((m.valueKg * 10).rounded() / 10)) kg", m); Divider() }
             if let m = records.bestVolume { row("Best session volume", "\(Load.format(m.valueKg.rounded())) kg", m) }
             if !hasLoadRecords {
                 Text("Body-weight and reps-only exercises have no load records (rulebook §5).")
@@ -164,9 +163,28 @@ struct ExerciseProgressView: View {
                 .tint(Theme.accent)
             }
         }
-        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+    }
+
+    /// Card 10.6: the one dominant figure, the best estimated 1RM (or best volume), with the
+    /// latest session beside it for context.
+    @ViewBuilder private var hero: some View {
+        let best = hasLoadRecords ? records.bestE1RM : records.bestVolume
+        let latest = hasLoadRecords ? points.last?.bestE1RM : points.last?.volumeKg
+        if let best {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(hasLoadRecords ? "Best estimated 1RM" : "Best session volume").font(.subheadline).foregroundStyle(.secondary)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(Load.format((best.valueKg * 10).rounded() / 10))
+                        .font(Theme.number(.largeTitle, weight: .bold))
+                    Text("kg").font(.title3).foregroundStyle(.secondary)
+                }
+                Text(best.date.formatted(.dateTime.day().month(.abbreviated).year())
+                     + (latest.map { " · latest \(Load.format(($0 * 10).rounded() / 10)) kg" } ?? ""))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            .accessibilityElement(children: .combine)
+        }
     }
 
     private func row(_ title: String, _ value: String, _ mark: ExerciseRecords.Mark) -> some View {

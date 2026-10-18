@@ -25,6 +25,9 @@ struct ExerciseDetailView: View {
             if let exercise = model.exercise {
                 VStack(alignment: .leading, spacing: 18) {
                     header(exercise)
+                    // Card 10.6: what the lift looks like and how to do it come first.
+                    ExerciseMediaView(exercise: exercise)
+                    FormCuesView(db: model.db, exerciseId: exercise.id)
                     stickyNote(exercise)
                     Picker("Section", selection: $section) {
                         ForEach(Section.allCases, id: \.self) { Text($0.rawValue) }
@@ -35,10 +38,7 @@ struct ExerciseDetailView: View {
                                                           sessions: model.sessions, exercise: exercise)
                     case .history: history(exercise)
                     case .notes: notesList
-                    case .about:
-                        ExerciseMediaView(exercise: exercise)
-                        FormCuesView(db: model.db, exerciseId: exercise.id)
-                        about(exercise)
+                    case .about: about(exercise)
                     }
                 }
                 .padding()
@@ -140,9 +140,9 @@ struct ExerciseDetailView: View {
                         }
                     }
                 }
-                .padding(12)
+                .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.card, in: .rect(cornerRadius: 12))
+                Divider()
             }
         }
     }
