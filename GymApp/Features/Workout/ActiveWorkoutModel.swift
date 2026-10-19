@@ -159,7 +159,14 @@ final class ActiveWorkoutModel {
     func fillStudioTarget(_ itemId: String) async {
         guard let item = snapshot?.items.first(where: { $0.id == itemId }), let target = item.studioTarget,
               let unit = target.unit, let reps = target.reps else { return }
-        let load = item.exercise.loadMode == .repsOnly ? nil : target.loadHundredths
+        await fill(itemId, loadHundredths: target.loadHundredths, unit: unit, reps: reps)
+    }
+
+    /// Puts a load and reps into every planned non-warm-up set of the exercise (studio targets
+    /// and rulebook §13 suggestions).
+    func fill(_ itemId: String, loadHundredths: Int?, unit: WeightUnit, reps: Int) async {
+        guard let item = snapshot?.items.first(where: { $0.id == itemId }) else { return }
+        let load = item.exercise.loadMode == .repsOnly ? nil : loadHundredths
         await change { db in
             for set in item.plannedSets where set.type != .warmUp {
                 try WorkoutWrites.updateSet(db, setId: set.id, edit: SetEdit(loadHundredths: load, unit: unit, reps: reps, type: set.type))

@@ -30,6 +30,7 @@ nonisolated struct WorkoutSnapshot: Equatable {
         var step: Double
         var allTimeSet: WorkoutSetRecord? = nil   // the set that made each best, for "70 × 12"
         var windowSet: WorkoutSetRecord? = nil
+        var next: NextSet.Suggestion? = nil          // rulebook §13
     }
 }
 
@@ -58,17 +59,19 @@ nonisolated enum WorkoutQueries {
         }
         let all = items.flatMap(\.sets)
         var hints: [String: WorkoutSnapshot.BestHint] = [:]
+        let range = settings.defaultRepMin...max(settings.defaultRepMin, settings.defaultRepMax)
         return WorkoutSnapshot(workout: workout, items: items,
                                completedSetCount: all.filter { $0.completedAt != nil }.count, totalSetCount: all.count,
-                               bests: try bests(db, items: items, hints: &hints),
+                               bests: try bests(db, items: items, hints: &hints, defaultRange: range, startedAt: workout.startedAt),
                                hints: hints,
-                               defaultRepRange: settings.defaultRepMin...max(settings.defaultRepMin, settings.defaultRepMax))
+                               defaultRepRange: range)
     }
 
     /// Card 7.2 (rulebook §5a): the best status of every logged set in the workout, each judged
     /// against the exercise's finished history and the sets logged before it in this workout.
     static func bests(_ db: Database, items: [WorkoutSnapshot.Item],
-                      hints: inout [String: WorkoutSnapshot.BestHint], now: Date = .now) throws -> [String: TrainingMath.BestStatus] {
+                      hints: inout [String: WorkoutSnapshot.BestHint], defaultRange: ClosedRange<Int> = 8...12,
+                      startedAt: Date? = nil, now: Date = .now) throws -> [String: TrainingMath.BestStatus] {
         var out: [String: TrainingMath.BestStatus] = [:]
         for exerciseId in Set(items.map(\.exercise.id)) {
             let mine = items.filter { $0.exercise.id == exerciseId }
@@ -97,9 +100,16 @@ nonisolated enum WorkoutQueries {
             hints[exerciseId] = .init(allTime: allTime, windowMonths: window?.months,
                                       windowBest: window?.best, step: TrainingMath.step(loads: loads),
                                       allTimeSet: setMaking(allTime, since: .distantPast),
-                                      windowSet: setMaking(window?.best, since: now.addingTimeInterval(-Double(windowDays) * 86_400)))
+                                      windowSet: setMaking(window?.best, since: now.addingTimeInterval(-Double(windowDays) * 86_400)),
+                                      next: NextSet.suggest(sessions: sessions, repRange: repRange(mine.first?.workoutExercise, defaultRange),
+                                                            stepKg: TrainingMath.step(loads: loads), loadMode: loadMode, now: startedAt ?? now))
         }
         return out
+    }
+
+    static func repRange(_ we: WorkoutExerciseRecord?, _ fallback: ClosedRange<Int>) -> ClosedRange<Int> {
+        guard let lo = we?.repMin, let hi = we?.repMax, lo >= 1, hi >= lo else { return fallback }
+        return lo...hi
     }
 
     /// The workout's day and the days it was copied from, when last time should prefer them.

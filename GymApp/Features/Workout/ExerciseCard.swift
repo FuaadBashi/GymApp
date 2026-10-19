@@ -155,6 +155,25 @@ struct ExerciseCard: View {
             .padding(10)
             .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             .accessibilityElement(children: .combine)
+        } else if let next = model.snapshot?.hints[item.exercise.id]?.next {
+            // Rulebook §13: the app's own suggestion when the studio has none.
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Label("Today: \(Load.format(Double(next.loadHundredths) / 100)) \(next.unit.rawValue) × \(next.reps)",
+                          systemImage: next.kind == .comeback ? "arrow.uturn.up" : "arrow.up.right")
+                        .font(.subheadline.weight(.semibold))
+                    Text(next.reason).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                if !item.plannedSets.isEmpty {
+                    Button("Fill sets") { Task { await model.fill(item.id, loadHundredths: next.loadHundredths, unit: next.unit, reps: next.reps) } }
+                        .buttonStyle(.bordered).controlSize(.small)
+                }
+            }
+            .padding(10)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("next-suggestion")
         }
 
         ExerciseMediaView(exercise: item.exercise)

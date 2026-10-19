@@ -27,7 +27,7 @@ if [ "${1:-}" != "--fast" ]; then
     || { note "FAIL app tests (see /tmp/gymapp-tests.log)"; grep -E '✘|error:' /tmp/gymapp-tests.log | head -20; fail=1; }
   xcodebuild test -project GymApp.xcodeproj -scheme GymAppUITests \
     -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' >/tmp/gymapp-uitests.log 2>&1 \
-    && note "ok   UI tests ($(grep -c "' passed" /tmp/gymapp-uitests.log) passed)" \
+    && note "ok   UI tests ($(grep -E "^Test Case .*' passed" /tmp/gymapp-uitests.log | sort -u | wc -l | tr -d ' ') passed)" \
     || { note "FAIL UI tests (see /tmp/gymapp-uitests.log)"; grep -E "failed|error:" /tmp/gymapp-uitests.log | head -20; fail=1; }
 fi
 exit $fail

@@ -46,4 +46,11 @@ final class WorkoutScreenUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["LAST"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["60"].exists)
     }
+
+    /// Rulebook §13: the fixture's last session was 60 days ago, so today is a comeback.
+    func testTodaysSuggestionIsShownAndFills() {
+        let next = element("next-suggestion")
+        XCTAssertTrue(next.label.contains("Today:"), next.label)
+        XCTAssertTrue(next.label.contains("First session in 60 days"), next.label)
+    }
 }

@@ -212,3 +212,26 @@ One vocabulary, so a feeling always means the same thing (card 9.3):
 - **Reps left chosen:** the selection tick.
 
 Animations are skipped under Reduce Motion; haptics follow the system setting.
+
+## §13 Today's suggestion
+
+Each exercise in a workout shows one suggested load × reps for its working sets, unless an
+accepted studio target is active (the studio's target wins). "Fill sets" puts it into every
+planned set that is not a warm-up. It is computed from the exercise's finished sessions, in
+the unit the lift was last entered in, with the learnt step (§7a, converted to 5 lb steps
+for pounds). Reps-only and body-weight-plus lifts get none.
+
+1. **First session after a break** (30+ days since the lift was last done): 90% of the last
+   session's top load (80% after 90+ days), rounded down to the step, at the bottom of the
+   rep range.
+2. **Climbing back:** if a break of 30+ days falls within the last 6 sessions and the last top
+   load is still below the top load from before the break, add the larger of one step or 5% of
+   that pre-break load, rounded up to the step and never above it, at the bottom of the range.
+3. **Double progression** (as the studio's `next_target`, Plotkin 2022): if every working set
+   at the last session's top load reached the top of the rep range, add one step and go back
+   to the bottom; otherwise stay at that load and aim for one rep more than the lowest of
+   those sets, capped at the top of the range.
+
+The studio's plateau rule (deload or swap after 21 days without an increase) stays in the
+studio and arrives as an accepted target.
+
