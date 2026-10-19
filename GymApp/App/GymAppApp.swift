@@ -4,7 +4,14 @@ import UserNotifications
 @main
 struct GymAppApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @State private var database = AppStartup.openDatabase()
+    @State private var database: Result<AppDatabase, Error>
+
+    init() {
+        let database = AppStartup.openDatabase()
+        _database = State(initialValue: database)
+        if case .success(let db) = database { WorkoutHub.db = db }
+        WorkoutHub.install()
+    }
 
     var body: some Scene {
         WindowGroup {

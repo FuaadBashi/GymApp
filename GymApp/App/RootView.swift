@@ -10,7 +10,7 @@ struct RootView: View {
 
     init(db: AppDatabase) {
         self.db = db
-        _workout = State(initialValue: ActiveWorkoutModel(db: db))
+        _workout = State(initialValue: WorkoutHub.model(for: db))
     }
 
     private struct LaunchReport: Identifiable {

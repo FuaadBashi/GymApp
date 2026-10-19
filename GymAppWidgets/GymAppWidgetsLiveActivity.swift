@@ -1,4 +1,5 @@
 import ActivityKit
+import AppIntents
 import WidgetKit
 import SwiftUI
 
@@ -14,7 +15,11 @@ struct GymAppWidgetsLiveActivity: Widget {
                     Spacer()
                     restStatus(context).font(.title.bold()).foregroundStyle(volt)
                 }
-                Text(context.state.nextSetText).font(.caption)
+                HStack {
+                    Text(context.state.nextSetText).font(.caption)
+                    Spacer(minLength: 8)
+                    logButton(context)
+                }
             }
             .padding()
             .activityBackgroundTint(.black)
@@ -28,9 +33,13 @@ struct GymAppWidgetsLiveActivity: Widget {
                     restStatus(context).foregroundStyle(volt)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(context.state.exerciseName).font(.headline)
-                        Text(context.state.nextSetText).font(.caption)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(context.state.exerciseName).font(.headline)
+                            Text(context.state.nextSetText).font(.caption)
+                        }
+                        Spacer(minLength: 8)
+                        logButton(context)
                     }
                 }
             } compactLeading: {
@@ -49,6 +58,18 @@ struct GymAppWidgetsLiveActivity: Widget {
                 }
             }
             .keylineTint(volt)
+        }
+    }
+
+    /// Logs the announced set without opening the app.
+    @ViewBuilder
+    private func logButton(_ context: ActivityViewContext<RestActivityAttributes>) -> some View {
+        if let id = context.state.nextSetId {
+            Button(intent: LogSetIntent(setId: id)) {
+                Label("Log", systemImage: "checkmark").font(.subheadline.bold())
+            }
+            .tint(volt)
+            .foregroundStyle(.black)
         }
     }
 

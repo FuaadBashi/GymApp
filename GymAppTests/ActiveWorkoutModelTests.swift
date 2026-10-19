@@ -284,4 +284,38 @@ extension ActiveWorkoutModelTests {
         try await model.start(dayId: nil)
         #expect(model.dismissedCues.isEmpty)
     }
+
+    // MARK: Live Activity Log button
+
+    @Test func theActivityLogsTheSetItAnnounces() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.log(bench.sets[0].id)
+        let snapshot = try #require(model.snapshot)
+        let announced = try #require(ActiveWorkoutModel.nextPlanned(snapshot, from: model.currentItemId))
+        #expect(announced.1.id == bench.sets[1].id)
+        #expect(ActiveWorkoutModel.notificationBody(snapshot, from: model.currentItemId).contains("set 2"))
+        await model.logFromActivity(announced.1.id)
+        #expect(model.snapshot?.completedSetCount == 2)
+        #expect(model.snapshot?.workout.restEndsAt != nil)
+    }
+
+    @Test func aStaleButtonDoesNotRelogASet() async throws {
+        let model = try await model()
+        let bench = try #require(model.snapshot?.items[0])
+        await model.log(bench.sets[0].id)
+        let before = try #require(model.snapshot?.items[0].sets[0].completedAt)
+        await model.logFromActivity(bench.sets[0].id)
+        await model.logFromActivity("no-such-set")
+        #expect(model.snapshot?.items[0].sets[0].completedAt == before)
+        #expect(model.snapshot?.completedSetCount == 1)
+    }
+
+    @Test func theButtonWorksAfterTheAppWasRelaunchedInTheBackground() async throws {
+        let first = try await model()
+        let set = try #require(first.snapshot?.items[0].sets[0])
+        let relaunched = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        await relaunched.logFromActivity(set.id)
+        #expect(relaunched.snapshot?.completedSetCount == 1)
+    }
 }

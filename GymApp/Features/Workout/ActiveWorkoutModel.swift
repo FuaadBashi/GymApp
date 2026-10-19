@@ -374,7 +374,8 @@ final class ActiveWorkoutModel {
         let state = RestActivityAttributes.ContentState(
             exerciseName: next?.exercise.name ?? "All sets logged",
             restEndsAt: end,
-            nextSetText: Self.notificationBody(snapshot, from: currentItemId))
+            nextSetText: Self.notificationBody(snapshot, from: currentItemId),
+            nextSetId: Self.nextPlanned(snapshot, from: currentItemId)?.1.id)
         let content = ActivityContent(state: state, staleDate: end)
         if restActivity == nil {
             restActivity = Activity<RestActivityAttributes>.activities.first {
@@ -412,16 +413,29 @@ final class ActiveWorkoutModel {
     /// "Next: Barbell Bench Press, set 2 — 50 kg × 10", searching from `itemId` onward and
     /// wrapping round.
     static func notificationBody(_ snapshot: WorkoutSnapshot, from itemId: String?) -> String {
+        guard !snapshot.items.isEmpty else { return "Time for your next set." }
+        guard let (item, set) = nextPlanned(snapshot, from: itemId) else { return "All sets logged. Finish when you're ready." }
+        return "Next: \(item.exercise.name), set \(set.position + 1) — \(SetFormat.long(set, loadMode: item.exercise.loadMode))"
+    }
+
+    /// The first planned set from `itemId` onward, wrapping round: what the alert announces and
+    /// the Live Activity's Log button logs.
+    static func nextPlanned(_ snapshot: WorkoutSnapshot, from itemId: String?) -> (WorkoutSnapshot.Item, WorkoutSetRecord)? {
         let items = snapshot.items
-        guard !items.isEmpty else { return "Time for your next set." }
         let start = items.firstIndex { $0.id == itemId } ?? 0
         for offset in 0..<items.count {
             let item = items[(start + offset) % items.count]
-            if let set = item.plannedSets.first {
-                return "Next: \(item.exercise.name), set \(set.position + 1) — \(SetFormat.long(set, loadMode: item.exercise.loadMode))"
-            }
+            if let set = item.plannedSets.first { return (item, set) }
         }
-        return "All sets logged. Finish when you're ready."
+        return nil
+    }
+
+    /// The Live Activity's Log button: logs that set if it is still planned, as a tap in the
+    /// app would (rest, alert and activity follow).
+    func logFromActivity(_ setId: String) async {
+        if snapshot == nil { await resumeIfNeeded() } else { await refresh() }
+        guard snapshot?.items.contains(where: { $0.plannedSets.contains { $0.id == setId } }) == true else { return }
+        await log(setId)
     }
 
     static func message(for error: Error) -> String {
