@@ -28,6 +28,8 @@ nonisolated struct WorkoutSnapshot: Equatable {
         var windowMonths: Int?
         var windowBest: Double?
         var step: Double
+        var allTimeSet: WorkoutSetRecord? = nil   // the set that made each best, for "70 × 12"
+        var windowSet: WorkoutSetRecord? = nil
     }
 }
 
@@ -79,8 +81,23 @@ nonisolated enum WorkoutQueries {
             out.merge(run.bests) { a, _ in a }
             let history = run.history
             let window = TrainingMath.eligibleWindows(history: history, at: now).first
-            hints[exerciseId] = .init(allTime: history.map(\.e1RM).max(), windowMonths: window?.months,
-                                      windowBest: window?.best, step: TrainingMath.step(loads: loads))
+            let allTime = history.map(\.e1RM).max()
+            let candidates = sessions.flatMap { s in s.sets.map { ($0.completedAt ?? s.workout.startedAt, $0) } }
+                + logged.map { ($0.completedAt ?? now, $0) }
+            func setMaking(_ best: Double?, since: Date) -> WorkoutSetRecord? {
+                guard let best else { return nil }
+                return candidates.last { date, set in
+                    guard date >= since, set.type != .warmUp, set.type != .drop, let load = set.loadHundredths,
+                          let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                    else { return false }
+                    return abs(e - best) <= 0.01
+                }?.1
+            }
+            let windowDays = TrainingMath.bestWindows.first { $0.months == window?.months }?.days ?? 0
+            hints[exerciseId] = .init(allTime: allTime, windowMonths: window?.months,
+                                      windowBest: window?.best, step: TrainingMath.step(loads: loads),
+                                      allTimeSet: setMaking(allTime, since: .distantPast),
+                                      windowSet: setMaking(window?.best, since: now.addingTimeInterval(-Double(windowDays) * 86_400)))
         }
         return out
     }

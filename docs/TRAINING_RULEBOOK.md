@@ -103,6 +103,16 @@ So a lift trained without a month off only ever shows all-time bests, and after 
 break the comeback earns smaller bests on the way back. Heaviest load, rep PRs and best
 session volume (§5) are still recorded; they don't drive badges.
 
+### §5b The set being entered, against the bests
+
+On the workout screen the selected set shows its own estimated 1RM, recomputed from the
+values in the editor as they change (Epley, §4; only for 1–12 reps, otherwise "no estimate").
+Under it are the all-time best and, when rule 2 above applies, the window best, each with
+the set that made it (weight × reps) and the gap: "X kg above", "X kg below" or "level with
+it" (within 0.01 kg). Tapping a best opens its beat table: for each rep count in the day's
+range, the lightest load in the exercise's step (§7a of card 7.3: the most common gap
+between loads used, else 2.5 kg) whose estimated 1RM beats that best by more than 0.01 kg.
+
 ## §6 Volume and sets per muscle
 
 - **Volume** = Σ (calculation load × reps) over volume-counting sets (§2, §3), in kg. JEFIT

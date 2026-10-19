@@ -11,7 +11,8 @@ struct ExerciseCard: View {
     @State private var editingNote = false
     @State private var noteDraft = ""
     @State private var metadata: MetadataDraft?
-    @State private var beating: WorkoutSetRecord?
+    @State private var beating: Beating?
+    private struct Beating: Identifiable { let row: WorkoutSetRecord; let title: String; let best: Double; var id: String { row.id + title } }
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
@@ -31,15 +32,14 @@ struct ExerciseCard: View {
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
         }
-        .sheet(item: $beating) { set in
-            if let best = model.snapshot?.hints[item.exercise.id]?.allTime {
-                BeatBestSheet(exerciseName: item.exercise.name, best: best, reps: repRange,
+        .sheet(item: $beating) { beat in
+            let set = beat.row
+            BeatBestSheet(exerciseName: item.exercise.name, title: beat.title, best: beat.best, reps: repRange,
                               step: model.snapshot?.hints[item.exercise.id]?.step ?? 2.5, unit: set.unit,
                               onPick: { kg, reps in
                                   Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: set.unit, reps: reps, type: set.type)) }
                               },
                               onHistory: { onAction(.history) })
-            }
         }
         .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
             if let metadata {
@@ -216,6 +216,10 @@ struct ExerciseCard: View {
                         .buttonStyle(.bordered).controlSize(.mini)
                     }
 
+                    if let hint = model.snapshot?.hints[item.exercise.id] {
+                        BestHintLine(set: set, hint: hint, loadMode: loadMode) { beating = Beating(row: set, title: $0, best: $1) }
+                            .padding(.horizontal, 10).padding(.vertical, 4)
+                    }
                     SetEditor(set: set, exercise: item.exercise) { edit in
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }
@@ -224,10 +228,6 @@ struct ExerciseCard: View {
                         Task { await model.setReserve(set.id, value) }
                     }
                     .padding(.bottom, 4)
-                    if let hint = model.snapshot?.hints[item.exercise.id] {
-                        BestHintLine(set: set, hint: hint, loadMode: loadMode) { beating = set }
-                            .padding(.horizontal, 10).padding(.bottom, 4)
-                    }
                 }
             }
         }
@@ -241,12 +241,13 @@ struct ExerciseCard: View {
     private var header: some View {
         HStack(spacing: 8) {
             Text("SET").frame(width: SetColumns.set, alignment: .leading)
-            Text("PREVIOUS").frame(maxWidth: .infinity, alignment: .leading)
             if loadMode != .repsOnly {
                 Text(SetColumns.loadHeader(unit: item.sets.first?.unit ?? item.exercise.preferredUnit, loadMode: loadMode))
-                    .frame(width: SetColumns.load, alignment: .trailing)
+                    .frame(width: SetColumns.load, alignment: .leading)
             }
-            Text("REPS").frame(width: SetColumns.reps, alignment: .trailing)
+            Text("REPS").frame(width: SetColumns.reps, alignment: .leading)
+            Spacer(minLength: 4)
+            Text("LAST").frame(width: SetColumns.last, alignment: .trailing)
             Color.clear.frame(width: 14)
             Image(systemName: "checkmark").frame(width: 44)
         }

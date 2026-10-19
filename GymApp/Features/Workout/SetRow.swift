@@ -30,25 +30,25 @@ struct SetRow: View {
             }
             .frame(width: SetColumns.set, alignment: .leading)
 
-            HStack(spacing: 6) {
-                Text(previous.map { SetFormat.short($0, loadMode: loadMode) } ?? "—")
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1).minimumScaleFactor(0.7)
-                if done && !isSelected {
-                    // Card 7.4: logged sets say they can be edited; tapping the row opens the editor.
-                    Image(systemName: "pencil").font(.caption2).foregroundStyle(.tertiary)
-                        .accessibilityLabel("Edit")
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
+            // Today's set leads; last time sits small at the side (DESIGN.md, one dominant figure).
             if loadMode != .repsOnly {
                 Text(SetColumns.load(set, loadMode: loadMode))
-                    .frame(width: SetColumns.load, alignment: .trailing)
+                    .frame(width: SetColumns.load, alignment: .leading)
             }
             Text("\(set.reps)")
-                .frame(width: SetColumns.reps, alignment: .trailing)
+                .frame(width: SetColumns.reps, alignment: .leading)
+            if done && !isSelected {
+                // Card 7.4: logged sets say they can be edited; tapping the row opens the editor.
+                Image(systemName: "pencil").font(.caption2).foregroundStyle(.tertiary)
+                    .accessibilityLabel("Edit")
+            }
+            Spacer(minLength: 4)
+            Text(previous.map { SetFormat.short($0, loadMode: loadMode) } ?? "—")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(.tertiary)
+                .lineLimit(1).minimumScaleFactor(0.7)
+                .frame(width: SetColumns.last, alignment: .trailing)
+                .accessibilityLabel(previous.map { "Last time " + SetFormat.short($0, loadMode: loadMode) } ?? "No last time")
 
             comparison.frame(width: 14)
 
@@ -66,7 +66,7 @@ struct SetRow: View {
             .buttonStyle(.plain)
             .accessibilityLabel(done ? "Unlog set" : "Log set")
         }
-        .font(.body.weight(.semibold).monospacedDigit())
+        .font(.title3.weight(.semibold).monospacedDigit())
         .foregroundStyle(done ? .primary : .secondary)
         .padding(.horizontal, 10)
         .padding(.vertical, 2)
@@ -93,6 +93,7 @@ enum SetColumns {
     static let set: CGFloat = 34
     static let load: CGFloat = 64
     static let reps: CGFloat = 40
+    static let last: CGFloat = 72
 
     static func load(_ set: WorkoutSetRecord, loadMode: LoadMode) -> String {
         let value = Load.format(Double(set.loadHundredths ?? 0) / 100)

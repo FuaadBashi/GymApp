@@ -273,3 +273,8 @@ xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean star
 ```
 
 - 16 Oct 2026, fix: the workout screen could hang on a spinner after the phone was locked during rest. A failed background read set the workout to nil and nothing retried. Reloads now keep the last good workout unless it was removed, the app reloads (and clears a finished rest) on return to the foreground, and the spinner retries. Seven regression tests in ActiveWorkoutModelTests.
+
+- 19 Oct, workout screen fixes (owner's screenshots in docs/screenshots/b-workout-before-*):
+  1. The set row now leads with today's load and reps (larger type, left); last time moved to a small "LAST" column at the side.
+  2. The best line became a panel directly under the selected set, above the steppers, so the floating Log bar no longer covers it: "This set" with its live estimated 1RM, then a 56 pt tile per best (all-time, and the 12/6/1-month best when §5a rule 2 applies) showing the set that made it and the gap in words. Each tile opens the beat table for that best. On the phone the old 16 pt line sat under the floating bar, which is why taps missed; in the simulator it opened. Rulebook §5b written. Four tests in BestPanelTests, including a round trip over bests, steps and 1–12 reps.
+  - Not done: an XCUITest for the tap. It needs a UI-test target, which is a project.pbxproj change; waiting for the owner's go-ahead.
