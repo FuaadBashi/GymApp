@@ -1,7 +1,7 @@
 #!/bin/sh
 # Every check before a commit: app tests, studio tests, and the repository rules
 # (no private files tracked, no attribution trailers in tracked text or commit messages).
-# Usage: tools/check.sh [--fast]   (--fast skips the app test run)
+# Usage: tools/check.sh [--fast]   (--fast skips the app and UI test runs)
 set -u
 cd "$(dirname "$0")/.."
 fail=0
@@ -25,5 +25,9 @@ if [ "${1:-}" != "--fast" ]; then
     -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' >/tmp/gymapp-tests.log 2>&1 \
     && note "ok   app tests ($(grep -oE 'with [0-9]+ tests' /tmp/gymapp-tests.log | tail -1))" \
     || { note "FAIL app tests (see /tmp/gymapp-tests.log)"; grep -E '✘|error:' /tmp/gymapp-tests.log | head -20; fail=1; }
+  xcodebuild test -project GymApp.xcodeproj -scheme GymAppUITests \
+    -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' >/tmp/gymapp-uitests.log 2>&1 \
+    && note "ok   UI tests ($(grep -c "' passed" /tmp/gymapp-uitests.log) passed)" \
+    || { note "FAIL UI tests (see /tmp/gymapp-uitests.log)"; grep -E "failed|error:" /tmp/gymapp-uitests.log | head -20; fail=1; }
 fi
 exit $fail

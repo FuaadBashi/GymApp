@@ -22,6 +22,7 @@ struct BestHintLine: View {
                     Text(e1RM == nil ? "no estimate outside 1–12 reps" : "est. 1RM").font(.caption).foregroundStyle(.secondary)
                 }
                 .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("this-set-e1rm")
                 HStack(spacing: 8) {
                     tile("All-time best", best, hint.allTimeSet, colour: Theme.accent)
                     if let months = hint.windowMonths, let windowBest = hint.windowBest {
@@ -51,6 +52,7 @@ struct BestHintLine: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Shows the weight and reps that beat it")
+        .accessibilityIdentifier(title == "All-time best" ? "best-all-time" : "best-window")
     }
 
     static func kg(_ value: Double) -> String { "\(Load.format((value * 10).rounded() / 10)) kg" }

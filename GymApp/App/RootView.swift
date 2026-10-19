@@ -37,6 +37,9 @@ struct RootView: View {
             .sheet(item: $launchReport) { ImportReportView(report: $0.report, db: db) }
             .task {
                 await workout.resumeIfNeeded()
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("-uiTestFixture") { workout.isPresented = true }
+                #endif
                 SigningExpiry.scheduleReminder(expiry: SigningExpiry.current())
                 await importFromLaunchArgument()
             }
