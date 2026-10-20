@@ -1,40 +1,41 @@
 # Training rulebook
 
-The definitions every figure in the app is computed from. Where the code and this document
-disagree, that is a bug report. These rules exist because a polished chart that compares
-incompatible numbers is worse than no chart.
+This document defines every figure that the app shows. The code must agree with it. If the
+code and this document do not agree, that is a bug. A chart that compares numbers of
+different kinds is worse than no chart.
 
 ## §1 Units and stored loads
 
-1. A load is stored exactly as entered: an integer count of hundredths in the unit used, plus
-   the unit. 62.5 kg is stored as `6250, kg`; 45 lb as `4500, lb`.
-2. Converted values are computed for display and aggregates and **never stored**. Storing a
-   conversion turns 45 lb into 44.99 lb on the way back.
+1. The app stores a load exactly as you enter it: a whole number of hundredths, plus the
+   unit. It stores 62.5 kg as `6250, kg` and 45 lb as `4500, lb`.
+2. The app converts loads only for display and for totals. It **never stores** a converted
+   load, because a stored conversion changes 45 lb into 44.99 lb.
 3. 1 lb = 0.45359237 kg, exactly.
-4. Aggregates (volume, PR comparisons, plateau checks) convert every load to kg first, then
-   display in the preferred unit.
-5. Each exercise remembers the unit it was last logged in, so lb dumbbells and kg machines can
-   coexist.
+4. For totals (volume, PR comparisons, plateau checks), the app converts each load to kg
+   first. Then it shows the result in the preferred unit.
+5. Each exercise keeps the unit of its last logged set. Thus lb dumbbells and kg machines can
+   be in the same history.
 
 ## §2 What a logged load means
 
-Every exercise has a **load mode** that says what its logged number means. The mode is fixed
-once the exercise has history, because changing it would change what past sets mean.
+Each exercise has a **load mode**. The load mode tells what the logged number means. After an
+exercise has history, its load mode cannot change, because a change would change the meaning
+of the past sets.
 
-| Load mode | Typical exercises | The number you log | Load used in calculations | Volume |
+| Load mode | Typical exercises | The number you log | Load in calculations | Volume |
 |---|---|---|---|---|
-| `total` | Barbell (including the bar), machine, cable, Smith, plate | The whole load | As logged | × 1 |
-| `perHand` | Two dumbbells at once | One dumbbell | As logged | × 2 |
+| `total` | Barbell (with the bar), machine, cable, Smith, plate | The full load | As logged | × 1 |
+| `perHand` | Two dumbbells at the same time | One dumbbell | As logged | × 2 |
 | `perSide` | One-arm row, single-leg press | One side; reps are per side | As logged | × 2 |
-| `bodyweightPlus` | Pull-up, dip, chin-up, assisted machines | Added weight, or assistance as a negative | Body weight + logged figure, never below 0. Body weight is the latest entry on or before the workout date | × 1 |
-| `repsOnly` | Push-up, knee raise, plank | Nothing | None | Excluded |
+| `bodyweightPlus` | Pull-up, dip, chin-up, assisted machines | Added weight, or assistance as a negative number | Body weight + the logged number, never below 0. Body weight is the latest entry on or before the workout date | × 1 |
+| `repsOnly` | Push-up, knee raise, plank | Nothing | None | Not counted |
 
-Each machine is its own exercise and is never compared with another. A held plate on a
-partial-bodyweight movement (weighted crunch, back extension) is `total`: the plate is the
-only load that changes.
+Each machine is a different exercise. The app never compares one machine with another. A
+plate that you hold during a partial-body-weight movement (weighted crunch, back extension) is
+`total`, because the plate is the only load that changes.
 
-With no body-weight entry, whole-body exercises fall back to reps only. The app says so
-rather than inventing a figure.
+If there is no body-weight entry, whole-body exercises use reps only. The app tells you this.
+It does not invent a figure.
 
 ## §3 Set types
 
@@ -42,201 +43,233 @@ rather than inventing a figure.
 |---|---|---|---|
 | Working (default) | Yes | 1 | Yes |
 | Warm-up | No | 0 | No |
-| Drop set (a working set plus its drops) | Every segment counts | 1 for the whole drop set | Only the first segment |
+| Drop set (a working set and its drops) | Each segment counts | 1 for the full drop set | Only the first segment |
+| Failed or partial | The reps you did | 1 | The reps you did |
 
-A drop set is stored as its first segment (a working or failed row) followed by one `drop` row
-per further segment. That is how "1 for the whole drop set" and "only the first segment" are
-computed: `drop` rows add volume and nothing else.
-| Failed or partial | Reps actually done | 1 | Reps actually done |
+The app stores a drop set as its first segment (a working or failed row), then one `drop` row
+for each other segment. A `drop` row adds volume and nothing else. That gives "1 for the full
+drop set" and "only the first segment".
 
-A superset is a grouping of exercises, not a set type, and changes no calculation.
+A superset is a group of exercises, not a set type. It changes no calculation.
 
-**Effort labels (11 October):** Max rep means 0 reps in reserve. MR −1, MR −2 and
-MR −3 mean 1, 2 and 3 reps left in the tank. Store this separately from actual reps,
-RPE and set type. Max rep does not imply a failed repetition. Deload, injury and form
-are independent annotations that may coexist with an effort label. Warm uses warm-up.
-These annotations do not change the existing calculation rules: 60 kg × 8 at MR −1
-still uses 8 actual reps and 480 kg of volume, not 9 inferred reps. Notes and labels
-belong to that particular set/session and are not copied into a new workout as facts.
+**Effort labels (11 October).**
+
+- Max rep means 0 reps in reserve. MR −1, MR −2 and MR −3 mean 1, 2 and 3 reps in reserve.
+- The app stores the effort label apart from the actual reps, the RPE and the set type.
+- Max rep does not mean a failed rep.
+- Deload, injury and form are separate labels. They can be on the same set as an effort label.
+- Warm uses the warm-up type.
+- Labels do not change any calculation. 60 kg × 8 at MR −1 gives 8 reps and 480 kg of volume,
+  not 9 reps.
+- Notes and labels belong to that set or session. The app does not copy them into a new
+  workout as facts.
 
 ## §3a Warm-up ramps
 
-Built on request per exercise (card 7.7) before the first unlogged working set, from that
-set's load and unit. The day's first exercise, when it is a barbell squat, hinge or
-horizontal push, gets the **strength ramp**: the bar × 10 (only when working at 30 kg / 65 lb
-or more), then 50% × 5, 70% × 3, 85% × 1. Every other loaded exercise gets the **short ramp**:
-50% × 8, 80% × 3. Loads round to the nearest step the exercise moves in (§5a's learnt step,
-default 2.5); a load that doesn't climb, reaches the working load, or is at or below the bar
-in the strength ramp is dropped. Warm-ups are `warmUp` sets, so they never count (§3).
+You turn on warm-ups for each exercise (card 7.7). The app then adds them before the first
+working set that is not logged yet. It uses the load and unit of that set.
+
+- The **strength ramp** applies to the first exercise of the day when that exercise is a
+  barbell squat, a hinge or a horizontal push: the bar × 10 (only when the working load is
+  30 kg / 65 lb or more), then 50% × 5, 70% × 3, 85% × 1.
+- The **short ramp** applies to each other loaded exercise: 50% × 8, 80% × 3.
+- Each load rounds to the nearest learnt step (§7a, default 2.5).
+- The app removes a warm-up load that does not go up, that reaches the working load, or that is
+  at or below the bar in the strength ramp.
+
+Warm-ups are `warmUp` sets, so they never count (§3).
 
 ## §4 Estimated 1RM
 
-- Epley: `load × (1 + reps / 30)`. One rep gives the load itself.
-- Shown as a PR only for sets of 1–12 reps; above that the estimate is too loose to present.
-- Plateau checks (§8) use it for 1–20 reps, where consistency matters more than accuracy.
+- Epley: `load × (1 + reps / 30)`. For one rep, the estimate is the load.
+- The app shows it as a PR only for sets of 1–12 reps. Above 12 reps the estimate is not
+  accurate enough to show.
+- Plateau checks (§8) use it for 1–20 reps. There, a consistent figure is more important than an
+  accurate one.
 
 ## §5 Personal records
 
-Per exercise, from working and failed sets (never warm-ups or `drop` segments), and never for
-`bodyweightPlus` or `repsOnly` exercises. All are computed from history on read, so
-correcting a set can create or remove a PR.
+The app finds records for each exercise from working and failed sets. It never uses warm-ups or
+`drop` segments. It never finds records for `bodyweightPlus` or `repsOnly` exercises. The app
+calculates all records from the history each time. Thus a corrected set can add or remove a
+PR.
 
-- **Heaviest load** at any reps.
+- **Heaviest load**, at any reps.
 - **Best estimated 1RM** (§4).
-- **Rep PR:** most reps at a given load.
+- **Rep PR:** the most reps at a given load.
 - **Best session volume.**
 
 ## §5a Time-window bests
 
-The personal best that badges, banners and the "beat my best" table use is the **best
-estimated 1RM** (§4, from the sets §5 counts). A newly logged set is judged against every
-earlier counted set of the exercise, including sets already logged in the same workout:
+Badges, banners and the "beat my best" table use the **best estimated 1RM** (§4, from the sets
+that §5 counts). The app compares a new logged set with each earlier counted set of the
+exercise. This includes sets from earlier in the same workout.
 
-1. **All-time best:** its estimated 1RM beats the best so far by more than 0.01 kg.
-2. Otherwise, **only if training broke off** for 30 days or more at some point since the
-   all-time best was last reached (including the gap up to this set), it may be a
-   **window best**: the longest of the last 12, 6 and 1 months (365, 182 and 30 days) whose
-   best is below the all-time best and which it beats by more than 0.01 kg.
-3. Otherwise it is not a best. A first-ever set has nothing to beat.
+1. **All-time best:** the set's estimated 1RM is more than 0.01 kg above the best so far.
+2. **Window best:** this applies only if you stopped training this exercise for 30 days or
+   more at some time after the all-time best (the gap up to this set also counts). Then the set
+   can be a window best. The window is the longest of the last 12, 6 and 1 months (365, 182 and
+   30 days) whose best is below the all-time best. The set must be more than 0.01 kg above that
+   window's best.
+3. If neither rule applies, the set is not a best. A first set ever has nothing to beat.
 
-So a lift trained without a month off only ever shows all-time bests, and after a long
-break the comeback earns smaller bests on the way back. Heaviest load, rep PRs and best
-session volume (§5) are still recorded; they don't drive badges.
+Thus a lift that you train with no month off shows only all-time bests. After a long break, the
+return gives smaller bests on the way back. The app still records heaviest load, rep PRs and
+best session volume (§5). These do not give badges.
 
 ### §5b The set being entered, against the bests
 
-On the workout screen the selected set shows its own estimated 1RM, recomputed from the
-values in the editor as they change (Epley, §4; only for 1–12 reps, otherwise "no estimate").
-Under it are the all-time best and, when rule 2 above applies, the window best, each with
-the set that made it (weight × reps) and the gap: "X kg above", "X kg below" or "level with
-it" (within 0.01 kg). Tapping a best opens its beat table: for each rep count in the day's
-range, the lightest load in the exercise's step (§7a of card 7.3: the most common gap
-between loads used, else 2.5 kg) whose estimated 1RM beats that best by more than 0.01 kg.
+On the workout screen, the selected set shows its estimated 1RM. The app calculates it again
+each time the values in the editor change (Epley, §4). For more than 12 reps it shows "no
+estimate".
+
+Below that, the app shows the all-time best. When rule 2 of §5a applies, it also shows the
+window best. Each best shows the set that made it (weight × reps) and the difference: "X kg
+above", "X kg below" or "level with it" (within 0.01 kg).
+
+When you tap a best, its beat table opens. For each rep count in the day's range, the table
+shows the lightest load, in the exercise's learnt step (§7a), whose estimated 1RM is more than
+0.01 kg above that best.
 
 ## §6 Volume and sets per muscle
 
-- **Volume** = Σ (calculation load × reps) over volume-counting sets (§2, §3), in kg. JEFIT
-  defines volume differently, so the figures will not match.
-- **Hard sets per muscle**: each hard set (§3) counts 1 for each primary muscle and 0.5 for each
+- **Volume** = Σ (calculation load × reps) over the sets that count for volume (§2, §3), in kg.
+  JEFIT uses a different definition, so the two figures do not agree.
+- **Hard sets per muscle:** each hard set (§3) counts 1 for each primary muscle and 0.5 for each
   secondary muscle.
-- **Week**: starts on the day set in Settings (default Sunday). A workout belongs to the local
-  date it started, even if it runs past midnight.
+- **Week:** starts on the day set in Settings (default Sunday). A workout belongs to the local
+  date on which it started, also when it continues after midnight.
 
 ## §7 Last-time values
 
 When an exercise opens in a workout, "last time" is its most recent logged session:
 
-1. In the **same routine day** (default), or in **any workout**, per Settings.
-2. If the same routine day has no history for it, fall back to any workout and label it so.
+1. In the **same routine day** (default), or in **any workout**. Settings controls this.
+2. If the same routine day has no history for the exercise, the app uses any workout and
+   tells you this.
 
-"Same routine day" includes the days it was copied from. A day built with *Copy from…*
-remembers its source (`copiedFromDayId`), so a new "Full Body 1" copied from JEFIT's "1FBD 1"
-picks up that day's history instead of starting blank.
+"Same routine day" includes the days that it was copied from. A day made with *Copy from…*
+keeps its source (`copiedFromDayId`). Thus a new "Full Body 1", copied from JEFIT's "1FBD 1",
+gets the history of that day. It does not start empty.
+
+## §7a Load step
+
+The load step is the smallest change of load that an exercise usually makes. The app learns it
+from the loads that you used: it is the most frequent positive gap between the different loads
+(in kg, to 0.01). If two gaps are equally frequent, the smaller gap is the step. If there is no
+gap, the step is 2.5 kg. For an exercise logged in lb, the step converts to the nearest 2.5 lb,
+and is at least 2.5 lb. The studio uses the same tie rule. It learns the step in the unit
+that you entered and ignores gaps of more than 20 kg.
 
 ## §8 Plateau swap
 
-**Progress score.** For one session of one exercise, the score is the best estimated 1RM
-(§4) among its working sets of 1–20 reps. For reps-only exercises, it is the most reps in a
-single set.
+**Progress score.** For one session of one exercise, the score is the best estimated 1RM (§4)
+of its working sets of 1–20 reps. For a reps-only exercise, it is the most reps in one set.
 
-**Plateau.** With window *W* (default 3 weeks, settable 2–6), an exercise has plateaued when
-all of these hold:
+**Plateau.** The window *W* is 3 weeks by default (you can set 2–6). An exercise is on a
+plateau when all these conditions are true:
 
-1. it was done in at least 3 sessions within the last *W* weeks;
-2. it was done at least once in the *W* weeks before that;
-3. the best score in the last *W* weeks is **not higher** than the best score in the *W*
-   weeks before.
+1. You did it in 3 sessions or more in the last *W* weeks.
+2. You did it 1 time or more in the *W* weeks before that.
+3. The best score in the last *W* weeks is **not higher** than the best score in the *W* weeks
+   before.
 
-A single extra rep counts as progress. Comparing against the previous window, not the
-all-time best, means returning from a break does not flag everything at once.
+One more rep counts as progress. The app compares with the previous window, not with the
+all-time best. Thus a return from a break does not show all exercises as plateaus at the same
+time.
 
-**Candidates.** Exercises with the same movement pattern that share a primary muscle and are not
-archived or marked "avoid". If gym availability is tagged, they must also be available. Ranked
-by never or longest since done, then most history. At most three, each with the reason.
+**Candidates.** These are exercises with the same movement pattern that share a primary muscle.
+They must not be archived or marked "avoid". If gym availability is set, they must also be
+available. The app puts first the exercises that you never did or did least recently. Then it
+puts the exercises with the most history. It shows three or fewer, each with the reason.
 
-**Behaviour.** Shown at the end of the session and on the exercise screen, never applied
-automatically.
+**Behaviour.** The app shows the plateau at the end of the session and on the exercise screen.
+It never makes a change without you.
 
 - **Swap** replaces the exercise in the routine from the next session.
-- **Keep for now** snoozes the check for *W* weeks.
-- **Dismiss** turns it off for that exercise until re-enabled.
+- **Keep for now** stops the check for *W* weeks.
+- **Dismiss** stops the check for that exercise until you turn it on again.
 
-The explanation always reads like: *"Best set in the last 3 weeks (3 sessions): 60 kg × 10.
+The explanation always has this form: *"Best set in the last 3 weeks (3 sessions): 60 kg × 10.
 Best in the 3 weeks before: 60 kg × 10."*
 
-**Movement pattern.** A tag on each exercise (`movementPattern`) naming the movement it
-trains, fine enough that swaps are genuinely equivalent. The full list is in
+**Movement pattern.** Each exercise has a tag (`movementPattern`) that names the movement that
+it trains. The tags are precise, so a swap gives an equivalent exercise. The full list is in
 `specs/00-foundation.md`, card 0.1. Examples:
 
 - Flat horizontal press: barbell bench, dumbbell bench, machine chest press, seated chest press.
-- Incline press is a separate pattern (`inclinePush`).
+- Incline press is a different pattern (`inclinePush`).
 - Horizontal pull: seated cable row, machine row, dumbbell one-arm row.
 - Squat pattern: barbell squat, hack squat, leg press.
 - Knee flexion: prone leg curl, seated leg curl.
 
 ## §9 Rest timer
 
-- Rest starts when a set is marked done. Its end is stored as an absolute time, so locking
-  the phone or switching apps cannot make it drift.
-- Duration comes from the exercise's rest setting (default 60 s) and can be changed or skipped
-  mid-rest.
-- When rest ends, a local notification with sound and vibration fires whether the app is
-  open, in the background or the phone is locked.
+- Rest starts when you mark a set as done. The app stores the end of the rest as an absolute
+  time. Thus a locked phone or a change of app cannot make the timer wrong.
+- The duration comes from the exercise's rest setting (default 60 s). You can change or skip
+  it during the rest.
+- When the rest ends, a local notification with sound and vibration comes. It comes when the
+  app is open, when it is in the background and when the phone is locked.
 
 ## §10 Templates, history and corrections
 
-- A routine is a template; a finished workout is history. Editing a routine never changes a
-  finished workout.
-- A logged session records the routine's targets at that time, so "hit the target" stays
-  true historically.
-- Renaming an exercise renames it everywhere; it is the same exercise. Moving to different
+- A routine is a template. A finished workout is history. A change to a routine never changes
+  a finished workout.
+- A logged session keeps the routine's targets from that time. Thus "hit the target" stays
+  correct in the history.
+- A new name for an exercise applies everywhere, because it is the same exercise. Different
   equipment or a different machine is a different exercise.
-- Finished workouts can be edited, since typos happen, and every derived figure follows.
-- Exercises with history are archived, never deleted.
-- A workout with logged sets is deleted only after explicit confirmation. An empty one is
-  discarded silently.
+- You can edit a finished workout to correct an error. Each figure from it changes to agree.
+- The app archives an exercise with history. It never deletes it.
+- **Caution:** the app deletes a workout with logged sets only after you confirm. It discards
+  an empty workout without a question.
 
 ## §11 Estimated session time
 
-The median duration of your last three completed sessions of that routine day. With fewer
-than three, use Σ over sets of (40 s + that exercise's rest).
+The estimate is the median duration of your last three completed sessions of that routine
+day. With fewer than three sessions, it is Σ over the sets of (40 s + the rest of that
+exercise).
 
 ## §12 Feedback (UI notes)
 
-One vocabulary, so a feeling always means the same thing (card 9.3):
+Each feeling has one meaning only (card 9.3):
 
-- **Set logged:** a light tap; the tick bounces.
-- **All-time best:** the success haptic; the volt trophy bounces in the banner and on the set.
-- **1/6/12-month best:** a soft tap; the gold clock bounces.
-- **Rest over:** the warning haptic and notification; the bell wiggles beside the Log button.
-- **Reps left chosen:** the selection tick.
+- **Set logged:** a light tap. The tick moves up and down one time.
+- **All-time best:** the success haptic. The volt trophy moves in the banner and on the set.
+- **1/6/12-month best:** a soft tap. The gold clock moves.
+- **Rest over:** the warning haptic and the notification. The bell shakes next to the Log
+  button.
+- **Reps left selected:** the selection tick.
 
-Animations are skipped under Reduce Motion; haptics follow the system setting.
+Under Reduce Motion the app shows no animations. Haptics follow the system setting.
 
 ## §13 Today's suggestion
 
-Each exercise in a workout shows one suggested load × reps for its working sets, unless an
-accepted studio target is active (the studio's target wins). "Fill sets" puts it into every
-planned set that is not a warm-up. It is computed from the exercise's finished sessions, in
-the unit the lift was last entered in, with the learnt step (§7a, converted to 5 lb steps
-for pounds). Reps-only and body-weight-plus lifts get none.
+Each exercise in a workout shows one suggested load × reps for its working sets. If an accepted
+studio target is active, the app shows the studio's target instead. "Fill sets" puts the
+suggestion into each planned set that is not a warm-up.
 
-1. **First session after a break** (30+ days since the lift was last done): 90% of the last
-   session's top load (80% after 90+ days), rounded down to the step, at the bottom of the
-   rep range.
-2. **Climbing back:** if a break of 30+ days falls within the last 6 sessions and the last top
-   load is still below the top load from before the break, add the larger of one step or 5% of
-   that pre-break load, rounded up to the step and never above it, at the bottom of the range.
-3. **Double progression** (as the studio's `next_target`, Plotkin 2022): if every working set
-   at the last session's top load reached the top of the rep range, add one step and go back
-   to the bottom; otherwise stay at that load and aim for one rep more than the lowest of
-   those sets, capped at the top of the range.
+The app calculates the suggestion from the exercise's finished sessions. It uses the unit of
+the last logged set and the learnt step (§7a). Reps-only and
+body-weight-plus lifts get no suggestion. The app uses the first rule that applies:
 
-4. **Reps in reserve:** if every working set at that top load was logged with reps in reserve
-   and the smallest is 2 or more, the step in rule 3 is doubled: two steps of load, or two reps
-   more than the lowest set (still capped at the top of the range). Sets without reps in reserve
-   leave rule 3 as it is. The studio's `next_target` applies the same rule.
+1. **First session after a break** (30 days or more since you last did the lift): 90% of the
+   last session's top load (80% after 90 days or more), rounded down to the step. Reps: the
+   bottom of the rep range.
+2. **Return after a break:** this applies when a break of 30 days or more is within the last 6
+   sessions and the last top load is still below the top load from before the break. Add one
+   step or 5% of the pre-break load, whichever is larger. Round up to the step. Never go above
+   the pre-break load. Reps: the bottom of the range.
+3. **Double progression** (as the studio's `next_target`, Plotkin 2022): if each working set at
+   the last session's top load reached the top of the rep range, add one step and go back to the
+   bottom of the range. If not, keep that load and aim for one rep more than the lowest of
+   those sets. Never go above the top of the range.
+4. **Reps in reserve:** this applies when each working set at that top load has reps in reserve
+   logged and the smallest value is 2 or more. Then rule 3 moves two times as fast: two steps of
+   load, or two reps more than the lowest set (never above the top of the range). If a set has
+   no reps in reserve logged, rule 3 does not change. The studio's `next_target` uses the same
+   rule.
 
-The studio's plateau rule (deload or swap after 21 days without an increase) stays in the
-studio and arrives as an accepted target.
-
+The studio's plateau rule (a deload or a swap after 21 days with no increase) stays in the
+studio. Its result comes to the app as an accepted target.
