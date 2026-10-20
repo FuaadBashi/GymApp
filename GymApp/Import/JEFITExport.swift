@@ -74,7 +74,7 @@ nonisolated struct JEFITExport {
 
     /// RFC 4180 over the whole file: quoted fields may hold commas, newlines and "" quotes,
     /// which notes and day names do. Splitting into lines first would cut them in half.
-    private static func records(in data: Data) -> [[String]] {
+    static func records(in data: Data) -> [[String]] {
         let quote = UInt8(ascii: "\""), comma = UInt8(ascii: ","), lf = UInt8(ascii: "\n"), cr = UInt8(ascii: "\r")
         var records: [[String]] = []
         var fields: [String] = []

@@ -80,6 +80,7 @@ that can change without reworking anything.
 | 36 | Where does deep analysis live? | **Possibly outside the app.** Phase 2 follows phase 1 directly. Phase 3's analytics may be skipped in favour of a separate offline, static tool that reads the export and can go further: more detail, and an LLM over the data. The app keeps history and per-exercise figures; the export (phase 4) must carry everything such a tool needs. To be settled before phase 3 is specified. |
 
 | 37 | Rest activity at expiry | **Show “Rest over” and the next set while suspended; clear on return.** The rest alert still fires at the deadline. Use ActivityKit’s `staleDate` and `context.isStale` to switch the lock-screen and Island presentation without keeping the app running. iOS controls the stale-state refresh and may briefly retain 0:00 (about one minute observed on the simulator); the notification is the deadline signal. Automatic removal while suspended is no longer required (11 Oct). JEFIT documents a lock-screen timer, but its exact expiry presentation is not publicly specified. |
+| 38 | Strong and Hevy imports (20 Oct) | **Stored with `source = 'app'` and an `externalId` of `strong:<start>` or `hevy:<start>`.** The `workout.source` CHECK allows only app and jefit; widening it means rebuilding `workout`, whose children cascade on delete, which is not worth the risk to real data for a label. The prefix keeps the origin. A workout starting in the same minute as an existing one is treated as already present. |
 
 ## Open
 

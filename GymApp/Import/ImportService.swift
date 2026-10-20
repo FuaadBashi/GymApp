@@ -19,4 +19,20 @@ nonisolated enum ImportService {
                                   fileName: url.lastPathComponent, fileSHA256: sha)
         }
     }
+
+    /// Settings' one import button: a Strong or Hevy workout CSV if its header says so,
+    /// otherwise a JEFIT export.
+    static func importFile(at url: URL, into db: AppDatabase) async throws -> ImportReport {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        let data = try Data(contentsOf: url)
+        guard let (format, rows) = try? LogCSVImporter.parse(data) else {
+            return try await importJEFIT(fileAt: url, into: db)
+        }
+        let sha = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        return try await db.writer.write { db in
+            try LogCSVImporter.run(format, rows, in: db, now: .now, fileName: url.lastPathComponent, fileSHA256: sha)
+        }
+    }
 }
+

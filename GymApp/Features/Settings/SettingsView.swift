@@ -112,7 +112,7 @@ struct SettingsView: View {
                 AppleHealthSection(db: model.db)
                 Section("Data") {
                     NavigationLink("Backups & recovery") { RecoveryView(db: model.db) }
-                    Button("Import JEFIT export…", systemImage: "square.and.arrow.down") { choosingFile = true }
+                    Button("Import from JEFIT, Strong or Hevy…", systemImage: "square.and.arrow.down") { choosingFile = true }
                     Button("Export sets as CSV", systemImage: "tablecells") { exportCSV() }
                     if let totals = model.totals {
                         Text("\(totals.workouts.formatted()) workouts · \(totals.sets.formatted()) sets · \(totals.exercises.formatted()) of your exercises")
@@ -163,7 +163,7 @@ struct SettingsView: View {
         Task {
             defer { importing = false }
             do {
-                report = PresentedReport(report: try await ImportService.importJEFIT(fileAt: url, into: model.db))
+                report = PresentedReport(report: try await ImportService.importFile(at: url, into: model.db))
             } catch {
                 model.lastError = error.localizedDescription
             }
