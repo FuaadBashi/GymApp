@@ -63,6 +63,62 @@ struct BestHintLine: View {
     }
 }
 
+/// The best panel with its beat table, shared by the exercise card and focus mode.
+struct BestPanel: View {
+    @Environment(ActiveWorkoutModel.self) private var model
+    let item: WorkoutSnapshot.Item
+    let set: WorkoutSetRecord
+    let onHistory: () -> Void
+    @State private var beating: Beating?
+    private struct Beating: Identifiable { let title: String; let best: Double; var id: String { title } }
+
+    private var repRange: ClosedRange<Int> {
+        WorkoutQueries.repRange(item.workoutExercise, model.snapshot?.defaultRepRange ?? 8...12)
+    }
+
+    var body: some View {
+        if let hint = model.snapshot?.hints[item.exercise.id] {
+            BestHintLine(set: set, hint: hint, loadMode: item.exercise.loadMode) { beating = Beating(title: $0, best: $1) }
+                .sheet(item: $beating) { beat in
+                    BeatBestSheet(exerciseName: item.exercise.name, title: beat.title, best: beat.best, reps: repRange,
+                                  step: hint.step, unit: set.unit,
+                                  onPick: { kg, reps in
+                                      Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: set.unit, reps: reps, type: set.type)) }
+                                  },
+                                  onHistory: onHistory)
+                }
+        }
+    }
+}
+
+/// Rulebook §13: today's suggestion with Fill sets, shared by the exercise card and focus mode.
+struct TodaySuggestion: View {
+    @Environment(ActiveWorkoutModel.self) private var model
+    let item: WorkoutSnapshot.Item
+
+    var body: some View {
+        if let next = model.snapshot?.hints[item.exercise.id]?.next {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Label("Today: \(Load.format(Double(next.loadHundredths) / 100)) \(next.unit.rawValue) × \(next.reps)",
+                          systemImage: next.kind == .comeback ? "arrow.uturn.up" : "arrow.up.right")
+                        .font(.subheadline.weight(.semibold))
+                    Text(next.reason).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                if !item.plannedSets.isEmpty {
+                    Button("Fill sets") { Task { await model.fill(item.id, loadHundredths: next.loadHundredths, unit: next.unit, reps: next.reps) } }
+                        .buttonStyle(.bordered).controlSize(.small)
+                }
+            }
+            .padding(10)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("next-suggestion")
+        }
+    }
+}
+
 /// Card 7.3: the lightest load for each rep count that beats the best.
 struct BeatBestSheet: View {
     let exerciseName: String

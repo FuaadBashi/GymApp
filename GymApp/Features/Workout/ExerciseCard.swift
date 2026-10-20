@@ -11,18 +11,9 @@ struct ExerciseCard: View {
     @State private var editingNote = false
     @State private var noteDraft = ""
     @State private var metadata: MetadataDraft?
-    @State private var beating: Beating?
-    private struct Beating: Identifiable { let row: WorkoutSetRecord; let title: String; let best: Double; var id: String { row.id + title } }
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
-    private var repRange: ClosedRange<Int> {
-        guard let lo = item.workoutExercise.repMin, let hi = item.workoutExercise.repMax, lo <= hi else {
-            return model.snapshot?.defaultRepRange ?? 8...12
-        }
-        return lo...hi
-    }
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isCurrent { expanded } else { collapsed }
@@ -31,15 +22,6 @@ struct ExerciseCard: View {
         .background(Theme.card, in: .rect(cornerRadius: 18))
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
-        }
-        .sheet(item: $beating) { beat in
-            let set = beat.row
-            BeatBestSheet(exerciseName: item.exercise.name, title: beat.title, best: beat.best, reps: repRange,
-                              step: model.snapshot?.hints[item.exercise.id]?.step ?? 2.5, unit: set.unit,
-                              onPick: { kg, reps in
-                                  Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: Int((kg * 100).rounded()), unit: set.unit, reps: reps, type: set.type)) }
-                              },
-                              onHistory: { onAction(.history) })
         }
         .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
             if let metadata {
@@ -155,25 +137,8 @@ struct ExerciseCard: View {
             .padding(10)
             .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
             .accessibilityElement(children: .combine)
-        } else if let next = model.snapshot?.hints[item.exercise.id]?.next {
-            // Rulebook §13: the app's own suggestion when the studio has none.
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Label("Today: \(Load.format(Double(next.loadHundredths) / 100)) \(next.unit.rawValue) × \(next.reps)",
-                          systemImage: next.kind == .comeback ? "arrow.uturn.up" : "arrow.up.right")
-                        .font(.subheadline.weight(.semibold))
-                    Text(next.reason).font(.caption).foregroundStyle(.secondary)
-                }
-                Spacer()
-                if !item.plannedSets.isEmpty {
-                    Button("Fill sets") { Task { await model.fill(item.id, loadHundredths: next.loadHundredths, unit: next.unit, reps: next.reps) } }
-                        .buttonStyle(.bordered).controlSize(.small)
-                }
-            }
-            .padding(10)
-            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("next-suggestion")
+        } else {
+            TodaySuggestion(item: item)
         }
 
         ExerciseMediaView(exercise: item.exercise)
@@ -235,10 +200,8 @@ struct ExerciseCard: View {
                         .buttonStyle(.bordered).controlSize(.mini)
                     }
 
-                    if let hint = model.snapshot?.hints[item.exercise.id] {
-                        BestHintLine(set: set, hint: hint, loadMode: loadMode) { beating = Beating(row: set, title: $0, best: $1) }
-                            .padding(.horizontal, 10).padding(.vertical, 4)
-                    }
+                    BestPanel(item: item, set: set) { onAction(.history) }
+                        .padding(.horizontal, 10).padding(.vertical, 4)
                     SetEditor(set: set, exercise: item.exercise) { edit in
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }

@@ -291,3 +291,4 @@ xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean star
   4. Strong's per-set notes were dropped (a dead assignment); they stay on their sets, and Hevy's exercise notes on the exercise.
   5. When two sets tied for a best, the tile named the oldest; it names the latest.
   Two tests added. Left open: if a write succeeds but the reload after it fails, the rest alert for that set is not scheduled until the next successful reload; the Hevy column names are from published descriptions, not a real file; focus mode shows the cue strip but not the best panel or today's suggestion.
+- 20 Oct: focus mode now shows today's suggestion (when no studio target) and the best panel with its beat tables. Both moved out of ExerciseCard into shared views (TodaySuggestion, BestPanel) so the list and focus mode run the same code. UI test added.

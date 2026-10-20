@@ -33,8 +33,10 @@ struct FocusView: View {
                     }
                 }
                 CueStrip(exerciseId: item.exercise.id)
+                if item.studioTarget == nil { TodaySuggestion(item: item) }
 
                 if let set {
+                    BestPanel(item: item, set: set) { onAction(.history, item) }
                     SetEditor(set: set, exercise: item.exercise, onChange: { edit in
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }, large: true)

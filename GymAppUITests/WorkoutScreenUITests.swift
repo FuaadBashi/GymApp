@@ -53,4 +53,13 @@ final class WorkoutScreenUITests: XCTestCase {
         XCTAssertTrue(next.label.contains("Today:"), next.label)
         XCTAssertTrue(next.label.contains("First session in 60 days"), next.label)
     }
+
+    /// Focus mode carries the same best panel and suggestion as the list.
+    func testFocusModeShowsTheBestsAndTodaysSuggestion() {
+        app.buttons["Focus mode"].tap()
+        XCTAssertTrue(element("next-suggestion").label.contains("Today:"))
+        XCTAssertTrue(element("this-set-e1rm").label.contains("80 kg"))
+        element("best-all-time").tap()
+        XCTAssertTrue(app.staticTexts["All-time best: est. 1RM 116.7 kg"].waitForExistence(timeout: 5))
+    }
 }
