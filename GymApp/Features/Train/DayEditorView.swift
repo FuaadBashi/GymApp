@@ -167,5 +167,7 @@ struct DayEditorView: View {
             }
         }
         .padding(.vertical, 2)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(.rect)   // the whole row answers a tap, not only its text
     }
 }

@@ -109,6 +109,7 @@ struct ExerciseCard: View {
             } label: {
                 Image(systemName: "ellipsis").font(.headline).frame(width: 36, height: 36).background(Theme.row, in: Circle())
             }
+            .accessibilityLabel("Exercise options")
         }
 
         CueStrip(exerciseId: item.exercise.id)

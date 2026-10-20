@@ -38,7 +38,7 @@ struct RootView: View {
             .task {
                 await workout.resumeIfNeeded()
                 #if DEBUG
-                if ProcessInfo.processInfo.arguments.contains("-uiTestFixture") { workout.isPresented = true }
+                if ProcessInfo.processInfo.arguments.contains("-uiTestFixture"), workout.snapshot != nil { workout.isPresented = true }
                 #endif
                 SigningExpiry.scheduleReminder(expiry: SigningExpiry.current())
                 await importFromLaunchArgument()

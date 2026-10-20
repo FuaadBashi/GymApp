@@ -58,7 +58,7 @@ struct SetEditor: View {
                 extra()
             }
             HStack(spacing: 6) {
-                stepButton("minus", action: minus)
+                stepButton("minus", label: field == .load ? "Less weight" : "Fewer reps", action: minus)
                 Button {
                     draft = field == .load ? Load.format(Double(set.loadHundredths ?? 0) / 100) : "\(set.reps)"
                     typing = field
@@ -70,7 +70,7 @@ struct SetEditor: View {
                         .rollingNumber(value)
                 }
                 .buttonStyle(.plain)
-                stepButton("plus", action: plus)
+                stepButton("plus", label: field == .load ? "More weight" : "More reps", action: plus)
             }
         }
         .padding(large ? 16 : 10)
@@ -78,7 +78,7 @@ struct SetEditor: View {
         .background(Theme.row, in: .rect(cornerRadius: 14))
     }
 
-    private func stepButton(_ symbol: String, action: @escaping () -> Void) -> some View {
+    private func stepButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.headline)
@@ -87,6 +87,7 @@ struct SetEditor: View {
         }
         .buttonStyle(.plain)
         .buttonRepeatBehavior(.enabled)
+        .accessibilityLabel(label)
     }
 
     private func stepLoad(_ direction: Double) {

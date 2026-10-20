@@ -48,6 +48,21 @@ enum AppStartup {
                 try WorkoutSetRecord(id: UUID().uuidString, workoutExerciseId: we.id, position: 0, loadHundredths: Int(kg * 100), unit: .kg,
                                      reps: reps, type: .working, completedAt: start, rpe: nil, externalId: nil).insert(db)
             }
+            // Redesign R.1: a program day of two lifts, for the tap-count tests.
+            var row = exercise
+            row.id = "ui-row"
+            row.name = "Test Row"
+            try row.insert(db)
+            let program = ProgramRecord(id: "ui-program", name: "Test Plan", split: .custom, isActive: true, isArchived: false,
+                                        sessionsPerWeekGoal: 3, source: .app, externalId: nil, createdAt: .now)
+            try program.insert(db)
+            try ProgramDayRecord(id: "ui-day", programId: program.id, name: "Day A", focus: .fullBody, position: 0,
+                                 copiedFromDayId: nil, externalId: nil).insert(db)
+            for (i, id) in ["ui-bench", "ui-row"].enumerated() {
+                try DayExerciseRecord(id: "ui-item-\(i)", dayId: "ui-day", exerciseId: id, position: i, targetSets: 2,
+                                      repMin: 8, repMax: 12, restSeconds: 90, note: nil, externalId: nil).insert(db)
+            }
+            guard !ProcessInfo.processInfo.arguments.contains("-uiTestNoWorkout") else { return }
             let settings = try AppSettings.load(db)
             let w = try WorkoutWrites.start(db, dayId: nil, settings: settings, now: .now)
             let item = try WorkoutWrites.addExercise(db, workoutId: w.id, exerciseId: exercise.id, settings: settings)
