@@ -18,6 +18,7 @@ nonisolated enum NextSet {
     static let longBreakDays = 90
     static let comebackStart = (short: 0.9, long: 0.8)     // share of the last top load
     static let comebackRamp = 0.05                         // of the pre-break top, per session
+    static let easyReserve = 2                             // reps in reserve that count as easy
 
     /// `sessions` newest first. `stepKg` is the exercise's learnt step (§7a).
     static func suggest(sessions: [ExerciseSession], repRange: ClosedRange<Int>, stepKg: Double,
@@ -53,14 +54,19 @@ nonisolated enum NextSet {
 
         // 3. Double progression.
         let atTop = working(last).filter { $0.loadHundredths == top.loadHundredths && $0.unit == unit }
+        // 4. Reps in reserve: when every top set was logged with 2 or more left, move twice as fast.
+        let reserve = atTop.allSatisfy { $0.repsInReserve != nil } ? atTop.compactMap(\.repsInReserve).min() : nil
+        let easy = (reserve ?? 0) >= easyReserve
+        let note = easy ? " (\(reserve!)+ reps in reserve on every set)" : ""
         if atTop.allSatisfy({ $0.reps >= hi }) {
-            let load = Int(((topLoad + step) * 100).rounded())
+            let steps = easy ? 2.0 : 1.0
+            let load = Int(((topLoad + step * steps) * 100).rounded())
             return Suggestion(kind: .addWeight, loadHundredths: load, unit: unit, reps: lo,
-                              reason: "Every set at \(fmt(top.loadHundredths ?? 0)) reached \(hi) reps: add \(Load.format(step)) \(unit.rawValue) and go back to \(lo).")
+                              reason: "Every set at \(fmt(top.loadHundredths ?? 0)) reached \(hi) reps\(note): add \(Load.format(step * steps)) \(unit.rawValue) and go back to \(lo).")
         }
         let lowest = atTop.map(\.reps).min() ?? lo
-        return Suggestion(kind: .addReps, loadHundredths: top.loadHundredths ?? 0, unit: unit, reps: min(lowest + 1, hi),
-                          reason: "Stay at \(fmt(top.loadHundredths ?? 0)) and beat your lowest set (\(lowest) reps) until every set reaches \(hi).")
+        return Suggestion(kind: .addReps, loadHundredths: top.loadHundredths ?? 0, unit: unit, reps: min(lowest + (easy ? 2 : 1), hi),
+                          reason: "Stay at \(fmt(top.loadHundredths ?? 0)) and beat your lowest set (\(lowest) reps)\(note) until every set reaches \(hi).")
     }
 
     private static func working(_ s: ExerciseSession) -> [WorkoutSetRecord] {

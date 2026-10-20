@@ -20,6 +20,15 @@ trailers=$(git log -50 --format=%B | grep -i -E 'co-authored-by|claude-session|g
 (cd studio && .venv/bin/python -m unittest discover -s tests -t . >/tmp/gymapp-studio-tests.log 2>&1) \
   && note "ok   studio tests" || { note "FAIL studio tests (see /tmp/gymapp-studio-tests.log)"; fail=1; }
 
+# Rulebook §13 cross-check: the studio's answers for the newest local backup, which the app's
+# NextSetCrossCheckTests compares against NextSet (skipped when data/ has no backup).
+newest=$(ls -t data/backups/*.sqlite 2>/dev/null | head -1)
+if [ -n "$newest" ]; then
+  studio/.venv/bin/python -I tools/cross_check_next.py "$newest" 2>/dev/null \
+    && note "ok   studio answers written for the §13 cross-check ($(basename "$newest"))" \
+    || { note "FAIL could not write the §13 cross-check"; fail=1; }
+fi
+
 if [ "${1:-}" != "--fast" ]; then
   xcodebuild test -project GymApp.xcodeproj -scheme GymApp \
     -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' >/tmp/gymapp-tests.log 2>&1 \

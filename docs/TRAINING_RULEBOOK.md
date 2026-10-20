@@ -232,6 +232,11 @@ for pounds). Reps-only and body-weight-plus lifts get none.
    to the bottom; otherwise stay at that load and aim for one rep more than the lowest of
    those sets, capped at the top of the range.
 
+4. **Reps in reserve:** if every working set at that top load was logged with reps in reserve
+   and the smallest is 2 or more, the step in rule 3 is doubled: two steps of load, or two reps
+   more than the lowest set (still capped at the top of the range). Sets without reps in reserve
+   leave rule 3 as it is. The studio's `next_target` applies the same rule.
+
 The studio's plateau rule (deload or swap after 21 days without an increase) stays in the
 studio and arrives as an accepted target.
 

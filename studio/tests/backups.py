@@ -13,7 +13,7 @@ def stamp(d: datetime) -> str:
 
 def make(path: Path, exercises: dict, workouts: list, day_items: list = ()) -> None:
     """exercises: id -> (name, equipment, loadMode, primary, secondary)
-    workouts: (day offset, [(exercise id, [(kg, reps, type), ...]), ...])
+    workouts: (day offset, [(exercise id, [(kg, reps, type[, reps in reserve]), ...]), ...])
     day_items: (exercise id, repMin, repMax) in an active program day."""
     db = sqlite3.connect(path)
     db.executescript(SCHEMA)
@@ -31,8 +31,8 @@ def make(path: Path, exercises: dict, workouts: list, day_items: list = ()) -> N
         for pos, (eid, sets) in enumerate(rows):
             we = f"w{n}-{pos}"
             db.execute("INSERT INTO workoutExercise (id,workoutId,exerciseId,position,restSeconds) VALUES (?,?,?,?,60)", (we, f"w{n}", eid, pos))
-            for i, (kg, reps, typ) in enumerate(sets):
-                db.execute("INSERT INTO workoutSet (id,workoutExerciseId,position,loadHundredths,unit,reps,type,completedAt) VALUES (?,?,?,?,'kg',?,?,?)",
-                           (f"{we}-{i}", we, i, None if kg is None else round(kg * 100), reps, typ, stamp(start)))
+            for i, (kg, reps, typ, *rir) in enumerate(sets):
+                db.execute("INSERT INTO workoutSet (id,workoutExerciseId,position,loadHundredths,unit,reps,type,completedAt,repsInReserve) VALUES (?,?,?,?,'kg',?,?,?,?)",
+                           (f"{we}-{i}", we, i, None if kg is None else round(kg * 100), reps, typ, stamp(start), rir[0] if rir else None))
     db.commit()
     db.close()

@@ -7,15 +7,17 @@ struct NextSetTests {
     let now = Date(timeIntervalSince1970: 1_800_000_000)
 
     /// A finished session `daysAgo` before `now` with working sets of (kg, reps).
-    private func session(_ daysAgo: Double, _ sets: [(Double, Int)], unit: WeightUnit = .kg) -> ExerciseSession {
+    private func session(_ daysAgo: Double, _ sets: [(Double, Int)], unit: WeightUnit = .kg, reserve: [Int?]? = nil) -> ExerciseSession {
         let start = now.addingTimeInterval(-daysAgo * 86_400)
         let w = WorkoutRecord(id: UUID().uuidString, startedAt: start, endedAt: start.addingTimeInterval(3600), programDayId: nil,
                               title: "W", note: nil, effort: nil, restEndsAt: nil, restDurationSeconds: nil, source: .app, externalId: nil)
         let we = WorkoutExerciseRecord(id: UUID().uuidString, workoutId: w.id, exerciseId: "e", position: 0, dayExerciseId: nil,
                                        targetSets: nil, repMin: nil, repMax: nil, restSeconds: 90, note: nil, externalId: nil)
         let records = sets.enumerated().map { i, s in
-            WorkoutSetRecord(id: UUID().uuidString, workoutExerciseId: we.id, position: i, loadHundredths: Int(s.0 * 100), unit: unit,
-                             reps: s.1, type: .working, completedAt: start, rpe: nil, externalId: nil)
+            var r = WorkoutSetRecord(id: UUID().uuidString, workoutExerciseId: we.id, position: i, loadHundredths: Int(s.0 * 100), unit: unit,
+                                     reps: s.1, type: .working, completedAt: start, rpe: nil, externalId: nil)
+            r.repsInReserve = reserve?[i]
+            return r
         }
         return ExerciseSession(workout: w, workoutExercise: we, sets: records)
     }
@@ -90,5 +92,29 @@ struct NextSetTests {
         #expect(suggest([session(3, [(0, 10)])], mode: .repsOnly) == nil)
         #expect(suggest([session(3, [(10, 10)])], mode: .bodyweightPlus) == nil)
         #expect(suggest([]) == nil)
+    }
+
+    // Rule 4: reps in reserve.
+
+    @Test func easySetsAtTheTopAddTwoSteps() throws {
+        let s = try #require(suggest([session(3, [(60, 12), (60, 12)], reserve: [2, 3])]))
+        #expect(s.kind == .addWeight && s.loadHundredths == 6500)
+        #expect(s.reason.contains("reps in reserve"))
+    }
+
+    @Test func easySetsBelowTheTopAddTwoReps() throws {
+        let s = try #require(suggest([session(3, [(60, 9), (60, 10)], reserve: [2, 2])]))
+        #expect(s.kind == .addReps && s.reps == 11)
+    }
+
+    @Test func oneHardSetOrAMissingReserveKeepsTheNormalStep() throws {
+        #expect(try #require(suggest([session(3, [(60, 9), (60, 10)], reserve: [2, 1])])).reps == 10)
+        #expect(try #require(suggest([session(3, [(60, 9), (60, 10)], reserve: [3, nil])])).reps == 10)
+        #expect(try #require(suggest([session(3, [(60, 12), (60, 12)], reserve: [0, 0])])).loadHundredths == 6250)
+    }
+
+    @Test func easyRepsStillStopAtTheTopOfTheRange() throws {
+        let s = try #require(suggest([session(3, [(60, 11), (60, 12)], reserve: [3, 3])]))
+        #expect(s.reps == 12)
     }
 }

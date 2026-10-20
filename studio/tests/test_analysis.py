@@ -50,6 +50,22 @@ class NextTargetTests(unittest.TestCase):
         t = a.next_target(h, "bench", self.s, BASE + timedelta(days=1))
         self.assertEqual((t["kind"], t["weight"], t["reps"]), ("add reps", 60, "8+"))
 
+    def test_easy_sets_at_the_top_add_two_steps(self):
+        h = history([(0, [("bench", [(57.5, 10, W)])]), (7, [("bench", [(60, 10, W, 2), (60, 10, W, 3)])])])
+        t = a.next_target(h, "bench", self.s, BASE + timedelta(days=8))
+        self.assertEqual((t["kind"], t["weight"], t["reps"]), ("add weight", 65, "8"))
+
+    def test_easy_sets_below_the_top_add_two_reps_and_one_hard_set_keeps_one(self):
+        easy = history([(0, [("bench", [(60, 8, W, 2), (60, 7, W, 2)])])])
+        self.assertEqual(a.next_target(easy, "bench", self.s, BASE + timedelta(days=1))["reps"], "9+")
+        mixed = history([(0, [("bench", [(60, 8, W, 2), (60, 7, W, 1)])])])
+        self.assertEqual(a.next_target(mixed, "bench", self.s, BASE + timedelta(days=1))["reps"], "8+")
+
+    def test_a_tied_step_goes_to_the_smaller_gap_as_in_the_app(self):
+        # Loads 5, 14, 17.5, 18, 20: every gap occurs once, so the step is the smallest, 0.5.
+        h = history([(d, [("bench", [(kg, 8, W)])]) for d, kg in ((0, 5), (7, 14), (14, 17.5), (21, 18), (28, 20))])
+        self.assertEqual(a.increment(h, "bench")["step"], 0.5)
+
     def test_a_plateau_suggests_a_deload(self):
         h = history([(d, [("bench", [(60, 8, W)])]) for d in (0, 7, 14, 21, 28)])
         t = a.next_target(h, "bench", self.s, BASE + timedelta(days=29))

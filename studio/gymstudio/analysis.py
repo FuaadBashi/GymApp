@@ -223,7 +223,8 @@ def increment(h: History, exercise_id: str) -> dict:
     gaps = Counter(b - a for a, b in zip(values, values[1:]) if 0 < b - a <= 2000)
     if not gaps:
         return {"unit": unit, "step": None, "confidence": 0}
-    step, count = gaps.most_common(1)[0]
+    # The most common gap; a tie goes to the smaller gap, as in the app (TrainingMath.step).
+    step, count = min(gaps.items(), key=lambda g: (-g[1], g[0]))
     return {"unit": unit, "step": step / 100, "confidence": round(count / sum(gaps.values()), 2),
             "loads_seen": len(values)}
 
@@ -236,6 +237,9 @@ def rep_range_for(h: History, exercise_id: str, s: Settings) -> tuple[int, int]:
         if item["exerciseId"] == exercise_id:
             return item["repMin"], item["repMax"]
     return s.default_rep_range
+
+
+EASY_RESERVE = 2
 
 
 def next_target(h: History, exercise_id: str, s: Settings, today: Optional[datetime] = None) -> Optional[dict]:
@@ -267,13 +271,16 @@ def next_target(h: History, exercise_id: str, s: Settings, today: Optional[datet
                 "reason": f"No weight increase in {s.plateau_days} days. Deload {int(s.deload_fraction*100)}% and rebuild, "
                           f"or swap to a close variant; see the weak-point check.",
                 "last": [f"{x.kg:g}×{x.reps}" for x in working]}
+    # Rulebook §13 rule 4: every top set logged with 2+ reps in reserve moves twice as fast.
+    reserves = [x.reps_in_reserve for x in at_top]
+    easy = all(r is not None for r in reserves) and min(reserves) >= EASY_RESERVE
     if all(x.reps >= hi for x in at_top):
-        return {"kind": "add weight", "weight": as_entered(top + step_kg), "unit": entered.unit, "reps": f"{lo}",
+        return {"kind": "add weight", "weight": as_entered(top + step_kg * (2 if easy else 1)), "unit": entered.unit, "reps": f"{lo}",
                 "reason": f"Every set at {as_entered(top):g} {entered.unit} reached {hi} reps; add one step "
                           f"({inc['step'] or 2.5:g} {inc['unit'] or 'kg'}) and go back to {lo}.",
                 "last": [f"{x.kg:g}×{x.reps}" for x in working]}
     lowest = min(x.reps for x in at_top)
-    return {"kind": "add reps", "weight": as_entered(top), "unit": entered.unit, "reps": f"{min(lowest + 1, hi)}+",
+    return {"kind": "add reps", "weight": as_entered(top), "unit": entered.unit, "reps": f"{min(lowest + (2 if easy else 1), hi)}+",
             "reason": f"Stay at {as_entered(top):g} {entered.unit} and beat the lowest set ({lowest} reps) until every set reaches {hi}.",
             "last": [f"{x.kg:g}×{x.reps}" for x in working]}
 
