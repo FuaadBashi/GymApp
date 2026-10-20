@@ -38,3 +38,19 @@ then the rest.
 2. The screen recording of a real session (step 1's hesitation notes).
 3. A yes for R.0's usage counts and the prototype target (a project.pbxproj change, like the
    UI-test target).
+
+## Decided with the prototypes (20 October)
+
+Interactive prototypes: https://claude.ai/artifact/Hncqj8wMbWEyKeLq5QKBzt (private).
+
+- **Best last time.** When a lift has no 12-, 6- or 1-month best because it was not done in
+  the window (the deadlift, last done 29 Jul 2025), the workout shows the best set of its
+  last session as the nearer target beside the all-time best, each with its own beat table.
+  Rulebook §5b gains this case; it goes into R.4.
+- **A richer end of workout:** headline of bests and lifts up; duration, sets, volume against
+  last time; each lift with a today-against-last bar, est. 1RM change and share of its
+  all-time best, expanding to sets and volume with a link to the exercise; muscles worked;
+  links to the full workout and the week. Replaces R.5's scope.
+- **Name and logo: Bashi Gym.** The app's display name, icon and Studio title become Bashi Gym
+  (code, bundle id and repo stay GymApp). New card **R.11**: display name, app icon from the
+  mark on the brand board, studio title and favicon.
