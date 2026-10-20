@@ -6,28 +6,36 @@ Each card is specified in [specs/](specs/); the rules for working on one are in
 
 ## Current
 
-### Mac Studio (14 October)
+**State (20 October 2026).** Phases 0–10 are complete. The code review of phase 10 is complete
+and its five fixes are in. After phase 10, these items were added (see the session notes):
 
-S4 Ask is implemented: Claude (key in the macOS keychain, set in Studio Settings) or a local
-Ollama model, calling the Studio's own functions. "Summaries only" exposes computed figures;
-"Full access" adds read-only SQL over the frozen snapshot, single workouts and note search.
-Every number in an answer is checked against the tool results and flagged if unmatched.
-Presets: weekly review, plateaus and weak points, balance, themes in notes. The installed
-llama3.2 (3B) is weak at tool use; a 7B+ model or Claude is recommended. 55 Studio tests pass.
+- The lock-screen freeze fix.
+- The best panel and "Today's suggestion" (rulebook §5b, §13), also in focus mode.
+- Log from the Live Activity on the lock screen.
+- Reps in reserve in the suggestion, cross-checked against the studio on the real history.
+- Strong and Hevy import.
+- A UI-test target (scheme GymAppUITests).
 
-S2 Rule Lab is implemented locally: five progression/deload comparisons, exercise
-filtering, configurable outcome window, later-session holdout, paginated target reasons
-and original-workout inspection. Replay uses only information available at each decision;
-missing RIR or incomplete outcomes remain unscored. No causal winner or phone promotion.
-See [S2 spec](specs/studio-s2-rule-lab.md) and [Studio README](../studio/README.md).
+**Next: the redesign.** The plan is in [docs/redesign/](redesign/), steps 1–6. The interactive
+prototypes are at https://claude.ai/artifact/Hncqj8wMbWEyKeLq5QKBzt (private). The app's public
+name becomes **Bashi Gym** (card R.11). The code and repo names stay GymApp. Do not start card
+R.0 until the owner approves the plan. R.0 adds usage counts and a prototype target, which
+changes project.pbxproj.
 
-Notebook work is retained at the user's request: local marimo editor, read-only snapshot
-tables and persisted custom metrics. Existing notebook files are preserved. Ask and
-later phone additions are deferred. 48 Studio tests pass. The owner authorised committing
-and pushing this Studio work on 14 October. The phone status and device checklist below
-are unchanged by Studio work.
+**Waiting on the owner:**
 
-**Phase 10 is closed (18 October).** Next: a code review of phase 10 before any new phase. Phases 0–9 are done and reviewed.
+1. Approval of the redesign plan.
+2. A screen recording of a real session (for the audit's hesitation notes).
+3. A real Hevy export, to check the Hevy column names.
+
+**Checks.** Run `tools/check.sh` before each commit. It runs the app tests, the UI tests, the
+studio tests, the §13 cross-check on the newest backup in data/backups, and the repository
+rules. On 20 October: 268 app tests, 6 UI tests and 75 studio tests pass.
+
+**Studio.** S2 Rule Lab and S4 Ask are complete ([S2 spec](specs/studio-s2-rule-lab.md),
+[Studio README](../studio/README.md)). Ask uses Claude (key in the macOS keychain) or a local
+Ollama model. The installed llama3.2 (3B) is weak at tool use. Use a 7B or larger model, or
+Claude. The notebooks stay, as the owner asked.
 
 ### Device checklist (from PHONE_SETUP.md)
 - [ ] Rest alert with the phone locked and music playing
@@ -130,6 +138,16 @@ are unchanged by Studio work.
 - [x] 9.5 Studio restyle
 - [x] 9.6 Phase close
 
+### Phase 10: Demonstrations, cues, the exercise page and the studio's look ([spec](specs/10-demos-cues-design.md))
+- [x] 10.1 Demonstration sources
+- [x] 10.2 Demonstration twins (160 of 193 logged exercises, 82.9%)
+- [x] 10.3 The demonstration view
+- [x] 10.4 Form cues
+- [x] 10.5 Cues in the workout
+- [x] 10.6 The exercise page
+- [x] 10.7 Studio restyle
+- [x] 10.8 Phase close, and its code review (20 October)
+
 ## Requested after phase 2
 
 Recorded in [post-phase-2 additions](specs/post-phase-2-additions.md): exact-exercise
@@ -230,48 +248,6 @@ card should know.
 - **0.3**: Shared fields are a protocol (ExerciseDefinition) with two concrete Decodable structs; BundledExercises loads either file and names it on failure. LibrarySeeder uses insert(onConflict: .ignore). 32 tests.
 - **0.2**: Schema.swift holds the spec SQL verbatim as migration v1; Records.swift has one nonisolated struct per table; AppDatabase as specified. ImportRunRecord.report is a String until 0.5. SchemaTests.swift also defines a small Make helper for test records. 28 tests.
 - **0.1**: Domain enums in ExerciseTypes.swift; TrainingMath now takes LoadMode and skips drop segments in records; PastSet moved to Domain. The prototype maps ProtoEquipment to a LoadMode. 17 tests.
-
-## Open questions
-
-- **Body map regions (3.5):** the MIT artwork has no separate lats/middle back region (both shade 'upper-back') and no outer-hip region (abductors shade the glutes, which hold gluteus medius). Its source names for the inner-thigh regions are swapped; both are mapped to adductors. Revisit if more precise artwork is wanted.
-- **Suggestion targets and migrations (6.3):** the spec named migration v3 for `studioDecision`; v3 was already card 6.2's `healthDay`, so it is v4. The app also reads `GymApp-suggestions.json` from its own Documents folder so the cable works without iCloud.
-- **Movement-pattern baseline (6.5):** measured from each lift's first week in the 8-week window rather than the 8 weeks before, because training restarted on 1 Oct after a gap since May and the earlier baseline was empty. Spec updated.
-- **Screenshots (9.6):** decided 14 October: the owner wants all new screenshots committed, including the end screen and studio pages; done at the phase 10 close.
-- **Studio font (9.5):** the system font replaced Inter (offline, and the app's family).
-- **Animated demonstrations (10):** decided 14 October: no bought 3D library. Demonstrations stay as licensed videos, Everkinetic drawings and credited wger photos.
-- **Recap speed (6.6):** about 2 s for a year on the simulator since the review fix.
-- **Exercise page order (3.4):** the page now opens on Progress, and the demonstration media moved into About so the chart sits above the fold. Easy to move back if preferred.
-
-Questions a card raised that the spec did not answer. Do not guess; record them here and
-stop.
-
-None for card 2.9: expiry behavior settled in decision #37.
-
-## Known issues
-
-- Resolved 13 Oct: 63 more JEFIT exercises are linked to their library twins (tools/build_jefit_map.py LIBRARY_LINKS, hand-checked: same movement, same equipment). Close variants without an exact twin stay unlinked by design (decision #28).
-
-## Useful commands
-
-```bash
-# Tests
-xcodebuild test -project GymApp.xcodeproj -scheme GymApp \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' 2>&1 | tail -30
-
-# Regenerate generated data (only when its inputs change)
-python3 -I tools/build_library.py
-python3 -I tools/build_jefit_map.py data/jefit/jefit-export-2026-10-11.csv
-python3 -I tools/reference_import.py data/jefit/jefit-export-2026-10-11.csv
-python3 -I tools/reference_import.py GymAppTests/Fixtures/jefit_mini.csv --no-spot-checks \
-  --out GymAppTests/Fixtures/jefit_mini_expected.json
-
-# Simulator
-xcrun simctl boot "iPhone 17 Pro Max"
-xcrun simctl install "iPhone 17 Pro Max" <path to GymApp.app>
-xcrun simctl launch "iPhone 17 Pro Max" com.fuaadshurie.GymApp
-xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean start
-```
-
 - 16 Oct 2026, fix: the workout screen could hang on a spinner after the phone was locked during rest. A failed background read set the workout to nil and nothing retried. Reloads now keep the last good workout unless it was removed, the app reloads (and clears a finished rest) on return to the foreground, and the spinner retries. Seven regression tests in ActiveWorkoutModelTests.
 
 - 19 Oct, workout screen fixes (owner's screenshots in docs/screenshots/b-workout-before-*):
@@ -293,3 +269,54 @@ xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean star
   Two tests added. Left open: if a write succeeds but the reload after it fails, the rest alert for that set is not scheduled until the next successful reload; the Hevy column names are from published descriptions, not a real file; focus mode shows the cue strip but not the best panel or today's suggestion.
 - 20 Oct: focus mode now shows today's suggestion (when no studio target) and the best panel with its beat tables. Both moved out of ExerciseCard into shared views (TodaySuggestion, BestPanel) so the list and focus mode run the same code. UI test added.
 - 20 Oct, redesign planning (no app code): docs/redesign/ steps 1-5: 01 audit (every screen captured, elements marked must/glance/rare), 02 navigation map and tap counts, 03 key moments, 04 design system with design/tokens.json, 05 wireframes, 06 build plan R.0-R.10 and proof. Waiting for the owner's approval, the session recording, and a yes for usage counts and a prototype target.
+
+## Open questions
+
+Record here each question that a card raises and the spec does not answer. Do not guess. Stop
+and ask.
+
+- **Body map regions (3.5):** the MIT artwork has one region for lats and middle back
+  ('upper-back') and no outer-hip region (the abductors shade the glutes). Its names for the
+  inner-thigh regions are the wrong way round; the app maps both to adductors. Look again if
+  better artwork becomes available.
+- **Migration numbers (6.3):** the spec gave v3 for `studioDecision`, but v3 was already
+  `healthDay` (6.2). It is v4. The app also reads `GymApp-suggestions.json` from its Documents
+  folder, so the cable works without iCloud.
+- **Movement-pattern baseline (6.5):** the app measures from each lift's first week in the
+  8-week window, not from the 8 weeks before. Training started again on 1 October after a gap
+  from May, so the earlier baseline was empty. The spec agrees.
+- **Hevy import (20 October):** the column names come from published descriptions, not from a
+  real file. Check them with a real export.
+- **Rest alert after a failed reload (review of phase 10):** if a write succeeds and the reload
+  after it fails, the app does not schedule that rest alert until the next good reload.
+
+Decided, kept for reference: the studio uses the system font (9.5); there is no bought 3D
+library for demonstrations (14 October); all new screenshots are committed (14 October); the
+recap takes about 2 s for a year in the simulator (6.6).
+
+## Known issues
+
+- None open. On 13 October, 63 more JEFIT exercises were linked to their library twins
+  (tools/build_jefit_map.py LIBRARY_LINKS). Close variants with no exact twin stay unlinked by
+  design (decision #28).
+
+## Useful commands
+
+```bash
+# Tests
+xcodebuild test -project GymApp.xcodeproj -scheme GymApp \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' 2>&1 | tail -30
+
+# Regenerate generated data (only when its inputs change)
+python3 -I tools/build_library.py
+python3 -I tools/build_jefit_map.py data/jefit/jefit-export-2026-10-11.csv
+python3 -I tools/reference_import.py data/jefit/jefit-export-2026-10-11.csv
+python3 -I tools/reference_import.py GymAppTests/Fixtures/jefit_mini.csv --no-spot-checks \
+  --out GymAppTests/Fixtures/jefit_mini_expected.json
+
+# Simulator
+xcrun simctl boot "iPhone 17 Pro Max"
+xcrun simctl install "iPhone 17 Pro Max" <path to GymApp.app>
+xcrun simctl launch "iPhone 17 Pro Max" com.fuaadshurie.GymApp
+xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean start
+```
