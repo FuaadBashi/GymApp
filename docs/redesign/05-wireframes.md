@@ -1,8 +1,9 @@
 # Redesign step 5: wireframes
 
-Low fidelity: position, order and weight only. `[ ]` is a button, `›` opens something,
-`▸` expands in place, `━━` is the floating glass bar. Sizes follow design/tokens.json.
-Compare with the current screens in [screens/](screens/).
+Low fidelity: these drawings show only position, order and weight. `[ ]` is a button, `›`
+opens a screen, `▸` opens in place, `━━` is the floating glass bar. The sizes come from
+design/tokens.json. Compare them with the current screens in [screens/](screens/). The
+interactive prototypes of 20 October go further; see [06-build-plan.md](06-build-plan.md).
 
 ## Train
 
@@ -73,8 +74,8 @@ Compare with the current screens in [screens/](screens/).
 └──────────────────────────────────────┘
 ```
 
-Resting: the bar becomes `( 1:24 ) Rest · Next: set 2 · 100 × 6  −15 +15 [Skip]`; the content
-keeps a bottom inset equal to the bar, so nothing sits under it.
+During rest, the bar becomes `( 1:24 ) Rest · Next: set 2 · 100 × 6  −15 +15 [Skip]`. The
+content has a bottom inset equal to the bar, so no item is below the bar.
 
 ## Workout, focus
 
@@ -150,8 +151,9 @@ History                         Past workout
 
 ## Exercises, Settings, lock screen
 
-Unchanged in structure: the exercise list and Settings already match the system; the lock
-screen keeps countdown, next set and Log. They take the tokens (type, spacing, radius).
+Their structure does not change. The exercise list and Settings already agree with the
+system. The lock screen keeps the countdown, the next set and Log. These screens get the
+tokens (type, spacing, radius).
 
 ## Studio overview (Mac)
 

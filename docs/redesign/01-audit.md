@@ -1,123 +1,135 @@
 # Redesign step 1: inventory and audit
 
-Captured 20 October 2026 in the simulator on a copy of the owner's data (471 workouts), with
-a workout in progress. Every screen is in [screens/](screens/); the sheet below shows the phone
-screens side by side. Studio pages are in screens/10.7-studio-*.jpg.
+On 20 October 2026, we captured each screen in the simulator. The simulator had a copy of the
+owner's data (471 workouts) and a workout in progress. Each screen is in
+[screens/](screens/). The sheet below shows the phone screens side by side. The studio pages
+are in screens/10.7-studio-*.jpg.
 
 ![Every phone screen](inventory-phone.png)
 
-## How to read the marks
+## The marks
 
-- **Must** — needed at that moment; must be visible without a tap or scroll.
-- **Glance** — useful there; may be smaller or collapsed, one tap away.
-- **Rare** — used now and then; belongs behind a menu, a disclosure or another screen.
+- **Must:** you need it at that moment. It must be visible with no tap and no scroll.
+- **Glance:** it is useful there. It can be smaller or closed, one tap away.
+- **Rare:** you use it sometimes. Put it in a menu, a disclosure or another screen.
 
 ## Screens
 
-| Screen | File | What it is for |
+| Screen | File | Purpose |
 |---|---|---|
-| Train | train.png | Start or resume the next day; see other days |
-| Day | train-day.png, train-day-item-sheet.png, train-day-menu.png | A program day's exercises and targets |
+| Train | train.png | Start or resume the next day; see the other days |
+| Day | train-day.png, train-day-item-sheet.png, train-day-menu.png | The exercises and targets of a program day |
 | Programs | train-programs.png | Active and archived programs |
-| Workout, list | workout-list.png | Log sets, exercise by exercise |
-| Workout, resting | workout-rest.png | The same with the rest bar |
-| Workout, focus | workout-focus.png | One exercise, big controls |
+| Workout, list | workout-list.png | Log sets, one exercise after the other |
+| Workout, resting | workout-rest.png | The same, with the rest bar |
+| Workout, focus | workout-focus.png | One exercise, large controls |
 | End of workout | workout-summary.png | Summary, comparisons, records |
 | Lock screen | lock-screen-rest.png | Rest countdown and Log button |
 | History | history.png | Calendar and weeks |
-| Past workout | history-workout.png | One workout, editable |
+| Past workout | history-workout.png | One workout; you can edit it |
 | Recaps | history-recap.png | Months and years |
 | Exercises | exercises.png | Library with filters |
 | Exercise page | exercise-top.png, exercise-progress.png | Demonstration, cues, progress, records |
-| Progress | progress.png, progress-2.png, progress-3.png | Twelve-week charts, muscles, recovery, trends, records, body |
-| Reports | progress-reports.png | Studio's weekly and monthly reports |
+| Progress | progress.png, progress-2.png, progress-3.png | 12-week charts, muscles, recovery, trends, records, body |
+| Reports | progress-reports.png | The studio's weekly and monthly reports |
 | Settings | settings.png, settings-2.png | Units, profile, defaults, Health, data |
 
 ## Element audit
 
-### Train (opened before every session)
+### Train (you open it before each session)
 
 | Element | Mark | Note |
 |---|---|---|
-| Next day name and Start/Resume | Must | The one action on this screen; good |
-| Next day's exercises with last time | Glance | Useful; currently a static list, not tappable |
-| Estimated time, last done | Glance | |
-| Other days | Glance | Each opens a day |
-| Programs button, + (new program, empty workout) | Rare | Top bar, fine |
-| Studio suggestions | Glance | Appear only when there are some |
-| Mini player (workout in progress) | Must | Good; duplicates Resume when on Train |
+| Next day name, and Start or Resume | Must | The one action on this screen. Good. |
+| The next day's exercises, with last time | Glance | Useful. Today the list does not respond to a tap. |
+| Estimated time, date last done | Glance | |
+| Other days | Glance | Each one opens a day. |
+| Programs button, + (new program, empty workout) | Rare | In the top bar. Good. |
+| Studio suggestions | Glance | Only when there are suggestions. |
+| Mini player (workout in progress) | Must | Good. On Train it repeats the Resume button. |
 
 ### Day
 
 | Element | Mark | Note |
 |---|---|---|
 | Exercise rows: targets, rest, last time | Glance | |
-| Tap a row | — | Opens sets/reps/rest/note only. **No way to the exercise's page, history or cues, and no swap from here** |
-| Edit (reorder, remove), ⋯ (copy from another day) | Rare | Reorder hidden behind Edit; swap not offered at all |
+| Tap on a row | — | Opens sets, reps, rest and note only. **You cannot open the exercise's page, history or cues, and you cannot swap the exercise.** |
+| Edit (reorder, remove), ⋯ (copy from another day) | Rare | Reorder is behind Edit. Swap is not available. |
 
 ### Workout, current exercise card (between sets, one hand)
 
-Top to bottom today: name and muscle, sticky note, today's suggestion, demonstration (video,
-about a quarter of the screen), credit lines, "Add a note for this workout", target line, set
-table, set type and notes, this-set 1RM, best tiles, steppers, reps-left chips, other sets,
-Add set, then the floating Log/Rest bar.
+Today, the card shows these items from the top down:
+
+1. Name and muscle.
+2. Sticky note.
+3. Today's suggestion.
+4. Demonstration (a video, about a quarter of the screen) and its credit lines.
+5. "Add a note for this workout".
+6. Target line, then the set table.
+7. Set type and notes.
+8. This set's estimated 1RM, then the best tiles.
+9. Steppers, then the reps-in-reserve chips.
+10. The other sets, then Add set.
+
+The floating Log/Rest bar is at the bottom.
 
 | Element | Mark | Note |
 |---|---|---|
-| Selected set: load × reps, steppers | Must | **Starts about 60% down the screen** on a 6.9" phone; below the fold on smaller ones |
-| Log button / rest countdown | Must | Floating bar; good |
-| What to beat (best tiles) | Must | Visible since 19 Oct; the rest bar can cover its lower half |
-| Last time (LAST column) | Glance | Right size since 19 Oct |
-| Today's suggestion | Glance | Takes a full-width box above the demonstration |
-| Sticky note | Glance | Often long; pushes everything down |
-| Form cues | Glance | Only when chosen |
-| Demonstration video and credits | Rare mid-workout | **Largest item on the card, above the sets** |
-| Workout note, set type, notes & labels, reps left | Rare | Each a full-width line |
-| Card ⋯ menu: swap, history, warm-ups, superset, plate calculator, remove | Rare | Fine as a menu |
-| Other exercises (collapsed cards) | Glance | Below the current card; long scroll to reach |
+| Selected set: load × reps, steppers | Must | **Starts about 60% down the screen** on a 6.9" phone. On a smaller phone it is below the fold. |
+| Log button, rest countdown | Must | A floating bar. Good. |
+| What to beat (best tiles) | Must | Visible since 19 October. The rest bar can cover its lower half. |
+| Last time (LAST column) | Glance | Correct size since 19 October. |
+| Today's suggestion | Glance | A full-width box above the demonstration. |
+| Sticky note | Glance | Often long. It moves all items down. |
+| Form cues | Glance | Only when you selected them. |
+| Demonstration video and credits | Rare during a workout | **The largest item on the card, and above the sets.** |
+| Workout note, set type, notes and labels, reps in reserve | Rare | Each one is a full-width line. |
+| Card ⋯ menu: swap, history, warm-ups, superset, plate calculator, remove | Rare | Good as a menu. |
+| Other exercises (closed cards) | Glance | Below the current card. You must scroll far to see them. |
 
 ### Workout, focus mode
 
-Better ordered than the list: name, "Set 1 of 3", suggestion, this-set 1RM, best, steppers,
-reps left, then the demonstration. Its Log action is the floating bar. Nothing to fix but the
-layout of the list should borrow this order.
+Focus mode has a better order than the list: name, "Set 1 of 3", suggestion, this set's
+estimated 1RM, best, steppers, reps in reserve, then the demonstration. Its Log action is the
+floating bar. Focus mode needs no change. The list must use the same order.
 
 ### End of workout, History, past workout, recaps
 
 | Element | Mark | Note |
 |---|---|---|
-| Summary: duration, volume, sets, records | Glance | Past workout shows them as **four equal tiles** (DESIGN.md tell 3) |
-| Records list, per-exercise sets with e1RM | Glance | |
-| Calendar | Glance | Good |
-| Week list | Glance | Good |
-| Recaps | Rare | Behind a small icon top right |
+| Summary: duration, volume, sets, records | Glance | The past workout shows them as **four equal tiles** (DESIGN.md, tell 3). |
+| Records list, the sets of each exercise with estimated 1RM | Glance | |
+| Calendar | Glance | Good. |
+| List of weeks | Glance | Good. |
+| Recaps | Rare | Behind a small icon at the top right. |
 
 ### Exercises and the exercise page
 
 | Element | Mark | Note |
 |---|---|---|
-| Search, filter chips, rows with last set | Must | Good |
-| Demonstration, cues | Glance | First on the page since 10.6 |
-| Best 1RM headline, chart, records | Glance | |
-| History / Notes / About segments | Rare | |
+| Search, filter chips, rows with the last set | Must | Good. |
+| Demonstration, cues | Glance | First on the page since card 10.6. |
+| Best estimated 1RM, chart, records | Glance | |
+| History, Notes, About segments | Rare | |
 
 ### Progress
 
 | Element | Mark | Note |
 |---|---|---|
-| This week vs last: volume, sessions, time | Glance | Three similar bar charts stacked |
+| This week against last week: volume, sessions, time | Glance | Three similar bar charts, one above the other. |
 | Muscles this week (body map, sets per muscle) | Glance | |
-| Recovery, last 72 h | Glance | Second body map |
+| Recovery, last 72 h | Glance | A second body map. |
 | Movement-pattern trends, recent records | Glance | |
 | Body weight, steps | Rare | |
-| Reports | Rare | Small icon top right |
+| Reports | Rare | A small icon at the top right. |
 
-One long scroll of about five screens with two body maps: the "too much at once" page.
+Progress is one long scroll of about five screens, with two body maps. This is the page with
+"too much at the same time".
 
 ### Settings
 
-Units, profile, calendar, new-exercise defaults, last-time source, Apple Health, backups,
-import and export. All rare; layout is fine.
+Units, profile, calendar, defaults for new exercises, the source of last-time values, Apple
+Health, backups, import and export. All items are rare. The layout is good.
 
 ### Lock screen
 
@@ -125,26 +137,28 @@ Rest countdown, next set and Log. Must. Good.
 
 ### GymApp Studio (Mac)
 
-Restyled in 10.7: sidebar, toolbar, ⌘K, overview hero. Visual language matches the phone's
-colours but not yet its type scale, spacing or components (no shared source).
+Card 10.7 gave the studio a sidebar, a toolbar, ⌘K and an overview hero. The studio uses the
+phone's colours. It does not use the phone's type scale, spacing or components yet, because the
+two apps have no shared source.
 
-## What the audit says, in short
+## Summary of the audit
 
-1. **Train → day → exercise is a dead end.** The day lists exercises but tapping one only edits
-   its targets; the exercise page, history, cues and swap are not reachable from a plan.
-2. **The workout card puts rare things above must-have things.** The demonstration, its
-   credits, the sticky note and the workout note sit above the set you are about to lift.
-3. **Progress is one long page** where everything is the same weight.
-4. **Equal-tile grids remain** on the past-workout summary.
-5. **Small top-bar icons hide useful screens** (Recaps, Reports).
-6. **The two apps share colours by hand**, not by a common definition.
+1. **Train → day → exercise is a dead end.** The day lists its exercises, but a tap only edits
+   the targets. From a plan you cannot open the exercise page, history or cues, and you cannot
+   swap the exercise.
+2. **The workout card puts rare items above necessary items.** The demonstration, its
+   credits, the sticky note and the workout note are above the set that you will lift.
+3. **Progress is one long page.** All items have the same weight.
+4. **Grids of equal tiles remain** on the past-workout summary.
+5. **Small icons in the top bar hide useful screens** (Recaps, Reports).
+6. **The two apps share their colours by hand,** not from one definition.
 
-## Still to do for this step
+## Open items for this step
 
-- **The session recording.** Waiting for the owner's screen recording; hesitations and
-  mis-taps will be added here.
-- **On-device usage counts** (needs approval, as it is code): a local count per screen opened
-  and per button tapped, kept in the app's database, never sent anywhere, with a "Usage"
-  line under Settings → Data that exports the counts as CSV. Proposed shape: one table
-  `usageCount(key TEXT PRIMARY KEY, count INTEGER, lastAt TEXT)`, keys like
-  `screen.workout`, `tap.log`, `tap.bestTile`. About 30 lines plus a test.
+- **The session recording.** We wait for the owner's screen recording. Then we add each
+  hesitation and each wrong tap here.
+- **Usage counts on the device.** This is code, so it needs approval. The app counts each
+  screen that you open and each button that you tap. It keeps the counts in its database and
+  never sends them. A "Usage" line in Settings → Data exports the counts as CSV. Proposed
+  table: `usageCount(key TEXT PRIMARY KEY, count INTEGER, lastAt TEXT)`, with keys such as
+  `screen.workout`, `tap.log` and `tap.bestTile`. About 30 lines and one test.
