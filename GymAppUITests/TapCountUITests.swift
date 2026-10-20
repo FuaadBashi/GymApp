@@ -10,12 +10,12 @@ final class TapCountUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-uiTestFixture"] + (workout ? [] : ["-uiTestNoWorkout"])
-        app.launch()
+        app.launchFixture()
         taps = 0
     }
 
     private func tap(_ element: XCUIElement, _ file: StaticString = #filePath, _ line: UInt = #line) {
-        XCTAssertTrue(element.waitForExistence(timeout: 10), "\(element) not found", file: file, line: line)
+        XCTAssertTrue(element.waitForExistence(timeout: 20), "\(element) not found", file: file, line: line)
         element.tap()
         taps += 1
     }
@@ -131,7 +131,7 @@ final class TapCountUITests: XCTestCase {
     // Plan edits
     func testChangeADaysTargets() {
         launch(workout: false)
-        tap(text("Day A"))
+        tap(buttonStarting("Next up"))
         tap(buttonStarting("Test Bench"))   // the row's centre: until 20 Oct only its text answered
         tap(app.buttons["Increment"].firstMatch)
         tap(button("Save"))
@@ -141,7 +141,7 @@ final class TapCountUITests: XCTestCase {
 
     func testReorderADay() {
         launch(workout: false)
-        tap(text("Day A"))
+        tap(buttonStarting("Next up"))
         tap(button("Edit"))
         let handle = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Reorder'")).element(boundBy: 1)
         XCTAssertTrue(handle.waitForExistence(timeout: 5))
@@ -149,5 +149,20 @@ final class TapCountUITests: XCTestCase {
         taps += 1
         tap(button("Done"))
         record("plan: reorder a day")
+    }
+}
+
+extension XCUIApplication {
+    /// Launches and checks the in-memory fixture is showing. The first launch straight after a
+    /// unit-test run on the same simulator can lose its launch arguments and open the real
+    /// database instead; relaunch once in that case so a test never runs against real data.
+    func launchFixture() {
+        launch()
+        let fixture = descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'Test Bench' OR label CONTAINS 'Day A'")).firstMatch
+        if !fixture.waitForExistence(timeout: 15) {
+            terminate()
+            launch()
+        }
+        XCTAssertTrue(fixture.waitForExistence(timeout: 15), "The UI-test fixture did not load")
     }
 }

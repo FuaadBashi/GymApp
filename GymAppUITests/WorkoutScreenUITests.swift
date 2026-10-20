@@ -9,7 +9,7 @@ final class WorkoutScreenUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-uiTestFixture"]
-        app.launch()
+        app.launchFixture()
     }
 
     private func element(_ id: String) -> XCUIElement {
