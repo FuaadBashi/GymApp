@@ -44,8 +44,16 @@ struct DayEditorView: View {
 
                 Section {
                     ForEach(card.detail.items) { item in
-                        Button { editingItem = item } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
-                            .buttonStyle(.plain)
+                        Group {
+                            if Prototype.on {
+                                NavigationLink {
+                                    ExerciseDetailView(db: model.db, exerciseId: item.exercise.id, plan: (item.dayExercise, card.detail.day.name))
+                                } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
+                            } else {
+                                Button { editingItem = item } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
+                                    .buttonStyle(.plain)
+                            }
+                        }
                             .contextMenu {
                                 // Card 7.6
                                 Menu("Superset with…", systemImage: "link") {

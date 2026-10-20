@@ -101,6 +101,21 @@ private struct NextUpCard: View {
     let card: DayCardData
     let open: () -> Void
     @Environment(ActiveWorkoutModel.self) private var workout
+    @Environment(\.appDatabase) private var db
+
+    private var rows: some View {
+        VStack(spacing: 9) { ForEach(card.detail.items) { row($0) } }
+    }
+
+    private func row(_ item: DayItem) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(item.exercise.name).lineLimit(1)
+            Spacer(minLength: 12)
+            Text(card.lastTime[item.id] ?? "new").monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
+            if Prototype.on { Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary) }
+        }
+        .font(.subheadline)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -113,20 +128,24 @@ private struct NextUpCard: View {
                     }
                     Text(card.detail.day.name).font(.title2.bold())
                     Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
-                    VStack(spacing: 9) {
-                        ForEach(card.detail.items) { item in
-                            HStack(alignment: .firstTextBaseline) {
-                                Text(item.exercise.name).lineLimit(1)
-                                Spacer(minLength: 12)
-                                Text(card.lastTime[item.id] ?? "new").monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
-                            }
-                            .font(.subheadline)
-                        }
-                    }
+                    if !Prototype.on { rows }
                 }
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            if Prototype.on, let db {
+                // Redesign R.0 prototype: each lift opens its page in the plan.
+                VStack(spacing: 0) {
+                    ForEach(card.detail.items) { item in
+                        NavigationLink {
+                            ExerciseDetailView(db: db, exerciseId: item.exercise.id, plan: (item.dayExercise, card.detail.day.name))
+                        } label: {
+                            row(item).frame(minHeight: 44).contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
             if let active = workout.snapshot?.workout {
                 Button("Resume \(active.title)") { workout.isPresented = true }
                     .buttonStyle(PrimaryButtonStyle())

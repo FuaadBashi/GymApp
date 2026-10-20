@@ -16,8 +16,11 @@ struct ExerciseDetailView: View {
         var id: String { switch self { case .edit(let e): "edit" + e.id; case .duplicate(let e): "dup" + e.id } }
     }
 
-    init(db: AppDatabase, exerciseId: String) {
+    private var plan: (item: DayExerciseRecord, dayName: String)?
+
+    init(db: AppDatabase, exerciseId: String, plan: (item: DayExerciseRecord, dayName: String)? = nil) {
         _model = State(initialValue: ExerciseDetailViewModel(db: db, exerciseId: exerciseId))
+        self.plan = plan
     }
 
     var body: some View {
@@ -25,6 +28,7 @@ struct ExerciseDetailView: View {
             if let exercise = model.exercise {
                 VStack(alignment: .leading, spacing: 18) {
                     header(exercise)
+                    if let plan { PlanItemHeader(db: model.db, dayName: plan.dayName, item: plan.item) }
                     // Card 10.6: what the lift looks like and how to do it come first.
                     ExerciseMediaView(exercise: exercise)
                     FormCuesView(db: model.db, exerciseId: exercise.id)

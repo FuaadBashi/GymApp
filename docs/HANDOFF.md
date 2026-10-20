@@ -320,3 +320,4 @@ xcrun simctl install "iPhone 17 Pro Max" <path to GymApp.app>
 xcrun simctl launch "iPhone 17 Pro Max" com.fuaadshurie.GymApp
 xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean start
 ```
+- 20 Oct, R.0: usage counts (migration v9, table usageCount, Usage.swift). The app counts each screen that opens (13 screens, `countsUsage`) and nine key taps (log, log from the lock screen, start, finish, fill, swap, best tile, focus, history sheet, plan swap). Settings → Data → Export usage counts gives a CSV. Two tests. The prototype is a debug launch flag, `-prototype`, not a separate target (no project-file change): Train's next-up rows and a day's rows open the exercise page with the day's targets edited in place, Swap and Remove (PlanItemHeader). R.3 will make this the default and add its UI tests. One UI-test run failed once on a 10 s wait while the simulator was also in use, then passed; watch for flakiness.
