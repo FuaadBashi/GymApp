@@ -80,6 +80,7 @@ struct ProgressTab: View {
             .sheet(isPresented: $addingWeight) {
                 AddWeightSheet(unit: model.settings.weightUnit) { value, unit in Task { await model.addWeight(value, unit: unit) } }
             }
+            .countsUsage("screen.progress")
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }
             .onReceive(NotificationCenter.default.publisher(for: HealthService.didSync)) { _ in Task { await model.reload() } }

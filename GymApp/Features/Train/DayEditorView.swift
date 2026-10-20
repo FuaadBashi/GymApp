@@ -134,6 +134,7 @@ struct DayEditorView: View {
         .alert("Something went wrong", isPresented: Binding(get: { model.lastError != nil }, set: { if !$0 { model.lastError = nil } })) {
             Button("OK", role: .cancel) {}
         } message: { Text(model.lastError ?? "") }
+        .countsUsage("screen.day")
         .task { await model.reload() }
     }
 

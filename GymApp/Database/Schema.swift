@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -99,6 +99,17 @@ nonisolated enum Schema {
                 CREATE TABLE formCueSeed (
                   exerciseId TEXT PRIMARY KEY NOT NULL REFERENCES exercise(id) ON DELETE CASCADE
                 );
+                """)
+        }
+        migrator.registerMigration("v9") { db in
+            // Redesign card R.0: how often each screen opens and each key button is tapped.
+            // Kept on the device only; exported from Settings as CSV.
+            try db.execute(sql: """
+                CREATE TABLE usageCount (
+                  key TEXT PRIMARY KEY NOT NULL CHECK (length(key) > 0),
+                  count INTEGER NOT NULL CHECK (count >= 0),
+                  lastAt TEXT NOT NULL
+                )
                 """)
         }
         return migrator

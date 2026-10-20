@@ -47,6 +47,7 @@ struct HistoryView: View {
                     WorkoutDetailView(db: model.db, workoutId: id)
                 }
             }
+            .countsUsage("screen.history")
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }
             .onChange(of: workout.justFinishedWorkoutId) { Task { await model.reload() } }

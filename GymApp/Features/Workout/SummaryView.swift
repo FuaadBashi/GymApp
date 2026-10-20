@@ -32,6 +32,7 @@ struct SummaryView: View {
         .onChange(of: note) { autosave() }
         .onChange(of: effort) { autosave() }
         .interactiveDismissDisabled(saveError != nil)
+        .countsUsage("screen.endOfWorkout")
         .task {
             await reload()
             effort = summary?.workout.effort

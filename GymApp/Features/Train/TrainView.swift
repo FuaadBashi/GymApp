@@ -89,6 +89,7 @@ struct TrainView: View {
                 await inbox.reload(model.db)
                 await model.reload()
             }
+            .countsUsage("screen.train")
             .task { await model.reload() }
             .onAppear { Task { await model.reload() } }
             .onChange(of: workout.isActive) { Task { await model.reload() } }

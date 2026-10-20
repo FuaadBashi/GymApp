@@ -35,6 +35,7 @@ struct WorkoutView: View {
             }
         }
         .background(Theme.background)
+        .countsUsage(model.focusMode ? "screen.workoutFocus" : "screen.workout")
         .overlay(alignment: .top) {
             if let banner = model.banner {
                 BestBannerView(banner: banner) { model.dismissBanner() }
@@ -95,7 +96,9 @@ struct WorkoutView: View {
     private func perform(_ action: ExerciseCardAction, on item: WorkoutSnapshot.Item) {
         switch action {
         case .swap: swapping = item
-        case .history: history = item
+        case .history:
+            history = item
+            model.db.count("tap.historySheet")
         case .plates: plates = item
         }
     }
@@ -152,7 +155,7 @@ private struct WorkoutHeader: View {
 
             ProgressRing(done: snapshot.completedSetCount, total: snapshot.totalSetCount)
 
-            Button { model.focusMode.toggle() } label: {
+            Button { model.focusMode.toggle(); model.db.count("tap.focus") } label: {
                 Image(systemName: "scope").font(.headline)
                     .foregroundStyle(model.focusMode ? Theme.onAccent : .primary)
                     .frame(width: 40, height: 40)

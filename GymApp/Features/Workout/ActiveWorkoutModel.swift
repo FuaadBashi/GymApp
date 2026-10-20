@@ -58,6 +58,7 @@ final class ActiveWorkoutModel {
             await reload(workoutId: workout.id)
             selectFirstPlanned()
             isPresented = true
+            db.count("tap.start")
         } catch WorkoutError.alreadyInProgress {
             lastError = Self.message(for: WorkoutError.alreadyInProgress)
             throw WorkoutError.alreadyInProgress
@@ -67,6 +68,7 @@ final class ActiveWorkoutModel {
     func finish() async {
         guard let id = snapshot?.workout.id else { return }
         guard let finished = await write({ try WorkoutWrites.finish($0, workoutId: id, now: .now) }) else { return }
+        db.count("tap.finish")
         notifier.cancel()
         await endRestActivity()
         snapshot = nil
@@ -115,6 +117,7 @@ final class ActiveWorkoutModel {
     func log(_ setId: String) async {
         let itemId = snapshot?.items.first { $0.sets.contains { $0.id == setId } }?.id
         guard await change({ try WorkoutWrites.logSet($0, setId: setId, now: .now) }) != nil else { return }
+        db.count("tap.log")
         showBanner(for: setId)
         advance(from: itemId)
     }
@@ -166,6 +169,7 @@ final class ActiveWorkoutModel {
     /// and rulebook §13 suggestions).
     func fill(_ itemId: String, loadHundredths: Int?, unit: WeightUnit, reps: Int) async {
         guard let item = snapshot?.items.first(where: { $0.id == itemId }) else { return }
+        db.count("tap.fill")
         let load = item.exercise.loadMode == .repsOnly ? nil : loadHundredths
         await change { db in
             for set in item.plannedSets where set.type != .warmUp {
@@ -198,6 +202,7 @@ final class ActiveWorkoutModel {
     }
 
     func swap(_ itemId: String, to exerciseId: String, alsoInProgram: Bool) async {
+        db.count("tap.swap")
         await change { db in
             try WorkoutWrites.swapExercise(db, workoutExerciseId: itemId, to: exerciseId, alsoInProgram: alsoInProgram,
                                            settings: try AppSettings.load(db))
@@ -437,6 +442,7 @@ final class ActiveWorkoutModel {
     /// The Live Activity's Log button: logs that set if it is still planned, as a tap in the
     /// app would (rest, alert and activity follow).
     func logFromActivity(_ setId: String) async {
+        db.count("tap.logLockScreen")
         if snapshot == nil { await resumeIfNeeded() } else { await refresh() }
         guard snapshot?.items.contains(where: { $0.plannedSets.contains { $0.id == setId } }) == true else { return }
         await log(setId)

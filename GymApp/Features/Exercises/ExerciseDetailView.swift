@@ -75,6 +75,7 @@ struct ExerciseDetailView: View {
         .sheet(isPresented: $addingNote) {
             NoteEditor(title: "New note", text: $noteDraft) { model.addNote(noteDraft) }
         }
+        .countsUsage("screen.exercisePage")
         .task { await model.reload() }
     }
 

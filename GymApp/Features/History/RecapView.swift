@@ -25,6 +25,7 @@ struct RecapsView: View {
         }
         .themedList()
         .navigationTitle("Recaps")
+        .countsUsage("screen.recaps")
         .task { years = (try? await db.reader.read { try RecapQueries.years($0) }) ?? [] }
     }
 }

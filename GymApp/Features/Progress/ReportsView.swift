@@ -30,6 +30,7 @@ struct ReportsView: View {
         .themedList()
         .navigationTitle("Reports")
         .refreshable { await inbox.reload(db) }
+        .countsUsage("screen.reports")
         .task { await inbox.reload(db) }
     }
 }

@@ -42,6 +42,7 @@ struct WorkoutDetailView: View {
         } message: {
             Text(error ?? "")
         }
+        .countsUsage("screen.pastWorkout")
         .task { await reload() }
     }
 

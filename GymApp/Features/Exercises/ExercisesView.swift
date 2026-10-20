@@ -41,6 +41,7 @@ struct ExercisesView: View {
                 ExerciseEditorView(db: model.db, editing: nil)
             }
             // Debounced: typing in the search field must not query on every keystroke.
+            .countsUsage("screen.exercises")
             .task(id: model.filter) {
                 try? await Task.sleep(for: .milliseconds(200))
                 guard !Task.isCancelled else { return }

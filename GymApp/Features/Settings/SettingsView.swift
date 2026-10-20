@@ -114,6 +114,7 @@ struct SettingsView: View {
                     NavigationLink("Backups & recovery") { RecoveryView(db: model.db) }
                     Button("Import from JEFIT, Strong or Hevy…", systemImage: "square.and.arrow.down") { choosingFile = true }
                     Button("Export sets as CSV", systemImage: "tablecells") { exportCSV() }
+                    Button("Export usage counts", systemImage: "hand.tap") { exportUsage() }
                     if let totals = model.totals {
                         Text("\(totals.workouts.formatted()) workouts · \(totals.sets.formatted()) sets · \(totals.exercises.formatted()) of your exercises")
                             .font(.footnote)
@@ -125,6 +126,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .onChange(of: model.settings) { model.save() }
             .sheet(item: $csv) { BackupShareSheet(url: $0.url) }
+            .countsUsage("screen.settings")
             .task { await model.reload() }
             .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.commaSeparatedText, .plainText, .data]) { result in
                 if case .success(let url) = result { runImport(url) }
@@ -151,6 +153,18 @@ struct SettingsView: View {
         Task {
             do {
                 let url = try await model.db.reader.read { try CSVExport.write($0) }
+                csv = SharedFile(url: url)
+            } catch {
+                model.lastError = error.localizedDescription
+            }
+        }
+    }
+
+    /// Redesign R.0: how often each screen and button is used, for checking the redesign.
+    private func exportUsage() {
+        Task {
+            do {
+                let url = try await model.db.reader.read { try Usage.write($0) }
                 csv = SharedFile(url: url)
             } catch {
                 model.lastError = error.localizedDescription
