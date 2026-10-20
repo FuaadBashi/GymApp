@@ -55,11 +55,9 @@ struct PoseLoopView: View {
     let exerciseName: String
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pose = 0
-
-    private var images: [UIImage] { asset.urls.compactMap { UIImage(contentsOfFile: $0.path) } }
+    @State private var images: [UIImage] = []   // decoded once, not on every pose change
 
     var body: some View {
-        let images = images
         VStack(alignment: .leading, spacing: 6) {
             ZStack {
                 Color.white   // the drawings and photos have white backgrounds
@@ -72,7 +70,8 @@ struct PoseLoopView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .accessibilityElement()
             .accessibilityLabel("Demonstration of \(exerciseName), \(pose % 2 == 0 ? "start" : "end") position")
-            .task(id: reduceMotion) {
+            .task(id: asset.files + [reduceMotion ? "still" : "moving"]) {
+                images = asset.urls.compactMap { UIImage(contentsOfFile: $0.path) }
                 guard images.count > 1, !reduceMotion else { return }
                 while !Task.isCancelled {
                     try? await Task.sleep(for: .seconds(1.2))

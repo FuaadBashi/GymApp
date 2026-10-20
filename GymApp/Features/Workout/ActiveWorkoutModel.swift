@@ -343,7 +343,11 @@ final class ActiveWorkoutModel {
                 try WorkoutQueries.snapshot(db, workoutId: workoutId, settings: try AppSettings.load(db))
             }
         } catch WorkoutError.notFound {
+            // Gone (finished or discarded elsewhere): close the screen rather than spin on it.
             snapshot = nil
+            currentItemId = nil
+            selectedSetId = nil
+            isPresented = false
         } catch {
             // A read can fail while the app is suspended or the phone locked; keep the last
             // good workout on screen rather than an endless spinner. The next reload repairs it.

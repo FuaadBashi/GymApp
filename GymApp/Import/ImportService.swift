@@ -26,7 +26,10 @@ nonisolated enum ImportService {
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         let data = try Data(contentsOf: url)
-        guard let (format, rows) = try? LogCSVImporter.parse(data) else {
+        let format: LogCSVImporter.Format, rows: [LogCSVImporter.SetRow]
+        do {
+            (format, rows) = try LogCSVImporter.parse(data)
+        } catch LogCSVImportError.unrecognised {
             return try await importJEFIT(fileAt: url, into: db)
         }
         let sha = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()

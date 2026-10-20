@@ -106,4 +106,21 @@ struct LogCSVImportTests {
         #expect(LogCSVImporter.date("2024-03-01 18:00:00", utc) != nil)
         #expect(LogCSVImporter.date("15 Jul 2026, 09:52", utc) != nil)
     }
+
+    /// Review of phase 10: a Strong file with a bad row reports that row, not a JEFIT error.
+    @Test func aBrokenStrongFileIsNotHandedToTheJEFITImporter() async throws {
+        let url = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString + ".csv")
+        try Data("Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps\nyesterday,W,1h,Bench,1,50,5\n".utf8).write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+        await #expect(throws: LogCSVImportError.badRow(2, "no readable date")) {
+            try await ImportService.importFile(at: url, into: try AppDatabase.inMemory())
+        }
+    }
+
+    @Test func strongSetNotesStayOnTheirSets() throws {
+        let (format, rows) = try LogCSVImporter.parse(Data(Self.strong.utf8), timeZone: utc)
+        let db = try database()
+        try db.writer.write { _ = try LogCSVImporter.run(format, rows, in: $0, now: .now, fileName: "s.csv", fileSHA256: "") }
+        #expect(try db.reader.read { try String.fetchAll($0, sql: "SELECT note FROM workoutSet WHERE note IS NOT NULL") } == ["slow"])
+    }
 }

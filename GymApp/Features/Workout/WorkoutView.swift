@@ -28,7 +28,10 @@ struct WorkoutView: View {
                 .safeAreaInset(edge: .bottom, spacing: 0) { WorkoutBottomBar() }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .task { await model.resumeIfNeeded() }
+                    .task {
+                        await model.resumeIfNeeded()
+                        if model.snapshot == nil { model.isPresented = false }   // nothing to resume
+                    }
             }
         }
         .background(Theme.background)

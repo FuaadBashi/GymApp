@@ -85,11 +85,12 @@ nonisolated enum WorkoutQueries {
             let history = run.history
             let window = TrainingMath.eligibleWindows(history: history, at: now).first
             let allTime = history.map(\.e1RM).max()
-            let candidates = sessions.flatMap { s in s.sets.map { ($0.completedAt ?? s.workout.startedAt, $0) } }
-                + logged.map { ($0.completedAt ?? now, $0) }
+            // Newest first (today's sets, then sessions newest first), so a tie names the latest set.
+            let candidates = logged.reversed().map { ($0.completedAt ?? now, $0) }
+                + sessions.flatMap { s in s.sets.map { ($0.completedAt ?? s.workout.startedAt, $0) } }
             func setMaking(_ best: Double?, since: Date) -> WorkoutSetRecord? {
                 guard let best else { return nil }
-                return candidates.last { date, set in
+                return candidates.first { date, set in
                     guard date >= since, set.type != .warmUp, set.type != .drop, let load = set.loadHundredths,
                           let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
                     else { return false }

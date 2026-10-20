@@ -156,7 +156,7 @@ nonisolated enum LogCSVImporter {
                 let mine = sets.filter { $0.exercise == name }
                 let we = WorkoutExerciseRecord(id: UUID().uuidString, workoutId: workout.id, exerciseId: exerciseId, position: position,
                                                dayExerciseId: nil, targetSets: nil, repMin: nil, repMax: nil, restSeconds: 90,
-                                               note: mine.compactMap(\.note).first, externalId: nil)
+                                               note: format == .hevy ? mine.compactMap(\.note).first : nil, externalId: nil)
                 try we.insert(db)
                 report.inserted["workoutExercise", default: 0] += 1
                 var n = 0
@@ -165,7 +165,7 @@ nonisolated enum LogCSVImporter {
                     var set = WorkoutSetRecord(id: UUID().uuidString, workoutExerciseId: we.id, position: n,
                                                loadHundredths: s.load.map { Int(($0 * 100).rounded()) }, unit: s.unit, reps: s.reps,
                                                type: s.type, completedAt: start, rpe: s.rpe, externalId: nil)
-                    set.note = nil
+                    set.note = format == .strong ? s.note : nil   // Strong's Notes are per set, Hevy's per exercise
                     try set.insert(db)
                     n += 1
                     report.inserted["workoutSet", default: 0] += 1

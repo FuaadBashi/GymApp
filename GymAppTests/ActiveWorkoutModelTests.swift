@@ -223,6 +223,7 @@ extension ActiveWorkoutModelTests {
         try await db.writer.write { try WorkoutWrites.discard($0, workoutId: id) }
         await model.refresh()
         #expect(model.snapshot == nil)
+        #expect(!model.isPresented)   // no endless spinner (review of phase 10)
     }
 
     @Test func returningAfterRestEndedClearsTheRest() async throws {
