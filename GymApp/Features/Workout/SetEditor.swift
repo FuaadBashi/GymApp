@@ -40,6 +40,7 @@ struct SetEditor: View {
             panel(title: "REPS", value: "\(set.reps)", field: .reps,
                   minus: { stepReps(-1) }, plus: { stepReps(1) }) { EmptyView() }
         }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: two steppers side by side
         .alert(typing == .load ? "Weight (\(set.unit.rawValue))" : "Reps", isPresented: Binding(
             get: { typing != nil }, set: { if !$0 { typing = nil } }
         )) {

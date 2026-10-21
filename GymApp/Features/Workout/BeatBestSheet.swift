@@ -86,6 +86,7 @@ struct BestPanel: View {
     var body: some View {
         if let hint = model.snapshot?.hints[item.exercise.id] {
             BestHintLine(set: set, hint: hint, loadMode: item.exercise.loadMode) { beating = Beating(title: $0, best: $1); model.db.count("tap.bestTile") }
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: side-by-side tiles
                 .sheet(item: $beating) { beat in
                     BeatBestSheet(exerciseName: item.exercise.name, title: beat.title, best: beat.best, reps: repRange,
                                   step: hint.step, unit: set.unit,

@@ -73,6 +73,7 @@ struct SetRow: View {
         .background(isSelected ? Theme.row : Color.clear, in: .rect(cornerRadius: Tokens.Radius.row))
         .contentShape(.rect)
         .onTapGesture(perform: onSelect)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: fixed columns; VoiceOver still reads it in full
     }
 
     @ViewBuilder private var comparison: some View {

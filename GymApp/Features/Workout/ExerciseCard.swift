@@ -272,8 +272,10 @@ struct ExerciseCard: View {
             Image(systemName: "checkmark").frame(width: 44)
         }
         .font(.caption2.weight(.bold))
+        .lineLimit(1).minimumScaleFactor(0.6)
         .foregroundStyle(.secondary)
         .padding(.horizontal, Tokens.Space.s)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: fixed columns
     }
 
     private var todayLine: String {

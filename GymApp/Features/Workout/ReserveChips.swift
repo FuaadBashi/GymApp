@@ -24,5 +24,6 @@ struct ReserveChips: View {
             }
         }
         .sensoryFeedback(.selection, trigger: reserve)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: one row of chips
     }
 }

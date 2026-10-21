@@ -62,4 +62,19 @@ final class WorkoutScreenUITests: XCTestCase {
         element("best-all-time").tap()
         XCTAssertTrue(app.staticTexts["All-time best: est. 1RM 116.7 kg"].waitForExistence(timeout: 5))
     }
+
+    /// R.9: at the largest accessibility text size the set, its best and Log stay usable, and
+    /// VoiceOver meets them in that order (top to bottom).
+    func testLargestTextSizeKeepsTheSetBestAndLogUsable() {
+        app.terminate()
+        app.launchArguments = ["-uiTestFixture", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchFixture()
+        let set = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Log set'")).firstMatch
+        let best = element("best-all-time")
+        XCTAssertTrue(set.waitForExistence(timeout: 10))
+        XCTAssertTrue(set.isHittable)
+        XCTAssertTrue(best.isHittable)
+        XCTAssertTrue(app.buttons["More weight"].isHittable)
+        XCTAssertLessThan(best.frame.minY, set.frame.minY)
+    }
 }

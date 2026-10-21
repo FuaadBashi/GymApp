@@ -17,6 +17,7 @@ struct WorkoutView: View {
             if let snapshot = model.snapshot {
                 WorkoutHeader(snapshot: snapshot, confirmingFinish: $confirmingFinish,
                               onAdd: { addingExercise = true }, onDiscard: { confirmingDiscard = true })
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: a dense row; capped so it never crushes
                 Group {
                     if model.focusMode {
                         FocusView(onAction: perform)
@@ -25,7 +26,7 @@ struct WorkoutView: View {
                     }
                 }
                 // Card 9.1: the bar floats over the content so its glass has something to show.
-                .safeAreaInset(edge: .bottom, spacing: 0) { WorkoutBottomBar() }
+                .safeAreaInset(edge: .bottom, spacing: 0) { WorkoutBottomBar().dynamicTypeSize(...DynamicTypeSize.xxxLarge) }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
                     .task {
