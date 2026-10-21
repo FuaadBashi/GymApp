@@ -16,7 +16,7 @@ and its five fixes are in. After phase 10, these items were added (see the sessi
 - Strong and Hevy import.
 - A UI-test target (scheme GymAppUITests).
 
-**Next: the redesign.** The plan is in [docs/redesign/](redesign/), steps 1–6. The interactive
+**The redesign is complete (21 October, R.0–R.11).** Before it: The plan is in [docs/redesign/](redesign/), steps 1–6. The interactive
 prototypes are at https://claude.ai/artifact/Hncqj8wMbWEyKeLq5QKBzt (private). The app's public
 name becomes **Bashi Gym** (card R.11). The code and repo names stay GymApp. Do not start card
 R.0 until the owner approves the plan. R.0 adds usage counts and a prototype target, which
@@ -332,3 +332,4 @@ xcrun simctl uninstall "iPhone 17 Pro Max" com.fuaadshurie.GymApp   # clean star
 - 21 Oct, R.8: the studio takes every colour and font size from tokens.css: CSS shades are color-mix of tokens, charts read the tokens at load (mixHex for in-between shades), and the 10 px sizes map to type roles (three added: label 13, pageTitle 28, hero 56). tools/check_literals.py also checks studio/web/style.css and app.js. The overview has the phone's three blocks (This week, Muscles, Lifts), each linking to its page. All 12 pages checked in the browser, no script errors.
 - 21 Oct, R.9: accessibility at the largest text size (AX5). Train, Progress and Settings grew correctly. The workout broke (header crushed, set table and steppers wrapped digit by digit), so its dense parts (header, set rows, best tiles, steppers, reps chips, Log bar) are capped at xxxLarge; text such as today's suggestion still grows fully. A UI test runs the workout at AX5 and checks the set, best and Log are usable, best above Log (VoiceOver order follows). Screenshots docs/redesign/screens/ax/.
 - 21 Oct, R.11: the app shows as Bashi Gym (display name) with the Bashi icon (GymApp/BrandAssets.xcassets/BashiIcon, drawn by tools/build_icon.py from the brand board's mark and the token colours; ASSETCATALOG_COMPILER_APPICON_NAME = BashiIcon in the project). The owner's local photo icon is untouched and still excluded. The studio is Bashi Gym Studio: page title, sidebar mark, favicon, window title, app name and Mac icon. Code, bundle id and repo stay GymApp.
+- 21 Oct, R.10: redesign closed. Tap counts after: docs/redesign/tap-counts.md (two targets missed: swap in a workout 3 vs 2, reorder a day 4 vs 2). Owed by the owner: gym timing and a two-person test. README updated (Bashi Gym, phase table).

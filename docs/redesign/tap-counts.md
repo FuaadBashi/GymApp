@@ -29,6 +29,24 @@ Notes:
 - Task 9 has no direct route before the redesign. The count is for the Exercises tab, with the
   exercise visible in the list without a search.
 
+## After the redesign (21 October 2026, card R.10)
+
+| # | Task | Before | After | Target | Met |
+|---|---|---|---|---|---|
+| 1 | Start the next workout | 1 | 1 | 1 | Yes |
+| 2 | Log the prefilled set | 1 | 1 | 1 | Yes (0 from the lock screen) |
+| 3 | Change the load by one step, then log | 2 | 2 | 2 | Yes |
+| 4 | See what to beat | 0 | 0 | 0 | Yes, now above the fold |
+| 5 | Skip the rest | 1 | 1 | 1 | Yes |
+| 6 | The page and history of a lift during a workout | 2 | 1 | 1 | Yes (tap the name) |
+| 7 | Swap an exercise during a workout | 3 | 3 | 2 | No: still card ⋯ → Swap → select |
+| 8 | Finish | 2 | 2 | 2 | Yes |
+| 9 | Open an exercise of today's plan | 2, through Exercises | 1, from Train | 2 | Yes |
+| 10 | Weekly review | 1 tap + 2 scrolls | 1 tap + 1 scroll | 1 | Better; one short scroll remains |
+| — | Change a day's targets | 4 | 2 | 3 | Yes |
+| — | Reorder a day | 4 | 4 | 2 | No: SwiftUI list reorder needs Edit mode |
+| — | Swap an exercise in the plan | Not possible | 3 | 3 | Yes |
+
 ## A bug that the counts found
 
 A row in a day answered a tap only on its text, not on the empty space in the row. A tap in the

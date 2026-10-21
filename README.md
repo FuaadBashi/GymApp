@@ -1,4 +1,4 @@
-# GymApp
+# GymApp (Bashi Gym)
 
 A private, offline training log for one iPhone, built in SwiftUI. It keeps the training side
 of JEFIT (exercises and how they're categorised, programs, set logging, the calendar and the
@@ -75,6 +75,7 @@ card by card in [docs/specs](docs/specs); [HANDOFF.md](docs/HANDOFF.md) holds th
 | 8 | Studio reports, data health, planner | done |
 | 9 | Visual polish | done |
 | 10 | Demonstrations, form cues, the exercise page, the studio's look | done |
+| R | Redesign: plan navigation, workout card, end of workout, Progress, shared tokens, accessibility, Bashi Gym name and icon ([plan](docs/redesign/)) | done |
 
 ## GymApp Studio
 
