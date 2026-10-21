@@ -1,6 +1,6 @@
 # Backend plan: sync for Bashi Gym
 
-Status: plan only. No code until the owner approves part 6. Purpose: practice. The design
+Status: built through step 2, hosting prepared. Decisions and the build log: [02-build-log-and-decisions.md](02-build-log-and-decisions.md). Purpose: practice. The design
 must also work if the app goes live.
 
 Target: 20,000 downloads, 1,000+ daily active users.
