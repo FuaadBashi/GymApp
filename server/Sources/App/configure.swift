@@ -10,10 +10,11 @@ extension Application {
     }
 }
 
-/// Environment: DATABASE_HOST, DATABASE_PORT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME,
-/// DATABASE_TLS (1 = require), JWT_SECRET, APPLE_BUNDLE_ID, AUTH_DEV (1 = allow /v1/auth/dev).
+/// Environment: DATABASE_URL (postgres://user:password@host/db; TLS is required with it), or
+/// DATABASE_HOST, DATABASE_PORT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME and
+/// DATABASE_TLS (1 = require); JWT_SECRET, APPLE_BUNDLE_ID, AUTH_DEV (1 = allow /v1/auth/dev).
 public func configure(_ app: Application) async throws {
-    let config = PostgresClient.Configuration(
+    let config = try Environment.get("DATABASE_URL").map(databaseConfig) ?? PostgresClient.Configuration(
         host: Environment.get("DATABASE_HOST") ?? "localhost",
         port: Environment.get("DATABASE_PORT").flatMap(Int.init) ?? 5432,
         username: Environment.get("DATABASE_USER") ?? ProcessInfo.processInfo.environment["USER"] ?? "postgres",
@@ -35,8 +36,21 @@ public func configure(_ app: Application) async throws {
     app.jwt.apple.applicationIdentifier = Environment.get("APPLE_BUNDLE_ID")
 
     app.routes.defaultMaxBodySize = "1mb"
+    app.get("health") { _ in "ok" }
     try await Migrations.run(client, logger: app.logger)
     try routes(app)
+}
+
+/// A hosted database's connection URL. Hosted databases are reached over the internet, so TLS
+/// is always required here.
+func databaseConfig(_ string: String) throws -> PostgresClient.Configuration {
+    guard let url = URLComponents(string: string), ["postgres", "postgresql"].contains(url.scheme ?? ""),
+          let host = url.host, !host.isEmpty, let user = url.user else {
+        throw Abort(.internalServerError, reason: "DATABASE_URL must look like postgres://user:password@host/database")
+    }
+    let database = String(url.path.drop { $0 == "/" })
+    return PostgresClient.Configuration(host: host, port: url.port ?? 5432, username: user, password: url.password,
+                                        database: database.isEmpty ? nil : database, tls: .require(.makeClientConfiguration()))
 }
 
 private struct ClientStopper: LifecycleHandler {

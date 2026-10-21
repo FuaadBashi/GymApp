@@ -214,4 +214,16 @@ final class SyncTests: XCTestCase {
             try await push([Change(table: table, id: "E", op: "upsert", updatedAt: Date(), row: row)], token: a, expect: .unprocessableEntity)
         }
     }
+
+    func testDatabaseURLIsParsedAndRequiresTLS() throws {
+        let c = try databaseConfig("postgresql://bashi:s3cret@ep-cool-name.eu-central-1.aws.neon.tech/bashi?sslmode=require")
+        XCTAssertEqual(c.host, "ep-cool-name.eu-central-1.aws.neon.tech")
+        XCTAssertEqual(c.port, 5432)
+        XCTAssertEqual(c.username, "bashi")
+        XCTAssertEqual(c.password, "s3cret")
+        XCTAssertEqual(c.database, "bashi")
+        XCTAssertTrue(String(describing: c.tls).contains("require"), "TLS is required for a hosted database")
+        XCTAssertThrowsError(try databaseConfig("mysql://a@b/c"))
+        XCTAssertThrowsError(try databaseConfig("not a url"))
+    }
 }

@@ -1,0 +1,17 @@
+# Render blueprint for the practice sync server (server/README.md, "Deploy").
+services:
+  - type: web
+    name: bashi-gym-sync
+    runtime: docker
+    plan: free
+    rootDir: server
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # paste the Neon connection string in the Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AUTH_DEV
+        value: "1"           # practice only: anyone with the URL can make an account

@@ -66,6 +66,39 @@ k6 run -e BASE=http://localhost:8080 loadtest/sync.js
 The test sends 14 pushes/s and 3 pulls/s for 5 minutes, which is 10× the planned peak. It
 passes when p95 is under 300 ms and fewer than 0.1% of requests fail.
 
+## Deploy (free): Render + Neon
+
+You do these steps yourself: each needs an account.
+
+1. **Neon** (neon.tech): sign up and create a project named `bashi`, in the region nearest to
+   you. Copy the connection string. It looks like
+   `postgresql://user:password@ep-….neon.tech/neondb?sslmode=require`.
+2. **Render** (render.com): sign up with GitHub. Choose **New → Blueprint**, then pick this
+   repository. Render reads `render.yaml` at the repository root.
+3. When Render asks for `DATABASE_URL`, paste the Neon string. Render generates `JWT_SECRET`.
+4. Deploy. The first build takes about 10 minutes (it compiles Swift). Then check:
+
+   ```bash
+   curl https://<your-service>.onrender.com/health
+   ```
+
+5. Load test against the deployed host:
+
+   ```bash
+   k6 run -e BASE=https://<your-service>.onrender.com loadtest/sync.js
+   ```
+
+6. On the phone: Settings → Sync (beta). Enter the `https://…onrender.com` address and an
+   account name, then tap Turn on sync.
+
+Free-tier limits:
+
+- Render's free service sleeps after 15 minutes idle. The first request after that takes
+  about a minute, so the app's retries cover it.
+- Neon's free storage is 0.5 GB.
+- `AUTH_DEV=1` lets anyone with the URL create an account. That is acceptable for practice
+  only; replace it with Sign in with Apple before real users.
+
 ## Free tier first: when to pay
 
 Start on a free Postgres (Neon or Supabase, about 0.5 GB). Check the size each week:
