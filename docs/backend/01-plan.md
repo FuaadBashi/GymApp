@@ -76,11 +76,11 @@ changes from "learn and defend a backend" to "only back up my data".
 | Stage | Where | Cost |
 |---|---|---|
 | Practice | Vapor and Postgres on the Mac (Docker), phone or simulator on the local network | Free |
-| First deploy | API on Render's free tier (it sleeps when idle) + Neon or Supabase free Postgres (0.5 GB) | Free |
+| First deploy | API on Render's free tier (it sleeps when idle) + Neon or Supabase free Postgres (1 GB) | Free |
 | Live at 1,000 users a day | Small always-on API instance + paid Postgres with point-in-time restore (2 GB/year fits the base plan) | About $25–35/month |
 
 Decision (21 October): **free tiers first.** Move to a paid plan only when the database reaches
-80% of the free limit. At full load, that is after about three months. server/README.md has
+80% of the free limit. At full load, that is after about five months. server/README.md has
 the size query to run each week.
 
 ## 3. Data model

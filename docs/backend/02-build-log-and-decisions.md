@@ -54,7 +54,7 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D1 | Design for 20,000 downloads and 1,000+ users a day | The owner's target; it sets the load figures | — | Owner |
 | D2 | Practice first, not a launch | The owner's answer. App Store privacy labels and in-app account deletion are left for a launch | Launch-ready work now | Owner |
 | D3 | Plan first, no code until approval | The owner's way of working on large work | Building straight away | Owner |
-| D4 | Free tiers first. Pay only at 80% of the free database limit | The owner's answer. At full load, the free tier is full in about three months; at practice load, never | Paying from the start | Owner |
+| D4 | Free tiers first. Pay only at 80% of the free database limit | The owner's answer. At full load, the free tier is full in about five months; at practice load, never | Paying from the start | Owner |
 
 ### 3.2 Architecture
 
@@ -138,7 +138,7 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 
 | # | Decision | Reason | Rejected | By |
 |---|---|---|---|---|
-| D48 | **Render (free web service, Docker) and Neon (free Postgres, 0.5 GB)** | Both free. Neon is plain Postgres, so moving later is a `pg_dump` and a restore | Fly.io (no longer free); Supabase (also fine; Neon chosen for plain Postgres) | Plan, with D4 |
+| D48 | **Render (free web service, Docker) and Neon (free Postgres, 1 GB)** | Both free. Neon is plain Postgres, so moving later is a `pg_dump` and a restore | Fly.io (no longer free); Supabase (also fine; Neon chosen for plain Postgres) | Plan, with D4 |
 | D49 | **A Dockerfile with a release build** (Swift 6.1 on Ubuntu 24.04, static standard library), run as a user that is not root | A small, standard image. Render builds it | Render's native Swift runtime (not offered) | Build |
 | D50 | **render.yaml blueprint:** free plan, health check `/health`, `JWT_SECRET` generated, `DATABASE_URL` pasted by hand, auto-deploy off | The secrets never go in git. Deploys happen only when chosen | Auto-deploy on each push | Build |
 | D51 | **The owner signs up for Render and Neon** | Creating accounts and entering their credentials is the owner's job | — | Rule |

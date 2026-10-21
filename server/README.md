@@ -96,18 +96,18 @@ Free-tier limits:
 
 - Render's free service sleeps after 15 minutes idle. The first request after that takes
   about a minute, so the app's retries cover it.
-- Neon's free storage is 0.5 GB.
+- Neon's free storage is 1 GB.
 - `AUTH_DEV=1` lets anyone with the URL create an account. That is acceptable for practice
   only; replace it with Sign in with Apple before real users.
 
 ## Free tier first: when to pay
 
-Start on a free Postgres (Neon or Supabase, about 0.5 GB). Check the size each week:
+Start on a free Postgres (Neon or Supabase, about 1 GB). Check the size each week:
 
 ```bash
 psql "$DATABASE_URL" -c "SELECT pg_size_pretty(pg_database_size(current_database())), (SELECT count(*) FROM workout_set) AS sets"
 ```
 
-Move to the paid plan at **80% of the free limit** (about 400 MB), or when you need
-point-in-time restore. At 1,000 active users a day, that is about three months. Moving is a
+Move to the paid plan at **80% of the free limit** (about 800 MB), or when you need
+point-in-time restore. At 1,000 active users a day, that is about five months. Moving is a
 `pg_dump` and a `pg_restore`, because the server uses only plain Postgres.
