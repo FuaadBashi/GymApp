@@ -20,6 +20,8 @@ a { color: inherit; text-decoration: none; }
 .sidebar { background: color-mix(in srgb, var(--color-surface0) 72%, transparent); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border-right: 1px solid var(--line); display: flex; flex-direction: column; padding: 20px 12px; position: sticky; top: 0; height: 100vh; }
 .brand { font-size: var(--type-body); padding: 4px 10px 22px; letter-spacing: -.2px; }
 .brand b { color: var(--volt); }
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand img { border-radius: var(--radius-tag); }
 nav a { display: flex; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 10px; color: var(--dim); font-size: var(--type-label); margin-bottom: 2px; }
 nav a svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 nav a:hover { background: var(--card); color: var(--text); }

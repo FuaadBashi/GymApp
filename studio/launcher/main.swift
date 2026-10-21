@@ -27,7 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1440, height: 900),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                           backing: .buffered, defer: false)
-        window.title = "GymApp Studio"
+        window.title = "Bashi Gym Studio"
         window.titlebarAppearsTransparent = true
         window.backgroundColor = NSColor(red: 0.04, green: 0.04, blue: 0.045, alpha: 1)
         window.contentView = web
@@ -69,7 +69,7 @@ let delegate = AppDelegate()
 app.delegate = delegate
 app.setActivationPolicy(.regular)
 let menu = NSMenu(); let item = NSMenuItem(); menu.addItem(item)
-let sub = NSMenu(); sub.addItem(withTitle: "Quit GymApp Studio", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+let sub = NSMenu(); sub.addItem(withTitle: "Quit Bashi Gym Studio", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 item.submenu = sub
 let edit = NSMenuItem(); menu.addItem(edit)
 let editMenu = NSMenu(title: "Edit")
