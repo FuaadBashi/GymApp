@@ -2,15 +2,21 @@
 const $ = (sel, el = document) => el.querySelector(sel);
 const main = $("#main");
 // Card 9.5: the app's tokens; charts get them through one ECharts theme.
-const VOLT = "#c7f242", GOLD = "#ffc238", DIM = "#9a9aa3", LINE = "#2e2e33", ORANGE = "#ff9945", BLUE = "#73a8ff", PURPLE = "#bf8cff";
+// Card R.8: chart colours come from tokens.css, so the studio and the app share one source.
+const token = name => getComputedStyle(document.documentElement).getPropertyValue("--color-" + name).trim();
+const VOLT = token("accent"), GOLD = token("gold"), DIM = token("text-secondary"), LINE = token("surface3"), ORANGE = token("warning"),
+  BLUE = token("upper"), PURPLE = token("core"), TEAL = token("day-teal"), TEXT = token("text-primary"), GRID = token("separator"),
+  SURFACE1 = token("surface1"), SURFACE2 = token("surface2"), SURFACE3 = token("surface3"), ON_ACCENT = token("on-accent"), VOLT_SOFT = token("accent-soft");
+/** "#RRGGBB" mixed toward another, for chart shades between two tokens. */
+const mixHex = (a, b, t) => "#" + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, "0")).join("");
 echarts.registerTheme("gymapp", {
-  color: [VOLT, BLUE, GOLD, PURPLE, ORANGE, "#5ad9d9"],
+  color: [VOLT, BLUE, GOLD, PURPLE, ORANGE, TEAL],
   backgroundColor: "transparent",
   textStyle: { color: DIM, fontFamily: "-apple-system, system-ui" },
-  categoryAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
-  valueAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
-  timeAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: "#ffffff0d" } } },
-  tooltip: { backgroundColor: "#232327", borderColor: "#313136", textStyle: { color: "#f2f2f4" } },
+  categoryAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: GRID } } },
+  valueAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: GRID } } },
+  timeAxis: { axisLine: { lineStyle: { color: LINE } }, axisLabel: { color: DIM }, splitLine: { lineStyle: { color: GRID } } },
+  tooltip: { backgroundColor: SURFACE2, borderColor: SURFACE3, textStyle: { color: TEXT } },
   legend: { textStyle: { color: DIM } },
 });
 const charts = [];
@@ -38,13 +44,13 @@ function chart(el, option) {
     grid: { left: 44, right: 16, top: 24, bottom: 30 },
     // Card 10.7: a crosshair on every axis chart.
     tooltip: { trigger: "axis", axisPointer: { type: "cross", lineStyle: { color: DIM, type: "dashed" }, crossStyle: { color: DIM },
-      label: { backgroundColor: "#313136", color: "#f2f2f4" } }, backgroundColor: "#1c1c1f", borderColor: LINE, textStyle: { color: "#f2f2f4" } },
+      label: { backgroundColor: SURFACE3, color: TEXT } }, backgroundColor: SURFACE1, borderColor: LINE, textStyle: { color: TEXT } },
   }, option));
   charts.push(c);
   return c;
 }
 window.addEventListener("resize", () => charts.forEach(c => c.resize()));
-const axis = extra => Object.assign({ axisLine: { lineStyle: { color: LINE } }, splitLine: { lineStyle: { color: "#ffffff0d" } }, axisLabel: { color: DIM } }, extra);
+const axis = extra => Object.assign({ axisLine: { lineStyle: { color: LINE } }, splitLine: { lineStyle: { color: GRID } }, axisLabel: { color: DIM } }, extra);
 
 // Router
 
@@ -93,23 +99,24 @@ pages.overview = async () => {
     <div id="custom-metrics" class="grid g4" style="margin-top:16px">${custom.metrics.map(m => `<div class="card tile"><div class="k">${esc(m.name)}</div><div class="v">${fmt(m.value)}</div><div class="c">${esc(m.unit)}${m.stale ? " · older snapshot" : ""}</div><p class="sub">${esc(m.description)}</p></div>`).join("")}</div>
     <h2 style="margin-top:26px">Next session · double progression</h2>
     <div class="grid g4" id="targets"></div>
+    <!-- Card R.8: the same three blocks as the phone's Progress tab. -->
     <div class="grid g3" style="margin-top:16px">
-      <div class="card span2"><h2>Sessions per week</h2><div class="chart" id="weeks"></div></div>
-      <div class="card"><h2>Balance · last 4 weeks</h2><div class="chart" id="balance"></div></div>
-    </div>
-    <div class="grid g2" style="margin-top:16px">
-      <div class="card"><h2>Plateaus</h2>${o.plateaus.length ? `<div class="list">${o.plateaus.map(p => `
+      <div class="card"><h2>This week</h2><p class="sub">${o.this_week.workouts} workouts · ${fmt(o.this_week.volume_kg)} kg</p><div class="chart" id="weeks"></div>
+        <a class="row" href="#/history"><div class="grow"><div class="t">History and breaks</div><div class="s">${o.breaks.length} breaks of a month or more</div></div></a></div>
+      <div class="card"><h2>Muscles · balance, last 4 weeks</h2><div class="chart" id="balance"></div>
+        <a class="row" href="#/muscles"><div class="grow"><div class="t">Sets per muscle</div><div class="s">12 weeks against the target band</div></div></a></div>
+      <div class="card"><h2>Lifts</h2>${o.plateaus.length ? `<div class="list">${o.plateaus.map(p => `
         <a class="row" href="#/exercises/${encodeURIComponent(p.id)}"><div class="grow"><div class="t">${esc(p.name)}</div><div class="s">${p.sessions} sessions · last ${day(p.last_done)}</div></div>${statusChip("plateau")}</a>`).join("")}</div>`
-        : `<div class="empty">No plateaus: every lift you trained in the last 3 weeks went up, or is rebuilding after a break.</div>`}</div>
-      <div class="card"><h2>Breaks</h2><table><tr><th>From</th><th>Days</th></tr>${o.breaks.map(x => `<tr><td>${day(x.from)}</td><td>${x.days}</td></tr>`).join("")}</table></div>
+        : `<div class="empty">No plateaus: every lift you trained in the last 3 weeks went up, or is rebuilding after a break.</div>`}
+        <a class="row" href="#/exercises"><div class="grow"><div class="t">All exercises</div><div class="s">Bests, progress and next targets</div></div></a></div>
     </div>
     ${o.steps ? `<div class="card" style="margin-top:16px"><h2>Steps · last 30 days</h2>
       <p class="sub">${fmt(o.steps.daily_average)} a day from Apple Health${o.body_weight ? ` · body weight ${fmt(o.body_weight[1], 1)} kg on ${day(o.body_weight[0])}` : ""}</p>
       <div class="chart" id="steps"></div></div>` : ""}`;
   $("#targets").innerHTML = o.next_targets.map(t => `
     <a class="card target" href="#/exercises/${encodeURIComponent(t.id)}">
-      <div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="font-size:13px">${esc(t.name)}</span>${statusChip(t.kind)}</div>
-      <div class="w">${fmt(t.weight, 2)} ${t.unit} <span class="muted" style="font-size:15px">× ${esc(t.reps)}</span></div>
+      <div style="display:flex;justify-content:space-between;gap:8px"><span class="muted" style="font-size: var(--type-label)">${esc(t.name)}</span>${statusChip(t.kind)}</div>
+      <div class="w">${fmt(t.weight, 2)} ${t.unit} <span class="muted" style="font-size: var(--type-secondary)">× ${esc(t.reps)}</span></div>
       <div class="why">${esc(t.reason)}</div>
       <div class="last">Last: ${t.last.map(esc).join(" · ")}</div>
     </a>`).join("") || `<div class="empty">No active program in the backup.</div>`;
@@ -177,29 +184,29 @@ async function exerciseDetail(id) {
     <h1>${esc(d.name)}</h1>
     <p class="sub">${esc(d.equipment)} · ${esc(d.load_mode)} · ${d.muscles.primary.map(muscleName).join(", ")}${d.muscles.secondary.length ? ` <span class="faint">+ ${d.muscles.secondary.map(muscleName).join(", ")}</span>` : ""}</p>
     <div class="grid g3">
-      <div class="card target">${n ? `<h2>Next session</h2><div class="w">${fmt(n.weight, 2)} ${n.unit} <span class="muted" style="font-size:15px">× ${esc(n.reps)}</span></div>${statusChip(n.kind)}<div class="why">${esc(n.reason)}</div><div class="last">Last: ${n.last.map(esc).join(" · ")}</div>` : `<h2>Next session</h2><div class="empty">No suggestion for this exercise.</div>`}</div>
+      <div class="card target">${n ? `<h2>Next session</h2><div class="w">${fmt(n.weight, 2)} ${n.unit} <span class="muted" style="font-size: var(--type-secondary)">× ${esc(n.reps)}</span></div>${statusChip(n.kind)}<div class="why">${esc(n.reason)}</div><div class="last">Last: ${n.last.map(esc).join(" · ")}</div>` : `<h2>Next session</h2><div class="empty">No suggestion for this exercise.</div>`}</div>
       <div class="card"><h2>Plateau check</h2><div style="margin-bottom:8px">${statusChip(p.status)}</div>
-        <div class="muted" style="font-size:13px;line-height:1.6">${p.sessions_in_window} sessions in the last 3 weeks<br>Last weight increase: ${p.last_increase ? day(p.last_increase) + ` (${p.days_since_increase} days ago)` : "–"}<br>Top weight ever: ${fmt(p.all_time_top, 2)}</div></div>
+        <div class="muted" style="font-size: var(--type-label);line-height:1.6">${p.sessions_in_window} sessions in the last 3 weeks<br>Last weight increase: ${p.last_increase ? day(p.last_increase) + ` (${p.days_since_increase} days ago)` : "–"}<br>Top weight ever: ${fmt(p.all_time_top, 2)}</div></div>
       <div class="card"><h2>Progress</h2>
         <div class="tile"><div class="v">${pr.kg_e1rm_per_month == null ? "–" : (pr.kg_e1rm_per_month > 0 ? "+" : "") + fmt(pr.kg_e1rm_per_month, 2)}</div><div class="c">kg e1RM per month, last ${pr.window_days} days</div></div>
-        <div class="muted" style="font-size:12px;margin-top:10px;line-height:1.6">${pr.best_90_days ? `Best 90 days from ${day(pr.best_90_days.from)}: <span class="volt">+${pr.best_90_days.kg_per_month}</span>/mo<br>Worst from ${day(pr.worst_90_days.from)}: <span class="orange">${pr.worst_90_days.kg_per_month}</span>/mo` : ""}</div></div>
+        <div class="muted" style="font-size: var(--type-caption);margin-top:10px;line-height:1.6">${pr.best_90_days ? `Best 90 days from ${day(pr.best_90_days.from)}: <span class="volt">+${pr.best_90_days.kg_per_month}</span>/mo<br>Worst from ${day(pr.worst_90_days.from)}: <span class="orange">${pr.worst_90_days.kg_per_month}</span>/mo` : ""}</div></div>
     </div>
     <div class="card" style="margin-top:16px">
       <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">History</h2>
         <div class="seg" id="metric"><button data-m="e1rm" class="on">Est. 1RM</button><button data-m="heaviest">Heaviest</button><button data-m="volume">Volume</button></div></div>
       <div class="chart tall" id="exchart"></div>
-      <div class="faint" style="font-size:12px">Click a point to see that session.</div>
+      <div class="faint" style="font-size: var(--type-caption)">Click a point to see that session.</div>
     </div>
     <div class="grid g2" style="margin-top:16px">
       <div class="card"><h2>Records</h2><table>${mark("Heaviest", r.heaviest)}${mark("Best est. 1RM", r.best_e1rm)}${mark("Best session volume", r.best_volume)}</table>
-        ${r.rep_records.length ? `<details style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-size:13px">Rep records by load (${r.rep_records.length})</summary><table>${r.rep_records.map(m => mark(fmt(m.kg, 2) + " kg", { ...m, kg: m.reps, reps: null }, "reps")).join("")}</table></details>` : ""}</div>
+        ${r.rep_records.length ? `<details style="margin-top:10px"><summary class="muted" style="cursor:pointer;font-size: var(--type-label)">Rep records by load (${r.rep_records.length})</summary><table>${r.rep_records.map(m => mark(fmt(m.kg, 2) + " kg", { ...m, kg: m.reps, reps: null }, "reps")).join("")}</table></details>` : ""}</div>
       <div class="card"><h2>Weak-point check</h2>${d.weak_points.map(w => `
-        <div style="padding:8px 0;border-bottom:1px solid #ffffff08"><div style="display:flex;justify-content:space-between"><b>${muscleName(w.muscle)}</b><span class="num ${w.likely_weak_point ? "orange" : "muted"}">${w.weekly_sets} sets/wk</span></div>
-        ${w.reasons.length ? `<div class="orange" style="font-size:12px">${w.reasons.map(esc).join("; ")}</div>` : ""}
-        <div class="faint" style="font-size:12px">${w.other_exercises.map(o => esc(o.name) + " (" + o.status + ")").join(", ") || "No other exercise for it in the last 3 weeks"}</div></div>`).join("")}</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--color-separator)"><div style="display:flex;justify-content:space-between"><b>${muscleName(w.muscle)}</b><span class="num ${w.likely_weak_point ? "orange" : "muted"}">${w.weekly_sets} sets/wk</span></div>
+        ${w.reasons.length ? `<div class="orange" style="font-size: var(--type-caption)">${w.reasons.map(esc).join("; ")}</div>` : ""}
+        <div class="faint" style="font-size: var(--type-caption)">${w.other_exercises.map(o => esc(o.name) + " (" + o.status + ")").join(", ") || "No other exercise for it in the last 3 weeks"}</div></div>`).join("")}</div>
       <div class="card"><h2>After breaks</h2>${d.detraining.length ? `<table><tr><th>Break</th><th>Before</th><th>First back</th><th>Sessions to recover</th></tr>${d.detraining.map(x => `<tr><td>${day(x.from)} · ${x.break_days} d</td><td>${x.e1rm_before}</td><td>${x.e1rm_first_back} <span class="faint">(${x.loss_pct > 0 ? "−" + x.loss_pct : "+" + -x.loss_pct}%)</span></td><td>${x.sessions_to_recover ?? "not yet"}</td></tr>`).join("")}</table>` : `<div class="empty">No breaks around this lift.</div>`}</div>
       <div class="card"><h2>Machine and formula</h2>
-        <div class="muted" style="font-size:13px;line-height:1.7">Load step: <b class="volt">${inc.step ?? "–"} ${inc.unit ?? ""}</b> <span class="faint">(learnt from ${inc.loads_seen ?? 0} loads you have used, ${Math.round((inc.confidence || 0) * 100)}% of steps)</span><br>
+        <div class="muted" style="font-size: var(--type-label);line-height:1.7">Load step: <b class="volt">${inc.step ?? "–"} ${inc.unit ?? ""}</b> <span class="faint">(learnt from ${inc.loads_seen ?? 0} loads you have used, ${Math.round((inc.confidence || 0) * 100)}% of steps)</span><br>
         1RM formula spread on this lift: ${Object.entries(f.mean_spread_pct).map(([k, v]) => `${k.replace("_", " ")} ${v ?? "–"}%`).join(" · ")}<br><span class="faint">${esc(f.caveat || "")}</span></div></div>
     </div>
     <div class="card" style="margin-top:16px"><h2>Sessions</h2><table>${d.sessions.slice(0, 40).map(s => `<tr class="click" data-w="${s.workout_id}"><td class="muted" style="width:120px">${day(s.date)}</td><td><div class="setline">${s.sets.map(x => `<span class="set ${x.type}">${x.type === "warmUp" ? "W " : x.type === "drop" ? "D " : ""}${fmt(x.kg, 2)}×${x.reps}${x.rir != null ? " @" + x.rir : ""}</span>`).join("")}</div></td></tr>`).join("")}</table></div>`;
@@ -212,7 +219,7 @@ async function exerciseDetail(id) {
       dataZoom: [{ type: "inside" }, { type: "slider", height: 18, bottom: 0, borderColor: LINE, textStyle: { color: DIM } }],
       grid: { left: 50, right: 16, top: 20, bottom: 50 },
       series: [{ type: "line", showSymbol: true, symbolSize: 6, data: pts.map(x => ({ value: [x.date, +x[m].toFixed(2)], workout: x.workout_id })),
-        lineStyle: { color: VOLT, width: 2 }, itemStyle: { color: VOLT }, areaStyle: { color: "rgba(199,242,66,.08)" } }],
+        lineStyle: { color: VOLT, width: 2 }, itemStyle: { color: VOLT }, areaStyle: { color: VOLT_SOFT } }],
     }, true);
   };
   plot("e1rm");
@@ -230,7 +237,7 @@ async function exerciseDetail(id) {
 async function openWorkout(id) {
   const w = await api("workout/" + encodeURIComponent(id));
   const dr = $("#drawer");
-  dr.innerHTML = `<button class="close" onclick="closeDrawer()">Close</button><h1 style="font-size:22px">${esc(w.title)}</h1>
+  dr.innerHTML = `<button class="close" onclick="closeDrawer()">Close</button><h1 style="font-size: var(--type-title)">${esc(w.title)}</h1>
     <p class="sub">${day(w.date)} · ${w.minutes} min${w.effort ? " · effort " + w.effort + "/10" : ""}</p>
     ${w.note ? `<div class="note" style="margin-bottom:12px">${esc(w.note)}</div>` : ""}
     ${w.exercises.map(x => `<div class="card" style="margin-bottom:10px"><a href="#/exercises/${encodeURIComponent(x.id)}"><b>${esc(x.name)}</b></a>
@@ -257,7 +264,7 @@ pages.muscles = async () => {
         <tr><td>Upper sets</td><td>${balance.upper_lower.upper}</td><td>Lower sets</td><td>${balance.upper_lower.lower}</td><td class="volt">${balance.upper_lower.ratio ?? "–"}×</td></tr>
         <tr><td colspan="4">Quads : hamstrings</td><td class="volt">${balance.quads_hamstrings.ratio ?? "–"}×</td></tr>
         <tr><td colspan="4">Chest : back</td><td class="volt">${balance.chest_back.ratio ?? "–"}×</td></tr></table>
-        <p class="faint" style="font-size:12px;line-height:1.5">Around 1× is even. Far from it in either direction is worth a look, not automatically a problem.</p></div>
+        <p class="faint" style="font-size: var(--type-caption);line-height:1.5">Around 1× is even. Far from it in either direction is worth a look, not automatically a problem.</p></div>
     </div>`;
   const data = [];
   muscles.forEach((m, y) => weekly.muscles[m].forEach((v, x) => data.push([x, y, v])));
@@ -267,16 +274,16 @@ pages.muscles = async () => {
     xAxis: axis({ type: "category", data: weekly.weeks.map(dayShort), splitArea: { show: false } }),
     yAxis: axis({ type: "category", data: muscles.map(muscleName) }),
     visualMap: { type: "piecewise", orient: "horizontal", left: "center", bottom: 0, textStyle: { color: DIM },
-      pieces: [{ max: 0.01, color: "#1f1f23", label: "0" }, { min: 0.01, max: lo, color: "#4a5a1f", label: `under ${lo}` },
+      pieces: [{ max: 0.01, color: SURFACE1, label: "0" }, { min: 0.01, max: lo, color: mixHex(SURFACE1, VOLT, 0.35), label: `under ${lo}` },
         { min: lo, max: hi, color: VOLT, label: `${lo}–${hi}` }, { min: hi, color: ORANGE, label: `over ${hi}` }] },
-    series: [{ type: "heatmap", data, label: { show: true, color: "#000", fontSize: 10, formatter: p => p.value[2] ? p.value[2] : "" } }],
+    series: [{ type: "heatmap", data, label: { show: true, color: ON_ACCENT, fontSize: 10, formatter: p => p.value[2] ? p.value[2] : "" } }],
   });
   const now = muscles.map(m => weekly.muscles[m].at(-1));
   chart($("#band"), {
     grid: { left: 110, right: 30, top: 10, bottom: 24 },
     xAxis: axis({ type: "value" }), yAxis: axis({ type: "category", data: muscles.map(muscleName), inverse: true }),
-    series: [{ type: "bar", data: now.map(v => ({ value: v, itemStyle: { color: v < lo ? "#4a5a1f" : v > hi ? ORANGE : VOLT, borderRadius: 4 } })),
-      markArea: { silent: true, itemStyle: { color: "rgba(199,242,66,.07)" }, data: [[{ xAxis: lo }, { xAxis: hi }]] } }],
+    series: [{ type: "bar", data: now.map(v => ({ value: v, itemStyle: { color: v < lo ? mixHex(SURFACE1, VOLT, 0.35) : v > hi ? ORANGE : VOLT, borderRadius: 4 } })),
+      markArea: { silent: true, itemStyle: { color: VOLT_SOFT }, data: [[{ xAxis: lo }, { xAxis: hi }]] } }],
   });
 };
 
@@ -304,7 +311,7 @@ pages.lab = async () => {
   main.innerHTML = `<h1>Rule lab</h1><p class="sub">Testing rules on your own history before the phone uses them.</p>
     <div class="grid g2">
       <div class="card"><h2>1RM formula lab</h2><div class="chart" id="form"></div>
-        <p class="muted" style="font-size:13px;line-height:1.55">Within one session, different weight × rep sets of the same lift should estimate the same 1RM. Lower spread = more consistent on your data.
+        <p class="muted" style="font-size: var(--type-label);line-height:1.55">Within one session, different weight × rep sets of the same lift should estimate the same 1RM. Lower spread = more consistent on your data.
         Compared over ${fmt(f.sessions_compared)} sessions; most consistent: <b class="volt">${esc(f.most_consistent)}</b>.</p>
         ${f.caveat ? `<div class="warn">${esc(f.caveat)}</div>` : ""}</div>
       <div class="card"><h2>Progression replay</h2><p class="muted">Compare rules against sessions that actually happened. Earlier sessions generate targets; later sessions score them.</p>
@@ -317,7 +324,7 @@ pages.lab = async () => {
   const names = Object.keys(f.mean_spread_pct);
   chart($("#form"), {
     xAxis: axis({ type: "category", data: names.map(n => n.replace("_", " ")) }), yAxis: axis({ type: "value", axisLabel: { color: DIM, formatter: "{value}%" } }),
-    series: [{ type: "bar", data: names.map(n => ({ value: f.mean_spread_pct[n], itemStyle: { color: n === f.most_consistent ? VOLT : "#4a5a1f", borderRadius: [6, 6, 0, 0] } })), label: { show: true, position: "top", color: DIM, formatter: "{c}%" } }],
+    series: [{ type: "bar", data: names.map(n => ({ value: f.mean_spread_pct[n], itemStyle: { color: n === f.most_consistent ? VOLT : mixHex(SURFACE1, VOLT, 0.35), borderRadius: [6, 6, 0, 0] } })), label: { show: true, position: "top", color: DIM, formatter: "{c}%" } }],
   });
   let offset = 0, selectedRule = "double_progression";
   const run = async () => {
@@ -398,7 +405,7 @@ pages.ask = async () => {
       <div class="seg" id="prov"><button data-v="claude">Claude</button><button data-v="local">Local model</button></div>
       <select id="model" style="width:220px"></select>
       <div class="seg" id="mode"><button data-v="summaries">Summaries only</button><button data-v="full">Full access</button></div>
-      <span id="modehelp" class="faint" style="font-size:12px;flex:1;min-width:220px"></span>
+      <span id="modehelp" class="faint" style="font-size: var(--type-caption);flex:1;min-width:220px"></span>
     </div>
     ${cfg.has_key ? "" : `<div class="warn" style="margin-top:12px">No Claude API key yet. Add one in Settings, or use the local model (${cfg.local_models.length ? esc(cfg.local_models.join(", ")) : "Ollama isn't running"}).</div>`}
     <div class="card" style="margin-top:16px"><div id="chat" style="display:flex;flex-direction:column;gap:14px;min-height:120px"></div>
@@ -425,10 +432,10 @@ pages.ask = async () => {
   const draw = () => {
     $("#chat").innerHTML = askChat.turns.map(t => t.role === "user"
       ? `<div style="align-self:flex-end;max-width:75%;background:var(--volt-dim);color:var(--text);padding:10px 14px;border-radius:14px">${esc(t.content)}</div>`
-      : `<div style="max-width:90%;line-height:1.55;font-size:14px">${t.error ? `<div class="warn">${esc(t.error)}</div>` : md(t.content)}
+      : `<div style="max-width:90%;line-height:1.55;font-size: var(--type-label)">${t.error ? `<div class="warn">${esc(t.error)}</div>` : md(t.content)}
           ${t.unverified?.length ? `<div class="warn" style="margin-top:8px">Unverified: ${t.unverified.map(esc).join(", ")} ${t.unverified.length > 1 ? "don't" : "doesn't"} appear in any calculation the model ran. Treat ${t.unverified.length > 1 ? "them" : "it"} as unreliable.</div>` : ""}
-          ${!t.error && t.content && t.content !== "Thinking…" && !t.calls?.length ? `<div class="faint" style="font-size:12px;margin-top:6px">No calculations were used for this answer.</div>` : ""}
-          ${t.calls?.length ? `<details style="margin-top:6px"><summary class="faint" style="cursor:pointer;font-size:12px">${t.calls.length} calculation${t.calls.length > 1 ? "s" : ""} used · ${esc(t.model || "")}</summary><div class="faint" style="font-size:12px;margin-top:4px">${t.calls.map(c => esc(c.tool) + (Object.keys(c.input || {}).length ? " " + esc(JSON.stringify(c.input)) : "")).join("<br>")}</div></details>` : ""}</div>`).join("")
+          ${!t.error && t.content && t.content !== "Thinking…" && !t.calls?.length ? `<div class="faint" style="font-size: var(--type-caption);margin-top:6px">No calculations were used for this answer.</div>` : ""}
+          ${t.calls?.length ? `<details style="margin-top:6px"><summary class="faint" style="cursor:pointer;font-size: var(--type-caption)">${t.calls.length} calculation${t.calls.length > 1 ? "s" : ""} used · ${esc(t.model || "")}</summary><div class="faint" style="font-size: var(--type-caption);margin-top:4px">${t.calls.map(c => esc(c.tool) + (Object.keys(c.input || {}).length ? " " + esc(JSON.stringify(c.input)) : "")).join("<br>")}</div></details>` : ""}</div>`).join("")
       || `<div class="empty">Ask anything about your training, or start with a button below.</div>`;
   };
   const send = async (question) => {
@@ -620,11 +627,11 @@ pages.settings = async () => {
     }).join("")}
     <div style="margin-top:16px;display:flex;gap:10px"><button class="primary" id="save">Save</button><span id="saved" class="faint" style="align-self:center"></span></div></div>
     <div class="card" style="margin-top:16px"><h2>Claude API key</h2>
-      <p class="muted" style="font-size:13px;line-height:1.5">Used only by Ask when Claude is chosen. Stored in this Mac's keychain, never in a file or the repository.</p>
+      <p class="muted" style="font-size: var(--type-label);line-height:1.5">Used only by Ask when Claude is chosen. Stored in this Mac's keychain, never in a file or the repository.</p>
       <div style="display:flex;gap:10px"><input type="password" id="apikey" placeholder="sk-ant-…"><button id="savekey">Save key</button><button id="delkey">Remove</button></div>
-      <div id="keystate" class="faint" style="font-size:12px;margin-top:8px"></div></div>
-    <div class="card" style="margin-top:16px"><h2>Backup</h2><div class="muted" style="font-size:13px;line-height:1.7">Loaded: ${esc(st.backup || "none")}<br>Watching: ${st.folders.map(esc).join("<br>")}</div>
-      <p class="faint" style="font-size:12px;line-height:1.5">To update automatically, choose a folder inside iCloud Drive in the app (Settings → Backups &amp; recovery). Any iCloud Drive folder whose name contains "GymApp" is watched.</p>
+      <div id="keystate" class="faint" style="font-size: var(--type-caption);margin-top:8px"></div></div>
+    <div class="card" style="margin-top:16px"><h2>Backup</h2><div class="muted" style="font-size: var(--type-label);line-height:1.7">Loaded: ${esc(st.backup || "none")}<br>Watching: ${st.folders.map(esc).join("<br>")}</div>
+      <p class="faint" style="font-size: var(--type-caption);line-height:1.5">To update automatically, choose a folder inside iCloud Drive in the app (Settings → Backups &amp; recovery). Any iCloud Drive folder whose name contains "GymApp" is watched.</p>
       <button id="reload">Reload newest backup</button></div>`;
   $("#save").onclick = async () => {
     const out = {};

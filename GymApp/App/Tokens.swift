@@ -76,6 +76,9 @@ enum Tokens {
         static let caption: Font.TextStyle = .caption
         static let figureXL: Font.TextStyle = .largeTitle
         static let figure: Font.TextStyle = .title3
+        static let label: Font.TextStyle = .footnote
+        static let pageTitle: Font.TextStyle = .title
+        static let hero: Font.TextStyle = .largeTitle
     }
 
     /// Durations in seconds.

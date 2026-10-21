@@ -62,6 +62,9 @@
   --type-caption: 12px;
   --type-figure-x-l: 34px;
   --type-figure: 20px;
+  --type-label: 13px;
+  --type-page-title: 28px;
+  --type-hero: 56px;
   --motion-press: 0.15s;
   --motion-change: 0.25s;
   --motion-navigate: 0.35s;
