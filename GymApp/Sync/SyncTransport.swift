@@ -1,13 +1,82 @@
 import Foundation
 
-/// The wire format of docs/backend/01-plan.md §4. A row is the phone's own `WorkoutSetRecord`;
-/// dates are milliseconds since 1970, so they round-trip exactly.
+/// A synced row: the phone's own record, sent as its JSON. Tables are listed parents first.
+nonisolated enum SyncRecord: Equatable, Sendable {
+    case exercise(ExerciseRecord)
+    case workout(WorkoutRecord)
+    case workoutExercise(WorkoutExerciseRecord)
+    case workoutSet(WorkoutSetRecord)
+
+    static let tables = ["exercise", "workout", "workoutExercise", "workoutSet"]
+
+    var table: String {
+        switch self {
+        case .exercise: "exercise"
+        case .workout: "workout"
+        case .workoutExercise: "workoutExercise"
+        case .workoutSet: "workoutSet"
+        }
+    }
+
+    var id: String {
+        switch self {
+        case .exercise(let r): r.id
+        case .workout(let r): r.id
+        case .workoutExercise(let r): r.id
+        case .workoutSet(let r): r.id
+        }
+    }
+}
+
+/// The wire format of docs/backend/01-plan.md §4. Dates are milliseconds since 1970, so they
+/// round-trip exactly.
 nonisolated struct SyncChange: Codable, Equatable, Sendable {
     var table: String
     var id: String
     var op: String          // upsert | delete
     var updatedAt: Date
-    var row: WorkoutSetRecord?
+    var row: SyncRecord?
+
+    init(table: String, id: String, op: String, updatedAt: Date, row: SyncRecord?) {
+        self.table = table
+        self.id = id
+        self.op = op
+        self.updatedAt = updatedAt
+        self.row = row
+    }
+
+    private enum Keys: String, CodingKey { case table, id, op, updatedAt, row }
+
+    init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: Keys.self)
+        table = try c.decode(String.self, forKey: .table)
+        id = try c.decode(String.self, forKey: .id)
+        op = try c.decode(String.self, forKey: .op)
+        updatedAt = try c.decode(Date.self, forKey: .updatedAt)
+        if try !c.contains(.row) || c.decodeNil(forKey: .row) { row = nil; return }
+        switch table {
+        case "exercise": row = .exercise(try c.decode(ExerciseRecord.self, forKey: .row))
+        case "workout": row = .workout(try c.decode(WorkoutRecord.self, forKey: .row))
+        case "workoutExercise": row = .workoutExercise(try c.decode(WorkoutExerciseRecord.self, forKey: .row))
+        case "workoutSet": row = .workoutSet(try c.decode(WorkoutSetRecord.self, forKey: .row))
+        default: row = nil
+        }
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: Keys.self)
+        try c.encode(table, forKey: .table)
+        try c.encode(id, forKey: .id)
+        try c.encode(op, forKey: .op)
+        try c.encode(updatedAt, forKey: .updatedAt)
+        switch row {
+        case .exercise(let r): try c.encode(r, forKey: .row)
+        case .workout(let r): try c.encode(r, forKey: .row)
+        case .workoutExercise(let r): try c.encode(r, forKey: .row)
+        case .workoutSet(let r): try c.encode(r, forKey: .row)
+        case nil: try c.encodeNil(forKey: .row)
+        }
+    }
 }
 
 nonisolated struct SyncPullPage: Codable, Equatable, Sendable {

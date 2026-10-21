@@ -22,18 +22,24 @@ nonisolated final class SyncEngine: Sendable {
 
     static func isEnabled(_ db: Database) throws -> Bool { try value(db, "enabled") != nil }
 
-    /// Turns the triggers on and puts every existing set in the outbox once.
+    /// Turns the triggers on and puts every existing row in the outbox once, parents first.
+    /// Bundled library exercises go only if changed here (favourite, archived or a note).
     static func enable(_ db: Database) throws {
         guard try !isEnabled(db) else { return }
-        try db.execute(sql: """
-            INSERT INTO syncChange (tableName, rowId, op, changedAtMs)
-            SELECT 'workoutSet', id, 'upsert', CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER) FROM workoutSet
-            """)
+        let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
+        let filters = ["exercise": "WHERE source != 'library' OR isFavorite = 1 OR isArchived = 1 OR stickyNote IS NOT NULL"]
+        for table in SyncRecord.tables {
+            try db.execute(sql: """
+                INSERT INTO syncChange (tableName, rowId, op, changedAtMs)
+                SELECT '\(table)', id, 'upsert', \(now) FROM \(table) \(filters[table] ?? "")
+                """)
+        }
         try set(db, "enabled", "1")
     }
 
+    /// Rows with changes not yet sent.
     static func pending(_ db: Database) throws -> Int {
-        try Int.fetchOne(db, sql: "SELECT COUNT(DISTINCT rowId) FROM syncChange") ?? 0
+        try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM (SELECT DISTINCT tableName, rowId FROM syncChange)") ?? 0
     }
 
     static func value(_ db: Database, _ key: String) throws -> String? {
@@ -85,8 +91,9 @@ nonisolated final class SyncEngine: Sendable {
         while let (changes, sent) = try nextBatch() {
             try await transport.push(changes)
             try await db.writer.write { db in
-                for (rowId, seq) in sent {
-                    try db.execute(sql: "DELETE FROM syncChange WHERE tableName = 'workoutSet' AND rowId = ? AND seq <= ?", arguments: [rowId, seq])
+                for (table, rowId, seq) in sent {
+                    try db.execute(sql: "DELETE FROM syncChange WHERE tableName = ? AND rowId = ? AND seq <= ?",
+                                   arguments: [table, rowId, seq])
                 }
             }
         }
@@ -99,65 +106,111 @@ nonisolated final class SyncEngine: Sendable {
         }
     }
 
-    /// The newest change of up to `batchSize` rows, oldest first. Many edits of one row go as one.
-    private func nextBatch() throws -> ([SyncChange], [(String, Int64)])? {
+    /// The newest change of up to `batchSize` rows, in the order they were first changed, so a
+    /// parent normally goes before its children. Many edits of one row go as one change.
+    private func nextBatch() throws -> ([SyncChange], [(String, String, Int64)])? {
         try db.reader.read { db in
             let rows = try Row.fetchAll(db, sql: """
-                SELECT c.rowId, c.seq, c.op, c.changedAtMs FROM syncChange c
-                JOIN (SELECT rowId, MAX(seq) AS seq FROM syncChange WHERE tableName = 'workoutSet' GROUP BY rowId) m
+                SELECT c.tableName, c.rowId, c.seq, c.op, c.changedAtMs, m.firstSeq FROM syncChange c
+                JOIN (SELECT tableName, rowId, MAX(seq) AS seq, MIN(seq) AS firstSeq FROM syncChange GROUP BY tableName, rowId) m
                   ON m.seq = c.seq
-                ORDER BY c.seq LIMIT ?
+                ORDER BY m.firstSeq LIMIT ?
                 """, arguments: [Self.batchSize])
             guard !rows.isEmpty else { return nil }
             var changes: [SyncChange] = []
-            var sent: [(String, Int64)] = []
+            var sent: [(String, String, Int64)] = []
             for row in rows {
+                let table: String = row["tableName"]
                 let id: String = row["rowId"]
                 let at = Date(timeIntervalSince1970: Double(row["changedAtMs"] as Int64) / 1000)
-                let record = (row["op"] as String) == "upsert" ? try WorkoutSetRecord.fetchOne(db, key: id) : nil
-                changes.append(SyncChange(table: "workoutSet", id: id, op: record == nil ? "delete" : "upsert", updatedAt: at, row: record))
-                sent.append((id, row["seq"]))
+                let record = (row["op"] as String) == "upsert" ? try Self.fetch(table, id, db) : nil
+                changes.append(SyncChange(table: table, id: id, op: record == nil ? "delete" : "upsert", updatedAt: at, row: record))
+                sent.append((table, id, row["seq"]))
             }
             return (changes, sent)
         }
     }
 
+    private static func fetch(_ table: String, _ id: String, _ db: Database) throws -> SyncRecord? {
+        switch table {
+        case "exercise": try ExerciseRecord.fetchOne(db, key: id).map(SyncRecord.exercise)
+        case "workout": try WorkoutRecord.fetchOne(db, key: id).map(SyncRecord.workout)
+        case "workoutExercise": try WorkoutExerciseRecord.fetchOne(db, key: id).map(SyncRecord.workoutExercise)
+        case "workoutSet": try WorkoutSetRecord.fetchOne(db, key: id).map(SyncRecord.workoutSet)
+        default: nil
+        }
+    }
+
     /// Writes a pulled page with the triggers paused. A row with unsent local changes is skipped:
-    /// the local push decides it on the server. A set whose exercise is not on this phone yet is
-    /// parked and tried again on each pull.
+    /// the local push decides it on the server. A row whose parent is not on this phone yet, or
+    /// that breaks a local rule (a second workout in progress), is parked and tried again after
+    /// each page, until no parked row can be written.
     static func apply(_ page: SyncPullPage, in db: Database) throws {
         try set(db, "applying", "1")
-        for change in page.changes where change.table == "workoutSet" {
-            let pending = try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM syncChange WHERE rowId = ?)", arguments: [change.id]) ?? false
+        for change in page.changes where SyncRecord.tables.contains(change.table) {
+            let pending = try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM syncChange WHERE tableName = ? AND rowId = ?)",
+                                            arguments: [change.table, change.id]) ?? false
             if pending { continue }
-            try db.execute(sql: "DELETE FROM syncParked WHERE rowId = ?", arguments: [change.id])
+            try db.execute(sql: "DELETE FROM syncParked WHERE tableName = ? AND rowId = ?", arguments: [change.table, change.id])
             if change.op == "delete" {
-                _ = try WorkoutSetRecord.deleteOne(db, key: change.id)
-            } else if let row = change.row {
-                try save(row, in: db)
+                try db.execute(sql: "DELETE FROM \(change.table) WHERE id = ?", arguments: [change.id])
+            } else if let row = change.row, !(try write(row, in: db)) {
+                try db.execute(sql: "INSERT OR REPLACE INTO syncParked (tableName, rowId, payload) VALUES (?, ?, ?)",
+                               arguments: [change.table, change.id, try JSONEncoder.sync.encode(change)])
             }
         }
-        for parked in try Data.fetchAll(db, sql: "SELECT payload FROM syncParked") {
-            let row = try JSONDecoder.sync.decode(WorkoutSetRecord.self, from: parked)
-            if try exerciseExists(row, db) {
-                try row.save(db)
-                try db.execute(sql: "DELETE FROM syncParked WHERE rowId = ?", arguments: [row.id])
+        var progress = true
+        while progress {
+            progress = false
+            let parked = try Data.fetchAll(db, sql: """
+                SELECT payload FROM syncParked ORDER BY CASE tableName
+                  WHEN 'exercise' THEN 0 WHEN 'workout' THEN 1 WHEN 'workoutExercise' THEN 2 ELSE 3 END
+                """)
+            for payload in parked {
+                let change = try JSONDecoder.sync.decode(SyncChange.self, from: payload)
+                if let row = change.row, try write(row, in: db) {
+                    try db.execute(sql: "DELETE FROM syncParked WHERE tableName = ? AND rowId = ?", arguments: [change.table, change.id])
+                    progress = true
+                }
             }
         }
         try set(db, "cursor", String(page.nextCursor))
         try set(db, "applying", nil)
     }
 
-    private static func save(_ row: WorkoutSetRecord, in db: Database) throws {
-        if try exerciseExists(row, db) {
-            try row.save(db)
-        } else {
-            try db.execute(sql: "INSERT OR REPLACE INTO syncParked (rowId, payload) VALUES (?, ?)",
-                           arguments: [row.id, try JSONEncoder.sync.encode(row)])
+    /// Saves (update, else insert: never REPLACE, which would cascade-delete children) when the
+    /// parents are here. A link to a program day or library entry this phone lacks is dropped.
+    /// shortcut: a dropped program-day link goes back to the server if this row is edited here;
+    /// fix when programs sync.
+    private static func write(_ row: SyncRecord, in db: Database) throws -> Bool {
+        func exists(_ table: String, _ id: String?) throws -> Bool {
+            guard let id else { return true }
+            return try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM \(table) WHERE id = ?)", arguments: [id]) ?? false
         }
-    }
-
-    private static func exerciseExists(_ row: WorkoutSetRecord, _ db: Database) throws -> Bool {
-        try WorkoutExerciseRecord.exists(db, key: row.workoutExerciseId)
+        var written = false
+        do {
+            try db.inSavepoint {
+                switch row {
+                case .exercise(var r):
+                    if try !exists("exercise", r.libraryId) { r.libraryId = nil }
+                    try r.save(db)
+                case .workout(var r):
+                    if try !exists("programDay", r.programDayId) { r.programDayId = nil }
+                    try r.save(db)
+                case .workoutExercise(var r):
+                    guard try exists("workout", r.workoutId), try exists("exercise", r.exerciseId) else { return .rollback }
+                    if try !exists("dayExercise", r.dayExerciseId) { r.dayExerciseId = nil }
+                    try r.save(db)
+                case .workoutSet(let r):
+                    guard try exists("workoutExercise", r.workoutExerciseId) else { return .rollback }
+                    try r.save(db)
+                }
+                written = true
+                return .commit
+            }
+            return written
+        } catch let error as DatabaseError where error.resultCode == .SQLITE_CONSTRAINT {
+            return false
+        }
     }
 }

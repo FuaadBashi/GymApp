@@ -1,7 +1,9 @@
 # Bashi Gym sync server
 
 The practice backend from [docs/backend/01-plan.md](../docs/backend/01-plan.md): Vapor and
-Postgres. It syncs logged sets (`workoutSet`) only.
+Postgres. It syncs exercises, workouts, workout exercises and sets. Each row is stored as
+the phone's JSON in one table, `sync_row`, keyed by user, table and id. The server checks
+each kind of row against its rules before it stores the row.
 
 ## Run on the Mac
 
@@ -39,9 +41,15 @@ Dates on the wire are milliseconds since 1970.
 swift test
 ```
 
-These run against the `bashi_test` database. They check that the same push twice gives one
-row, that one user cannot read or overwrite another user's rows, the 401 cases, last-writer-wins
-with tombstones, paging and input checks.
+These run against the `bashi_test` database. They check:
+
+- the same push twice gives one row;
+- one user cannot read or overwrite another user's rows;
+- the 401 cases;
+- last-writer-wins, with tombstones;
+- paging;
+- the checks for each kind of row;
+- an exact round trip, including fields the server does not know.
 
 The app's tests against this server, run from the repository root with the server running:
 

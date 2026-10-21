@@ -33,9 +33,9 @@ final class SyncTests: XCTestCase {
 
     func set(_ id: String, load: Int = 10_000, reps: Int = 8, at ms: Double) -> Change {
         Change(table: "workoutSet", id: id, op: "upsert", updatedAt: Date(timeIntervalSince1970: ms / 1000),
-               row: SetRow(id: id, workoutExerciseId: "we-1", position: 0, loadHundredths: load, unit: "kg", reps: reps,
-                           type: "working", completedAt: Date(timeIntervalSince1970: ms / 1000), rpe: nil, externalId: nil,
-                           note: nil, repsInReserve: nil, annotations: []))
+               row: .object(["id": .string(id), "workoutExerciseId": .string("we-1"), "position": .int(0),
+                             "loadHundredths": .int(Int64(load)), "unit": .string("kg"), "reps": .int(Int64(reps)),
+                             "type": .string("working"), "completedAt": .int(Int64(ms)), "annotations": .array([])]))
     }
 
     @discardableResult
@@ -60,7 +60,7 @@ final class SyncTests: XCTestCase {
     }
 
     func count(_ id: String) async throws -> Int {
-        try await app.db.query("SELECT count(*)::int FROM workout_set WHERE id = \(id)", logger: app.logger)
+        try await app.db.query("SELECT count(*)::int FROM sync_row WHERE id = \(id)", logger: app.logger)
             .collect().first!.decode(Int.self)
     }
 
@@ -83,8 +83,8 @@ final class SyncTests: XCTestCase {
         XCTAssertEqual(after.changes.count, 1)
         XCTAssertEqual(after.changes, first.changes, "a repeated push changes nothing, not even server_seq")
         XCTAssertEqual(after.nextCursor, first.nextCursor)
-        XCTAssertEqual(after.changes.first?.row?.loadHundredths, 10_000)
-        XCTAssertEqual(after.changes.first?.row?.unit, "kg")
+        XCTAssertEqual(after.changes.first?.row?["loadHundredths"], .int(10_000))
+        XCTAssertEqual(after.changes.first?.row?["unit"], .string("kg"))
     }
 
     // MARK: Done-when check 4: one user cannot read another user's rows
@@ -100,9 +100,9 @@ final class SyncTests: XCTestCase {
         // Bob pushes with Alice's row id: he gets his own row, Alice's is untouched.
         try await push([set("S1", load: 99_900, at: 9_000)], token: b)
         let alicePull = try await pull(token: a)
-        XCTAssertEqual(alicePull.changes.map(\.row?.loadHundredths), [10_000])
+        XCTAssertEqual(alicePull.changes.map(\.row?["loadHundredths"]), [.int(10_000)])
         let bobAfter = try await pull(token: b)
-        XCTAssertEqual(bobAfter.changes.map(\.row?.loadHundredths), [99_900])
+        XCTAssertEqual(bobAfter.changes.map(\.row?["loadHundredths"]), [.int(99_900)])
     }
 
     func testMissingExpiredOrForeignTokensAre401() async throws {
@@ -127,7 +127,7 @@ final class SyncTests: XCTestCase {
         try await push([set("S1", load: 10_000, at: 2_000)], token: a)
         try await push([set("S1", load: 5_000, at: 1_000)], token: a)    // older: ignored
         var rows = try await pull(token: a)
-        XCTAssertEqual(rows.changes.first?.row?.loadHundredths, 10_000)
+        XCTAssertEqual(rows.changes.first?.row?["loadHundredths"], .int(10_000))
 
         try await push([Change(table: "workoutSet", id: "S1", op: "delete", updatedAt: Date(timeIntervalSince1970: 3), row: nil)], token: a)
         rows = try await pull(token: a)
@@ -157,10 +157,61 @@ final class SyncTests: XCTestCase {
     func testInvalidChangesAreRejected() async throws {
         let a = try await token("alice")
         var bad = set("S1", at: 1)
-        bad.row?.unit = "stone"
+        if case .object(var o) = bad.row { o["unit"] = .string("stone"); bad.row = .object(o) }
         try await push([bad], token: a, expect: .unprocessableEntity)
+        var missing = set("S1", at: 1)
+        if case .object(var o) = missing.row { o["reps"] = nil; missing.row = .object(o) }
+        try await push([missing], token: a, expect: .unprocessableEntity)
+        var otherId = set("S1", at: 1)
+        otherId.id = "S2"
+        try await push([otherId], token: a, expect: .unprocessableEntity)
+        var unknown = set("S1", at: 1)
+        unknown.table = "program"
+        try await push([unknown], token: a, expect: .unprocessableEntity)
         try await push((0...SyncController.maxPush).map { set("S\($0)", at: 1) }, token: a, expect: .payloadTooLarge)
         let count = try await count("S1")
         XCTAssertEqual(count, 0)
+    }
+
+    // MARK: Other kinds of row
+
+    func testEveryKindRoundTripsExactlyIncludingFieldsTheServerDoesNotKnow() async throws {
+        let a = try await token("alice")
+        let at = Date(timeIntervalSince1970: 1_790_000_000)
+        let exercise: JSON = .object(["id": .string("custom-1"), "name": .string("Hack squat"), "source": .string("custom"),
+                                      "defaultRestSeconds": .int(120), "preferredUnit": .string("kg"),
+                                      "primaryMuscles": .array([.string("quads")]), "isFavorite": .bool(true)])
+        let workout: JSON = .object(["id": .string("W1"), "startedAt": .int(1_790_000_000_000), "endedAt": .int(1_790_003_600_000),
+                                     "title": .string("Legs"), "effort": .int(8), "restDurationSeconds": .double(92.5)])
+        let we: JSON = .object(["id": .string("WE1"), "workoutId": .string("W1"), "exerciseId": .string("custom-1"),
+                                "position": .int(0), "restSeconds": .int(120), "note": .null])
+        let changes = [("exercise", "custom-1", exercise), ("workout", "W1", workout), ("workoutExercise", "WE1", we)]
+            .map { Change(table: $0.0, id: $0.1, op: "upsert", updatedAt: at, row: $0.2) }
+        try await push(changes, token: a)
+        let pulled = try await pull(token: a)
+        XCTAssertEqual(pulled.changes.map(\.table), ["exercise", "workout", "workoutExercise"])
+        XCTAssertEqual(pulled.changes.map(\.row), [exercise, workout, we])
+    }
+
+    func testTheSameIdInTwoTablesIsTwoRows() async throws {
+        let a = try await token("alice")
+        let workout: JSON = .object(["id": .string("X"), "startedAt": .int(1), "title": .string("W")])
+        try await push([set("X", at: 1), Change(table: "workout", id: "X", op: "upsert", updatedAt: Date(timeIntervalSince1970: 1), row: workout)], token: a)
+        let pulled = try await pull(token: a)
+        XCTAssertEqual(pulled.changes.count, 2)
+    }
+
+    func testInvalidRowsOfEachKindAreRejected() async throws {
+        let a = try await token("alice")
+        let bad: [(String, JSON)] = [
+            ("exercise", .object(["id": .string("E"), "name": .string("  "), "source": .string("custom"),
+                                  "defaultRestSeconds": .int(60), "preferredUnit": .string("kg")])),
+            ("workout", .object(["id": .string("E"), "startedAt": .int(2_000), "endedAt": .int(1_000), "title": .string("W")])),
+            ("workoutExercise", .object(["id": .string("E"), "workoutId": .string("W"), "exerciseId": .string("x"),
+                                         "position": .int(-1), "restSeconds": .int(60)])),
+        ]
+        for (table, row) in bad {
+            try await push([Change(table: table, id: "E", op: "upsert", updatedAt: Date(), row: row)], token: a, expect: .unprocessableEntity)
+        }
     }
 }

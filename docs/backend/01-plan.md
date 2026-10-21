@@ -445,9 +445,45 @@ Changes from the plan, and the reasons:
   (a deployed host). Plain HTTP to a LAN address needs an App Transport Security exception,
   which is an Info.plist change.
 
+### Step 2 built: all four tables (21 October 2026)
+
+The tables are `exercise`, `workout`, `workoutExercise` and `workoutSet`. Here is how the step
+differs from section 3:
+
+- **The server stores one table, `sync_row`,** with the key `(user_id, table_name, id)` and the
+  row as `jsonb`. This replaces one typed table for each kind of row.
+  - The server decodes each kind into its own struct, and checks it there: the rules match the
+    phone's CHECK constraints.
+  - It stores the JSON as it was sent, so a new field on the phone needs no server change.
+  - The server never queries inside a row, so typed columns would add code and gain nothing.
+- **Migration v11** adds a trigger on each of the three new tables. A bundled library exercise
+  is sent only when it is changed on this phone. Seeding uses `INSERT OR IGNORE`, which fires no
+  trigger. When sync is turned on, an existing library exercise goes only if it is a favourite,
+  is archived or has a note.
+- **Pull order.** The phone writes parents first. A child whose parent is not there yet is
+  parked, and so is a row that breaks a local rule (a second workout in progress). After each
+  page, the phone tries the parked rows again until no more of them can be written.
+- **Saving.** Rows are saved with update-then-insert, never `REPLACE`, which would delete the
+  children through the cascade.
+- **Links that are dropped.** A link to a program day, day item or library entry that this phone
+  does not have is set to NULL. Programs do not sync yet.
+
+Tests:
+
+- Server: 9 tests.
+  - An exact round trip of each kind of row, including fields that the server does not know.
+  - The same ID in two tables gives two rows.
+  - The checks for each kind of row.
+- App: 10 sync tests.
+  - A whole workout arrives on a second phone, with no echo back to the server.
+  - Children that arrive before their parents are parked, then written.
+  - A second workout in progress is parked until the phone's own workout ends.
+  - Library exercises that were not changed are never sent.
+  - Each kind of row survives the wire exactly.
+- Integration: a workout logged on one phone arrives on another through the real server.
+
 Next:
 
-1. Sync `exercise`, `workout` and `workoutExercise` with the same pattern.
 2. Deploy to Render and Neon (free), then run k6 against the deployed host.
 3. Sign in with Apple.
 4. Account export and delete.

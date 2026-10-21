@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -142,6 +142,32 @@ nonisolated enum Schema {
                       INSERT INTO syncChange (tableName, rowId, op, changedAtMs) VALUES ('workoutSet', \(row).id, '\(op)', \(now));
                     END
                     """)
+            }
+        }
+        migrator.registerMigration("v11") { db in
+            // Exercises, workouts and their exercises sync too. A bundled library exercise is
+            // recorded only once it is changed here (seeding inserts with OR IGNORE, so it never
+            // fires). Parked rows are now keyed by table as well as id.
+            try db.execute(sql: """
+                DROP TABLE syncParked;
+                CREATE TABLE syncParked (
+                  tableName TEXT NOT NULL,
+                  rowId TEXT NOT NULL,
+                  payload BLOB NOT NULL,
+                  PRIMARY KEY (tableName, rowId)
+                );
+                """)
+            let when = "EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled') AND NOT EXISTS (SELECT 1 FROM syncState WHERE key = 'applying')"
+            let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
+            for table in ["exercise", "workout", "workoutExercise"] {
+                for (event, row, op) in [("INSERT", "NEW", "upsert"), ("UPDATE", "NEW", "upsert"), ("DELETE", "OLD", "delete")] {
+                    let extra = table == "exercise" && event == "INSERT" ? " AND NEW.source != 'library'" : ""
+                    try db.execute(sql: """
+                        CREATE TRIGGER \(table)_sync_\(event.lowercased()) AFTER \(event) ON \(table) WHEN \(when)\(extra) BEGIN
+                          INSERT INTO syncChange (tableName, rowId, op, changedAtMs) VALUES ('\(table)', \(row).id, '\(op)', \(now));
+                        END
+                        """)
+                }
             }
         }
         return migrator
