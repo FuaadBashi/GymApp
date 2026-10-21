@@ -58,24 +58,24 @@ struct ProgressTab: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                // Redesign R.6: three summaries, each opening its detail; nothing removed.
                 VStack(alignment: .leading, spacing: 16) {
-                    weekly
+                    weekSummary
                     muscles
-                    recovery
-                    patterns
-                    recentRecords
-                    bodyWeight
-                    stepsCard
+                    NavigationLink { detail("Recovery") { recovery } } label: { linkRow("Recovery, last 72 hours") }
+                        .buttonStyle(.plain)
+                    liftsSummary
+                    VStack(spacing: 0) {
+                        NavigationLink { ReportsView(db: model.db) } label: { linkRow("Reports") }
+                        Divider()
+                        NavigationLink { RecapsView(db: model.db) } label: { linkRow("Recaps") }
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(16)
             }
             .background(Theme.background)
             .navigationTitle("Progress")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink { ReportsView(db: model.db) } label: { Label("Reports", systemImage: "doc.text.magnifyingglass") }
-                }
-            }
             .navigationDestination(for: String.self) { WorkoutDetailView(db: model.db, workoutId: $0) }
             .sheet(isPresented: $addingWeight) {
                 AddWeightSheet(unit: model.settings.weightUnit) { value, unit in Task { await model.addWeight(value, unit: unit) } }
@@ -86,6 +86,88 @@ struct ProgressTab: View {
             .onReceive(NotificationCenter.default.publisher(for: HealthService.didSync)) { _ in Task { await model.reload() } }
             .onChange(of: workout.justFinishedWorkoutId) { Task { await model.reload() } }
         }
+    }
+
+    // MARK: Summaries (R.6)
+
+    private var weekSummary: some View {
+        let week = model.weeks.last
+        let minutes = Int(((week?.seconds ?? 0) / 60).rounded())
+        return NavigationLink {
+            detail("This week") { weekly; bodyWeight; stepsCard }
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("This week").font(.headline)
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
+                }
+                Text("\(week?.sessions ?? 0) session\(week?.sessions == 1 ? "" : "s") · \(minutes) min · \(Load.format((week?.volumeKg ?? 0).rounded())) kg")
+                    .font(.subheadline)
+                Chart(model.weeks) { w in
+                    BarMark(x: .value("Week", w.start, unit: .weekOfYear), y: .value("Sessions", w.sessions))
+                        .foregroundStyle(w.id == model.weeks.last?.id ? Theme.accent : Theme.neutral)
+                }
+                .chartXAxis(.hidden).chartYAxis(.hidden)
+                .frame(height: 40)
+                .accessibilityLabel("Sessions per week, last 12 weeks: " + model.weeks.map { "\($0.sessions)" }.joined(separator: ", "))
+                Text("Sessions per week, 12 weeks · charts, body weight and steps").font(.caption).foregroundStyle(.secondary)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var liftsSummary: some View {
+        NavigationLink {
+            detail("Lifts") { recentRecords; patterns }
+        } label: {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Lifts").font(.headline)
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
+                }
+                if model.records.isEmpty {
+                    Text("Bests appear when a session beats every earlier one.").font(.subheadline).foregroundStyle(.secondary)
+                }
+                ForEach(model.records.prefix(3)) { r in
+                    HStack(alignment: .firstTextBaseline) {
+                        Image(systemName: "trophy.fill").foregroundStyle(Theme.accent).accessibilityHidden(true)
+                        Text(r.exercise.name).font(.subheadline).lineLimit(1)
+                        Spacer()
+                        Text("\(Load.format((r.valueKg * 10).rounded() / 10)) kg").font(Theme.number(.subheadline))
+                    }
+                }
+                Text("Recent bests and movement trends").font(.caption).foregroundStyle(.secondary)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func detail<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
+        ScrollView { VStack(alignment: .leading, spacing: 16) { content() }.padding(16) }
+            .background(Theme.background)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func linkRow(_ title: String) -> some View {
+        HStack {
+            Text(title).font(.subheadline)
+            Spacer()
+            Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
+        }
+        .padding(.vertical, 14).padding(.horizontal, 14)
+        .background(Theme.card, in: .rect(cornerRadius: 12))
+        .contentShape(.rect)
     }
 
     // MARK: Weekly

@@ -121,11 +121,11 @@ final class TapCountUITests: XCTestCase {
         record("9 open an exercise of today's plan")
     }
 
-    // 10
+    // 10 (R.6: one screen of summaries)
     func testWeeklyReview() {
         launch(workout: false)
         tap(button("Progress"))
-        let end = text("No weights yet")
+        let end = button("Recaps")
         var swipes = 0
         while !(end.exists && end.isHittable) && swipes < 12 {
             app.swipeUp()
@@ -134,6 +134,21 @@ final class TapCountUITests: XCTestCase {
         XCTAssertTrue(end.isHittable)
         taps += swipes
         record("10 weekly review (1 tap + \(swipes) scrolls to the end)")
+    }
+
+    /// R.6 proof: every old Progress section is two taps or fewer from the tab.
+    func testEveryProgressDetailWithinTwoTaps() {
+        launch(workout: false)
+        tap(button("Progress"))
+        tap(buttonStarting("This week"))
+        XCTAssertTrue(text("No weights yet").waitForExistence(timeout: 10))   // body weight, in the week's detail
+        XCTAssertTrue(text("Volume").exists)
+        app.navigationBars.buttons.firstMatch.tap()
+        tap(buttonStarting("Recovery"))
+        XCTAssertTrue(app.navigationBars["Recovery"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.firstMatch.tap()
+        tap(buttonStarting("Lifts"))
+        XCTAssertTrue(app.navigationBars["Lifts"].waitForExistence(timeout: 5))
     }
 
     // Plan edits
