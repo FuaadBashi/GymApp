@@ -21,6 +21,10 @@ python3 -I tools/build_tokens.py --check 2>/dev/null \
   && note "ok   tokens match design/tokens.json" \
   || { note "FAIL tokens: GymApp/App/Tokens.swift or studio/web/tokens.css differ from design/tokens.json (edit the JSON, run tools/build_tokens.py)"; fail=1; }
 
+python3 -I tools/check_literals.py 2>/tmp/gymapp-literals.log \
+  && note "ok   no literal colours, paddings, radii or font sizes in the app" \
+  || { note "FAIL literal design values (see /tmp/gymapp-literals.log)"; fail=1; }
+
 (cd studio && .venv/bin/python -m unittest discover -s tests -t . >/tmp/gymapp-studio-tests.log 2>&1) \
   && note "ok   studio tests" || { note "FAIL studio tests (see /tmp/gymapp-studio-tests.log)"; fail=1; }
 

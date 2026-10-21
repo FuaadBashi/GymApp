@@ -91,8 +91,8 @@ struct FocusView: View {
                             .font(.body.monospacedDigit())
                         }
                     }
-                    .padding(14)
-                    .background(Theme.card, in: .rect(cornerRadius: 14))
+                    .padding(Tokens.Space.m)
+                    .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
                 }
 
                 if let next = nextItem(snapshot, after: item) {
@@ -109,14 +109,14 @@ struct FocusView: View {
                             Spacer()
                             Image(systemName: "chevron.right").foregroundStyle(.secondary)
                         }
-                        .padding(14)
-                        .background(Theme.card, in: .rect(cornerRadius: 14))
+                        .padding(Tokens.Space.m)
+                        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(16)
+            .padding(Tokens.Space.l)
         }
         .gesture(DragGesture(minimumDistance: 40).onEnded { value in
             guard abs(value.translation.width) > abs(value.translation.height) else { return }

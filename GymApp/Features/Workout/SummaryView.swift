@@ -17,7 +17,7 @@ struct SummaryView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                if let summary { content(summary) } else { ProgressView().padding(.top, 80) }
+                if let summary { content(summary) } else { ProgressView().padding(.top, Tokens.Space.emptyTop) }
             }
             .background(Theme.background)
             .toolbar {
@@ -66,7 +66,7 @@ struct SummaryView: View {
 
             if !s.records.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Bests").font(.headline).padding(.bottom, 8)
+                    Text("Bests").font(.headline).padding(.bottom, Tokens.Space.s)
                     ForEach(s.records) { r in
                         NavigationLink { ExerciseDetailView(db: model.db, exerciseId: r.exercise.id) } label: {
                             HStack(alignment: .firstTextBaseline, spacing: 10) {
@@ -80,7 +80,7 @@ struct SummaryView: View {
                                 Text("\(Load.format((r.valueKg * 10).rounded() / 10)) kg").font(Theme.number(.subheadline))
                                 Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
                             }
-                            .padding(.vertical, 10)
+                            .padding(.vertical, Tokens.Space.s)
                             .contentShape(.rect)
                         }
                         .buttonStyle(.plain)
@@ -95,13 +95,13 @@ struct SummaryView: View {
                     Spacer()
                     Text("est. 1RM · tap for sets").font(.caption).foregroundStyle(.secondary)
                 }
-                .padding(.bottom, 8)
+                .padding(.bottom, Tokens.Space.s)
                 ForEach(s.exercises) { line in
                     lineRow(line)
                     Divider()
                 }
                 Text("Bar: today against last time. The share is today against the lift's best before today.")
-                    .font(.caption2).foregroundStyle(.secondary).padding(.top, 6)
+                    .font(.caption2).foregroundStyle(.secondary).padding(.top, Tokens.Space.s)
             }
 
             if !s.muscles.isEmpty {
@@ -115,7 +115,7 @@ struct SummaryView: View {
                             Text("\(m.muscle.displayName) \(Load.format(m.sets))")
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(Theme.color(for: m.muscle.region))
-                                .padding(.horizontal, 8).padding(.vertical, 4)
+                                .padding(.horizontal, Tokens.Space.s).padding(.vertical, Tokens.Space.xs)
                                 .background(Theme.color(for: m.muscle.region).opacity(0.15), in: Capsule())
                         }
                     }
@@ -148,11 +148,11 @@ struct SummaryView: View {
                 }
                 TextField("Note", text: $note, axis: .vertical)
                     .lineLimit(2...5)
-                    .padding(10)
-                    .background(Theme.row, in: .rect(cornerRadius: 10))
+                    .padding(Tokens.Space.s)
+                    .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
             }
         }
-        .padding(16)
+        .padding(Tokens.Space.l)
     }
 
     /// "2 bests, 5 lifts up", "5 lifts up", "Matched last time".
@@ -202,7 +202,7 @@ struct SummaryView: View {
                         }
                     }
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, Tokens.Space.s)
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
@@ -218,14 +218,14 @@ struct SummaryView: View {
                     if let note = line.note { Text(note).foregroundStyle(Theme.note) }
                     NavigationLink { ExerciseDetailView(db: model.db, exerciseId: line.exercise.id) } label: {
                         Label("Open \(line.exercise.name)", systemImage: "chevron.right")
-                            .font(.caption.weight(.semibold)).padding(.horizontal, 12).frame(minHeight: 36)
+                            .font(.caption.weight(.semibold)).padding(.horizontal, Tokens.Space.m).frame(minHeight: 36)
                             .background(Theme.row, in: Capsule())
                     }
                     .buttonStyle(.plain)
-                    .padding(.top, 4)
+                    .padding(.top, Tokens.Space.xs)
                 }
                 .font(.caption.monospacedDigit())
-                .padding(.bottom, 10)
+                .padding(.bottom, Tokens.Space.s)
             }
         }
     }
@@ -244,7 +244,7 @@ struct SummaryView: View {
             Spacer()
             Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, Tokens.Space.m)
         .contentShape(.rect)
     }
 

@@ -18,7 +18,7 @@ struct FormCuesView: View {
                 }
                 .labelStyle(.iconOnly)
             }
-            .padding(.bottom, 6)
+            .padding(.bottom, Tokens.Space.s)
             if cues.isEmpty {
                 Text("No cues yet. Add the one thing you want to remember for this lift.")
                     .font(.subheadline).foregroundStyle(.secondary)
@@ -32,7 +32,7 @@ struct FormCuesView: View {
                             Image(systemName: "eye").foregroundStyle(Theme.accent).accessibilityLabel("Shows in workouts")
                         }
                     }
-                    .padding(.vertical, 8)
+                    .padding(.vertical, Tokens.Space.s)
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)

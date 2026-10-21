@@ -18,9 +18,9 @@ struct BestBannerView: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(banner.status.color.opacity(0.6), lineWidth: 1))
+        .padding(Tokens.Space.m)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
+        .overlay(RoundedRectangle(cornerRadius: Tokens.Radius.card).strokeBorder(banner.status.color.opacity(0.6), lineWidth: 1))
         .shadow(color: .black.opacity(0.4), radius: 12, y: 4)
         .onTapGesture(perform: onDismiss)
         .accessibilityElement(children: .combine)

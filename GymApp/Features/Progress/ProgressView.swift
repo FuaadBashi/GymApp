@@ -72,7 +72,7 @@ struct ProgressTab: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(16)
+                .padding(Tokens.Space.l)
             }
             .background(Theme.background)
             .navigationTitle("Progress")
@@ -113,9 +113,9 @@ struct ProgressTab: View {
                 .accessibilityLabel("Sessions per week, last 12 weeks: " + model.weeks.map { "\($0.sessions)" }.joined(separator: ", "))
                 Text("Sessions per week, 12 weeks · charts, body weight and steps").font(.caption).foregroundStyle(.secondary)
             }
-            .padding(14)
+            .padding(Tokens.Space.m)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -144,16 +144,16 @@ struct ProgressTab: View {
                 }
                 Text("Recent bests and movement trends").font(.caption).foregroundStyle(.secondary)
             }
-            .padding(14)
+            .padding(Tokens.Space.m)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
     }
 
     private func detail<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
-        ScrollView { VStack(alignment: .leading, spacing: 16) { content() }.padding(16) }
+        ScrollView { VStack(alignment: .leading, spacing: 16) { content() }.padding(Tokens.Space.l) }
             .background(Theme.background)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
@@ -165,8 +165,8 @@ struct ProgressTab: View {
             Spacer()
             Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
         }
-        .padding(.vertical, 14).padding(.horizontal, 14)
-        .background(Theme.card, in: .rect(cornerRadius: 12))
+        .padding(.vertical, Tokens.Space.m).padding(.horizontal, Tokens.Space.m)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
         .contentShape(.rect)
     }
 
@@ -220,7 +220,7 @@ struct ProgressTab: View {
             HStack(spacing: 8) {
                 ForEach(SetBand.allCases, id: \.self) { band in
                     HStack(spacing: 3) {
-                        RoundedRectangle(cornerRadius: 2).fill(band.color).frame(width: 10, height: 10)
+                        RoundedRectangle(cornerRadius: Tokens.Radius.tag).fill(band.color).frame(width: 10, height: 10)
                         Text(band.label).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
@@ -260,7 +260,7 @@ struct ProgressTab: View {
             HStack(spacing: 8) {
                 ForEach(RecoveryBand.allCases, id: \.self) { band in
                     HStack(spacing: 3) {
-                        RoundedRectangle(cornerRadius: 2).fill(band.color).frame(width: 10, height: 10)
+                        RoundedRectangle(cornerRadius: Tokens.Radius.tag).fill(band.color).frame(width: 10, height: 10)
                         Text(band.label).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
@@ -397,9 +397,9 @@ struct ProgressTab: View {
             Text(title.uppercased()).font(.caption.weight(.bold)).foregroundStyle(.secondary)
             content()
         }
-        .padding(14)
+        .padding(Tokens.Space.m)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 }
 

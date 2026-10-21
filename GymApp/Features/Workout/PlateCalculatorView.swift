@@ -17,7 +17,7 @@ struct PlateCalculatorView: View {
         NavigationStack {
             VStack(spacing: 24) {
                 Text("\(Load.format(target)) \(unit.rawValue)")
-                    .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
+                    .font(.system(size: Tokens.Size.plateTotal, weight: .bold, design: .rounded).monospacedDigit())
                 if let available, let result = PlateMath.plates(target: target, bar: bar, available: available) {
                     plates(result.perSide)
                     Text(bar == 0 ? "No bar" : "Bar \(Load.format(bar)) \(unit.rawValue)").foregroundStyle(.secondary)
@@ -36,7 +36,7 @@ struct PlateCalculatorView: View {
                 }
                 Spacer()
             }
-            .padding(.top, 24)
+            .padding(.top, Tokens.Space.xl)
             .frame(maxWidth: .infinity)
             .navigationTitle("Plates")
             .navigationBarTitleDisplayMode(.inline)
@@ -55,10 +55,10 @@ struct PlateCalculatorView: View {
         return HStack(spacing: 3) {
             Capsule().fill(Theme.neutral).frame(width: 36, height: 10)
             ForEach(Array(perSide.enumerated()), id: \.offset) { _, plate in
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: Tokens.Radius.tag)
                     .fill(color(plate))
                     .frame(width: 16, height: 40 + 100 * plate / biggest)
-                    .overlay(Text(Load.format(plate)).font(.system(size: 8, weight: .bold)).rotationEffect(.degrees(-90)).fixedSize())
+                    .overlay(Text(Load.format(plate)).font(.system(size: Tokens.Size.plateLabel, weight: .bold)).rotationEffect(.degrees(-90)).fixedSize())
             }
             Capsule().fill(Theme.neutral).frame(width: 20, height: 10)
         }

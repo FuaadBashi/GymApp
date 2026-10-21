@@ -39,7 +39,7 @@ struct WorkoutView: View {
         .overlay(alignment: .top) {
             if let banner = model.banner {
                 BestBannerView(banner: banner) { model.dismissBanner() }
-                    .padding(.horizontal, 16).padding(.top, 8)
+                    .padding(.horizontal, Tokens.Space.l).padding(.top, Tokens.Space.s)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -113,10 +113,10 @@ struct WorkoutView: View {
                     }
                     Button("Add exercise", systemImage: "plus") { addingExercise = true }
                         .buttonStyle(SecondaryButtonStyle())
-                        .padding(.top, 4)
+                        .padding(.top, Tokens.Space.xs)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding(.horizontal, Tokens.Space.l)
+                .padding(.vertical, Tokens.Space.m)
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: model.currentItemId) { _, id in
@@ -174,12 +174,12 @@ private struct WorkoutHeader: View {
             Button("Finish") { confirmingFinish = true }
                 .font(.subheadline.bold())
                 .foregroundStyle(Theme.onAccent)
-                .padding(.horizontal, 14).frame(height: 40)
+                .padding(.horizontal, Tokens.Space.m).frame(height: 40)
                 .background(Theme.accent, in: Capsule())
                 .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.horizontal, Tokens.Space.l)
+        .padding(.vertical, Tokens.Space.s)
     }
 }
 

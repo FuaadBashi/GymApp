@@ -52,9 +52,9 @@ struct BestHintLine: View {
                 if let source { Text(SetFormat.short(source, loadMode: loadMode)).font(.caption.monospacedDigit()).foregroundStyle(.secondary) }
                 if let e1RM { Text(Self.delta(e1RM - best)).font(.caption.weight(.semibold)).foregroundStyle(e1RM - best > 0.01 ? Theme.accent : .secondary) }
             }
-            .padding(10)
+            .padding(Tokens.Space.s)
             .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
-            .background(Theme.row, in: .rect(cornerRadius: 12))
+            .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
@@ -118,8 +118,8 @@ struct TodaySuggestion: View {
                         .buttonStyle(.bordered).controlSize(.small)
                 }
             }
-            .padding(10)
-            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .padding(Tokens.Space.s)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: Tokens.Radius.row))
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("next-suggestion")
         }

@@ -96,15 +96,15 @@ struct ExerciseFilterBar: View {
                     chipLabel(filter.force.map { $0.rawValue.capitalized } ?? "Push/Pull", count: filter.force == nil ? 0 : 1, showCount: false)
                 }
             }
-            .padding(.vertical, 6)
+            .padding(.vertical, Tokens.Space.s)
         }
     }
 
     private func chipLabel(_ title: String, count: Int, showCount: Bool = true) -> some View {
         Text(count > 0 && showCount ? "\(title) · \(count)" : title)
             .font(.subheadline.weight(.medium))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 7)
+            .padding(.horizontal, Tokens.Space.m)
+            .padding(.vertical, Tokens.Space.s)
             .foregroundStyle(count > 0 ? Theme.onAccent : .primary)
             .background(count > 0 ? Theme.accent : Theme.row, in: Capsule())
     }

@@ -60,9 +60,9 @@ struct RecapView: View {
                     }
                     if !r.months.isEmpty { months(r) }
                 }
-                .padding(16)
+                .padding(Tokens.Space.l)
             } else {
-                ProgressView().padding(40)
+                ProgressView().padding(Tokens.Space.inset)
             }
         }
         .background(Theme.background)
@@ -96,8 +96,8 @@ struct RecapView: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .padding(Tokens.Space.m)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 
     private func tile(_ label: String, _ value: String) -> some View {
@@ -105,9 +105,9 @@ struct RecapView: View {
             Text(label.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
             Text(value).font(Theme.number(.title3)).rollingNumber(value).lineLimit(1).minimumScaleFactor(0.6)
         }
-        .padding(14)
+        .padding(Tokens.Space.m)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 
     static func hours(_ seconds: TimeInterval) -> String {

@@ -25,7 +25,7 @@ struct SetRow: View {
                     }
                 if set.type == .failed {
                     Text("F").font(.caption2.bold()).foregroundStyle(.white)
-                        .padding(.horizontal, 3).background(Theme.danger, in: .rect(cornerRadius: 3))
+                        .padding(.horizontal, Tokens.Space.xxs).background(Theme.danger, in: .rect(cornerRadius: Tokens.Radius.tag))
                 }
             }
             .frame(width: SetColumns.set, alignment: .leading)
@@ -68,9 +68,9 @@ struct SetRow: View {
         }
         .font(.title3.weight(.semibold).monospacedDigit())
         .foregroundStyle(done ? .primary : .secondary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 2)
-        .background(isSelected ? Theme.row : Color.clear, in: .rect(cornerRadius: 10))
+        .padding(.horizontal, Tokens.Space.s)
+        .padding(.vertical, Tokens.Space.xxs)
+        .background(isSelected ? Theme.row : Color.clear, in: .rect(cornerRadius: Tokens.Radius.row))
         .contentShape(.rect)
         .onTapGesture(perform: onSelect)
     }

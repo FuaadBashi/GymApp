@@ -15,12 +15,12 @@ struct WorkoutBottomBar: View {
                 action
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, Tokens.Space.m)
+        .padding(.vertical, Tokens.Space.s)
         // Card 9.1: a floating control, so Liquid Glass; the content under it stays opaque.
-        .glassEffect(.regular, in: .rect(cornerRadius: 30))
-        .padding(.horizontal, 10)
-        .padding(.bottom, 4)
+        .glassEffect(.regular, in: .rect(cornerRadius: Tokens.Radius.bar))
+        .padding(.horizontal, Tokens.Space.s)
+        .padding(.bottom, Tokens.Space.xs)
         .sensoryFeedback(.warning, trigger: restEnded)
         .task(id: model.snapshot?.workout.restEndsAt) {
             guard let end = model.snapshot?.workout.restEndsAt else { return }
@@ -47,7 +47,7 @@ struct WorkoutBottomBar: View {
             Button("Skip") { Task { await model.skipRest() } }
                 .font(.subheadline.bold())
                 .foregroundStyle(Theme.onAccent)
-                .padding(.horizontal, 14).frame(height: 40)
+                .padding(.horizontal, Tokens.Space.m).frame(height: 40)
                 .background(Theme.accent, in: Capsule())
                 .buttonStyle(.plain)
         }

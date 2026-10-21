@@ -78,7 +78,7 @@ struct SuggestDayView: View {
                 .labelsHidden()
             }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Tokens.Space.xxs)
     }
 
     /// The swapped-out exercise joins the alternatives so the choice can be undone.

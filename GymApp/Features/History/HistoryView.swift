@@ -85,7 +85,7 @@ struct WorkoutRow: View {
                 Text(item.exerciseNames.joined(separator: ", ")).font(.caption).foregroundStyle(.secondary).lineLimit(1)
             }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Tokens.Space.xxs)
     }
 
     static func duration(_ seconds: TimeInterval) -> String {

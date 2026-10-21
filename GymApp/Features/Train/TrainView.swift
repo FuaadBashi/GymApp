@@ -31,7 +31,7 @@ struct TrainView: View {
                             NextUpCard(card: next) { path.append(.day(next.id)) }
                         }
                         if !model.others.isEmpty {
-                            Text("OTHER DAYS").font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.top, 8)
+                            Text("OTHER DAYS").font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.top, Tokens.Space.s)
                             ForEach(model.others) { card in
                                 Button { path.append(.day(card.id)) } label: { CompactDayCard(card: card) }
                                     .buttonStyle(.plain)
@@ -45,7 +45,7 @@ struct TrainView: View {
                         } actions: {
                             Button("New program") { creating = true }.buttonStyle(.borderedProminent)
                         }
-                        .padding(.top, 80)
+                        .padding(.top, Tokens.Space.emptyTop)
                     }
                 }
                 .padding()
@@ -152,7 +152,7 @@ private struct NextUpCard: View {
             }
         }
         .padding()
-        .background(Theme.card, in: .rect(cornerRadius: 20))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 
     private var subtitle: String {
@@ -175,7 +175,7 @@ private struct CompactDayCard: View {
             Image(systemName: "chevron.right").foregroundStyle(.secondary)
         }
         .padding()
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
         .contentShape(.rect)
     }
 }
@@ -202,8 +202,8 @@ private struct SigningExpiryBanner: View {
         Label(text, systemImage: "exclamationmark.triangle.fill")
             .font(.subheadline)
             .foregroundStyle(color)
-            .padding(12)
+            .padding(Tokens.Space.m)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(color.opacity(0.15), in: .rect(cornerRadius: 12))
+            .background(color.opacity(0.15), in: .rect(cornerRadius: Tokens.Radius.row))
     }
 }

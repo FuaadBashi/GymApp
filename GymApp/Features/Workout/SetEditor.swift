@@ -64,7 +64,7 @@ struct SetEditor: View {
                     typing = field
                 } label: {
                     Text(value)
-                        .font(.system(size: large ? 56 : 26, weight: .bold, design: .rounded).monospacedDigit())
+                        .font(.system(size: large ? Tokens.Size.stepperFigureLarge : Tokens.Size.stepperFigure, weight: .bold, design: .rounded).monospacedDigit())
                         .lineLimit(1).minimumScaleFactor(0.5)
                         .frame(maxWidth: .infinity)
                         .rollingNumber(value)
@@ -75,7 +75,7 @@ struct SetEditor: View {
         }
         .padding(large ? 16 : 10)
         .frame(maxWidth: .infinity)
-        .background(Theme.row, in: .rect(cornerRadius: 14))
+        .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
     }
 
     private func stepButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {

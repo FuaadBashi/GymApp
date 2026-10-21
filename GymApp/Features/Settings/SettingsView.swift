@@ -134,7 +134,7 @@ struct SettingsView: View {
             }
             .overlay {
                 if importing {
-                    ProgressView("Importing…").padding(24).background(.regularMaterial, in: .rect(cornerRadius: 16))
+                    ProgressView("Importing…").padding(Tokens.Space.xl).background(.regularMaterial, in: .rect(cornerRadius: Tokens.Radius.card))
                 }
             }
             .sheet(item: $report, onDismiss: { Task { await model.reload() } }) {

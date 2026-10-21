@@ -83,7 +83,7 @@ struct ExerciseProgressView: View {
                             .annotation(position: .top, spacing: 6) {
                                 Text("\(Load.format((p.value * 10).rounded() / 10)) kg")
                                     .font(Theme.number(.caption, weight: .bold))
-                                    .padding(.horizontal, 8).padding(.vertical, 4)
+                                    .padding(.horizontal, Tokens.Space.s).padding(.vertical, Tokens.Space.xs)
                                     .background(Theme.raised, in: Capsule())
                             }
                     }
@@ -136,8 +136,8 @@ struct ExerciseProgressView: View {
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             }
-            .padding(10)
-            .background(Theme.row, in: .rect(cornerRadius: 10))
+            .padding(Tokens.Space.s)
+            .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

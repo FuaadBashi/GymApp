@@ -49,12 +49,12 @@ struct ReportDetailView: View {
                             Text(line).font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .padding(14)
+                    .padding(Tokens.Space.m)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.card, in: .rect(cornerRadius: 16))
+                    .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
                 }
             }
-            .padding(16)
+            .padding(Tokens.Space.l)
         }
         .background(Theme.background)
         .navigationTitle(report.title)

@@ -29,18 +29,18 @@ enum Theme {
     static let core = Tokens.core
     static let cardio = Tokens.cardio
     static let dayPalette: [Color] = [accent, upper, lower, core, cardio,
-                                      Color(red: 0.35, green: 0.85, blue: 0.85), gold, Color(red: 0.55, green: 0.95, blue: 0.75)]
+                                      Tokens.dayTeal, gold, Tokens.dayMint]
     static let neutral = Tokens.neutral
 
     /// Competition plate colours (25 red, 20 blue, 15 yellow, 10 green), so the calculator
     /// looks like the bar in the gym.
     static func plate(_ value: Double, unit: WeightUnit) -> Color {
         switch (unit, value) {
-        case (.kg, 25...), (.lb, 45...): Color(red: 0.86, green: 0.2, blue: 0.2)
-        case (.kg, 20...), (.lb, 35...): Color(red: 0.2, green: 0.4, blue: 0.9)
-        case (.kg, 15...), (.lb, 25...): Color(red: 0.95, green: 0.82, blue: 0.2)
-        case (.kg, 10...), (.lb, 10...): Color(red: 0.2, green: 0.7, blue: 0.35)
-        default: Color(white: 0.6)
+        case (.kg, 25...), (.lb, 45...): Tokens.plateRed
+        case (.kg, 20...), (.lb, 35...): Tokens.plateBlue
+        case (.kg, 15...), (.lb, 25...): Tokens.plateYellow
+        case (.kg, 10...), (.lb, 10...): Tokens.plateGreen
+        default: Tokens.plateGrey
         }
     }
 
@@ -69,7 +69,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .font(.headline)
             .foregroundStyle(Theme.onAccent)
             .frame(maxWidth: .infinity, minHeight: 54)
-            .background(Theme.accent.opacity(isEnabled ? 1 : 0.35), in: .rect(cornerRadius: 16))
+            .background(Theme.accent.opacity(isEnabled ? 1 : 0.35), in: .rect(cornerRadius: Tokens.Radius.card))
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .opacity(configuration.isPressed ? 0.85 : 1)
             .animation(.snappy(duration: 0.15), value: configuration.isPressed)
@@ -82,7 +82,7 @@ struct SecondaryButtonStyle: ButtonStyle {
             .font(.headline)
             .foregroundStyle(Theme.accent)
             .frame(maxWidth: .infinity, minHeight: 50)
-            .background(Theme.row, in: .rect(cornerRadius: 16))
+            .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.card))
             .opacity(configuration.isPressed ? 0.7 : 1)
     }
 }
@@ -97,8 +97,8 @@ struct Chip: View {
         Button(action: action) {
             Text(title)
                 .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
+                .padding(.horizontal, Tokens.Space.m)
+                .padding(.vertical, Tokens.Space.s)
                 .foregroundStyle(isSelected ? Theme.onAccent : .primary)
                 .background(isSelected ? Theme.accent : Theme.row, in: Capsule())
         }

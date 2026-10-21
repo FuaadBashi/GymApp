@@ -29,6 +29,6 @@ struct ExerciseRow: View {
                 .font(.caption.monospacedDigit())
             }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Tokens.Space.xxs)
     }
 }

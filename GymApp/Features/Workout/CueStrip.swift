@@ -25,8 +25,8 @@ struct CueStrip: View {
                     }
                     .accessibilityLabel("Dismiss cues")
                 }
-                .padding(10)
-                .background(Theme.row, in: .rect(cornerRadius: 10))
+                .padding(Tokens.Space.s)
+                .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
                 .contentShape(.rect)
                 .onTapGesture { model.dismissedCues.insert(exerciseId) }
             }

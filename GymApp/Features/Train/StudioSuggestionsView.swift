@@ -13,8 +13,8 @@ struct StudioSuggestionsCard: View {
                 Spacer()
                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             }
-            .padding(14)
-            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .padding(Tokens.Space.m)
+            .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

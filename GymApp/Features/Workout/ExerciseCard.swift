@@ -22,10 +22,10 @@ struct ExerciseCard: View {
         VStack(alignment: .leading, spacing: 12) {
             if isCurrent { expanded } else { collapsed }
         }
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 18))
+        .padding(Tokens.Space.m)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
         .overlay {
-            if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
+            if isCurrent { RoundedRectangle(cornerRadius: Tokens.Radius.card).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
         }
         .sheet(isPresented: $showingPage) {
             NavigationStack {
@@ -158,7 +158,7 @@ struct ExerciseCard: View {
                     }
                 if !set.metadataText.isEmpty {
                     Text(set.metadataText).font(.caption).foregroundStyle(Theme.note)
-                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 10)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, Tokens.Space.s)
                 }
                 if model.selectedSetId == set.id {
                     HStack {
@@ -185,15 +185,15 @@ struct ExerciseCard: View {
                     }
 
                     BestPanel(item: item, set: set) { onAction(.history) }
-                        .padding(.horizontal, 10).padding(.vertical, 4)
+                        .padding(.horizontal, Tokens.Space.s).padding(.vertical, Tokens.Space.xs)
                     SetEditor(set: set, exercise: item.exercise) { edit in
                         Task { await model.updateDurably(set.id, edit: edit) }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, Tokens.Space.xs)
                     ReserveChips(reserve: set.repsInReserve) { value in
                         Task { await model.setReserve(set.id, value) }
                     }
-                    .padding(.bottom, 4)
+                    .padding(.bottom, Tokens.Space.xs)
                 }
             }
         }
@@ -208,8 +208,8 @@ struct ExerciseCard: View {
                         .buttonStyle(.bordered).controlSize(.small)
                 }
             }
-            .padding(10)
-            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .padding(Tokens.Space.s)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: Tokens.Radius.row))
             .accessibilityElement(children: .combine)
         } else {
             TodaySuggestion(item: item)
@@ -238,8 +238,8 @@ struct ExerciseCard: View {
                 Label(note, systemImage: "pin.fill")
                     .font(.subheadline).foregroundStyle(Theme.note)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: 10))
+                    .padding(Tokens.Space.s)
+                    .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: Tokens.Radius.row))
             }
             .buttonStyle(.plain)
         }
@@ -253,7 +253,7 @@ struct ExerciseCard: View {
     private func extraChip(_ title: String, action: @escaping () -> Void) -> some View {
         Button(title, action: action)
             .font(.caption.weight(.semibold))
-            .padding(.horizontal, 12).frame(minHeight: 36)
+            .padding(.horizontal, Tokens.Space.m).frame(minHeight: 36)
             .background(Theme.row, in: Capsule())
             .buttonStyle(.plain)
     }
@@ -273,7 +273,7 @@ struct ExerciseCard: View {
         }
         .font(.caption2.weight(.bold))
         .foregroundStyle(.secondary)
-        .padding(.horizontal, 10)
+        .padding(.horizontal, Tokens.Space.s)
     }
 
     private var todayLine: String {

@@ -57,9 +57,9 @@ struct GoalStandardsView: View {
                     .font(.subheadline).foregroundStyle(.secondary)
             }
         }
-        .padding(14)
+        .padding(Tokens.Space.m)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 
     private func projectionText(_ target: Double) -> String {
@@ -98,9 +98,9 @@ struct GoalStandardsView: View {
                     Link(standards.attribution, destination: url).font(.caption2)
                 }
             }
-            .padding(14)
+            .padding(Tokens.Space.m)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.card, in: .rect(cornerRadius: 16))
+            .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
         }
     }
 

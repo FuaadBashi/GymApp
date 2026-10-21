@@ -27,8 +27,8 @@ struct NewProgramView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     TextField("Name", text: $name)
                         .font(.title3.weight(.semibold))
-                        .padding(14)
-                        .background(Theme.card, in: .rect(cornerRadius: 14))
+                        .padding(Tokens.Space.m)
+                        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
                         .onChange(of: name) { if name != Self.defaultNames[split] { nameEdited = true } }
                     Text("SPLIT").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                     ForEach(Split.allCases, id: \.self) { option in
@@ -47,7 +47,7 @@ struct NewProgramView: View {
                         }
                         .pickerStyle(.segmented)
                     }
-                    Toggle("Make active", isOn: $makeActive).padding(.top, 4)
+                    Toggle("Make active", isOn: $makeActive).padding(.top, Tokens.Space.xs)
                 }
                 .padding()
             }
@@ -74,9 +74,9 @@ struct NewProgramView: View {
                 .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 14))
-        .overlay(RoundedRectangle(cornerRadius: 14).stroke(selected ? Theme.accent : .clear, lineWidth: 2))
+        .padding(Tokens.Space.m)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
+        .overlay(RoundedRectangle(cornerRadius: Tokens.Radius.row).stroke(selected ? Theme.accent : .clear, lineWidth: 2))
     }
 
     private func create() {

@@ -24,6 +24,13 @@
   --color-neutral: #8C8C8C;
   --color-idle: #424242;
   --color-inert: #303030;
+  --color-day-teal: #59D9D9;
+  --color-day-mint: #8CF2BF;
+  --color-plate-red: #DB3333;
+  --color-plate-blue: #3366E6;
+  --color-plate-yellow: #F2D133;
+  --color-plate-green: #33B359;
+  --color-plate-grey: #999999;
   --space-xxs: 2px;
   --space-xs: 4px;
   --space-s: 8px;
@@ -31,6 +38,9 @@
   --space-l: 16px;
   --space-xl: 24px;
   --space-xxl: 32px;
+  --space-inset: 40px;
+  --space-empty-top: 80px;
+  --radius-tag: 4px;
   --radius-chip: 8px;
   --radius-row: 12px;
   --radius-card: 16px;
@@ -40,6 +50,10 @@
   --size-min-tap: 44px;
   --size-workout-control: 56px;
   --size-primary-button: 54px;
+  --size-stepper-figure: 26px;
+  --size-stepper-figure-large: 56px;
+  --size-plate-total: 44px;
+  --size-plate-label: 8px;
   --type-display: 34px;
   --type-title: 22px;
   --type-heading: 17px;

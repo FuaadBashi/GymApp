@@ -110,8 +110,8 @@ struct ExerciseDetailView: View {
                 Spacer(minLength: 0)
             }
             .font(.subheadline)
-            .padding(12)
-            .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: 12))
+            .padding(Tokens.Space.m)
+            .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: Tokens.Radius.row))
         }
         .buttonStyle(.plain)
     }
@@ -145,7 +145,7 @@ struct ExerciseDetailView: View {
                         }
                     }
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, Tokens.Space.s)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Divider()
             }
@@ -168,9 +168,9 @@ struct ExerciseDetailView: View {
                 Text(note.date).font(.caption).foregroundStyle(.secondary)
                 Text(note.text).font(.subheadline)
             }
-            .padding(12)
+            .padding(Tokens.Space.m)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.card, in: .rect(cornerRadius: 12))
+            .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.row))
         }
     }
 
@@ -183,7 +183,7 @@ struct ExerciseDetailView: View {
             row("Category", e.category.rawValue.capitalized)
             if let library = model.libraryName { row("Library match", library) }
             if !e.instructions.isEmpty {
-                Text("Instructions").font(.headline).padding(.top, 6)
+                Text("Instructions").font(.headline).padding(.top, Tokens.Space.s)
                 ForEach(Array(e.instructions.enumerated()), id: \.offset) { i, step in
                     HStack(alignment: .top) {
                         Text("\(i + 1).").foregroundStyle(.secondary).monospacedDigit()

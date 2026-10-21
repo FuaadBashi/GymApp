@@ -32,7 +32,7 @@ struct DayEditorView: View {
                         } label: {
                             Text(card.detail.day.focus.displayName)
                                 .font(.subheadline.weight(.medium))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .padding(.horizontal, Tokens.Space.s).padding(.vertical, Tokens.Space.xs)
                                 .background(Theme.row, in: Capsule())
                         }
                     }
@@ -153,7 +153,7 @@ struct DayEditorView: View {
                 Text("Last: \(lastTime)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Tokens.Space.xxs)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(.rect)   // the whole row answers a tap, not only its text
     }

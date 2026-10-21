@@ -22,12 +22,12 @@ struct MiniPlayer: View {
                     Button("Log") { Task { await model.log(setId) } }
                         .font(.caption.bold())
                         .foregroundStyle(Theme.onAccent)
-                        .padding(.horizontal, 12).frame(height: 30)
+                        .padding(.horizontal, Tokens.Space.m).frame(height: 30)
                         .background(Theme.accent, in: Capsule())
                         .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 14)
+            .padding(.horizontal, Tokens.Space.m)
             .contentShape(.rect)
             .onTapGesture { model.isPresented = true }
             .accessibilityAddTraits(.isButton)

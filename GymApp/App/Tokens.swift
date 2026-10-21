@@ -26,6 +26,13 @@ enum Tokens {
     static let neutral = Color(.sRGB, red: 140 / 255, green: 140 / 255, blue: 140 / 255)
     static let idle = Color(.sRGB, red: 66 / 255, green: 66 / 255, blue: 66 / 255)
     static let inert = Color(.sRGB, red: 48 / 255, green: 48 / 255, blue: 48 / 255)
+    static let dayTeal = Color(.sRGB, red: 89 / 255, green: 217 / 255, blue: 217 / 255)
+    static let dayMint = Color(.sRGB, red: 140 / 255, green: 242 / 255, blue: 191 / 255)
+    static let plateRed = Color(.sRGB, red: 219 / 255, green: 51 / 255, blue: 51 / 255)
+    static let plateBlue = Color(.sRGB, red: 51 / 255, green: 102 / 255, blue: 230 / 255)
+    static let plateYellow = Color(.sRGB, red: 242 / 255, green: 209 / 255, blue: 51 / 255)
+    static let plateGreen = Color(.sRGB, red: 51 / 255, green: 179 / 255, blue: 89 / 255)
+    static let plateGrey = Color(.sRGB, red: 153 / 255, green: 153 / 255, blue: 153 / 255)
 
     enum Space {
         static let xxs: CGFloat = 2
@@ -35,9 +42,12 @@ enum Tokens {
         static let l: CGFloat = 16
         static let xl: CGFloat = 24
         static let xxl: CGFloat = 32
+        static let inset: CGFloat = 40
+        static let emptyTop: CGFloat = 80
     }
 
     enum Radius {
+        static let tag: CGFloat = 4
         static let chip: CGFloat = 8
         static let row: CGFloat = 12
         static let card: CGFloat = 16
@@ -50,6 +60,10 @@ enum Tokens {
         static let minTap: CGFloat = 44
         static let workoutControl: CGFloat = 56
         static let primaryButton: CGFloat = 54
+        static let stepperFigure: CGFloat = 26
+        static let stepperFigureLarge: CGFloat = 56
+        static let plateTotal: CGFloat = 44
+        static let plateLabel: CGFloat = 8
     }
 
     /// Text roles as Dynamic Type styles.

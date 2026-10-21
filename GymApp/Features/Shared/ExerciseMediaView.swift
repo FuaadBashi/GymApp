@@ -18,7 +18,7 @@ struct ExerciseMediaView: View {
                     }
                 }
                 .aspectRatio(16 / 9, contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Tokens.Radius.row))
                 .accessibilityLabel("Demonstration of " + exercise.name)
                 .onTapGesture { playback.isPlaying ? playback.stop() : playback.play(video) }
                 .onHover { hovering in
@@ -62,12 +62,12 @@ struct PoseLoopView: View {
             ZStack {
                 Color.white   // the drawings and photos have white backgrounds
                 ForEach(Array(images.enumerated()), id: \.offset) { index, image in
-                    Image(uiImage: image).resizable().scaledToFit().padding(10)
+                    Image(uiImage: image).resizable().scaledToFit().padding(Tokens.Space.s)
                         .opacity(index == pose % max(images.count, 1) ? 1 : 0)
                 }
             }
             .aspectRatio(16 / 9, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: Tokens.Radius.row))
             .accessibilityElement()
             .accessibilityLabel("Demonstration of \(exerciseName), \(pose % 2 == 0 ? "start" : "end") position")
             .task(id: asset.files + [reduceMotion ? "still" : "moving"]) {

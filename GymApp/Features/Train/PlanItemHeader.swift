@@ -36,8 +36,8 @@ struct PlanItemHeader: View {
             }
         }
         .font(.subheadline)
-        .padding(16)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .padding(Tokens.Space.l)
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
         .onChange(of: item) { _, updated in
             Task { try? await db.writer.write { try ProgramWrites.updateItem($0, item: updated) } }
         }

@@ -77,7 +77,7 @@ struct WorkoutDetailView: View {
                         .buttonStyle(.bordered)
                 }
             }
-            .padding(16)
+            .padding(Tokens.Space.l)
         }
     }
 
@@ -85,7 +85,7 @@ struct WorkoutDetailView: View {
         VStack(alignment: .leading, spacing: 6) {
             if editing {
                 TextField("Title", text: $title).font(.title2.bold())
-                    .padding(8).background(Theme.row, in: .rect(cornerRadius: 10))
+                    .padding(Tokens.Space.s).background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
             } else {
                 Text(s.workout.title).font(.title2.bold())
             }
@@ -100,7 +100,7 @@ struct WorkoutDetailView: View {
                     }
                 }
                 TextField("Note", text: $note, axis: .vertical).lineLimit(2...5)
-                    .padding(8).background(Theme.row, in: .rect(cornerRadius: 10))
+                    .padding(Tokens.Space.s).background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.row))
             } else {
                 if let e = s.workout.effort { Text("Effort \(e)/10").font(.subheadline) }
                 if let n = s.workout.note { Text(n).font(.subheadline).foregroundStyle(.secondary) }
@@ -139,8 +139,8 @@ struct WorkoutDetailView: View {
                     }
                     .contentShape(.rect)
                     .onTapGesture { if editing { selectedSetId = selectedSetId == set.id ? nil : set.id } }
-                    .padding(.vertical, 2)
-                    .background(editing && selectedSetId == set.id ? Theme.row : Color.clear, in: .rect(cornerRadius: 8))
+                    .padding(.vertical, Tokens.Space.xxs)
+                    .background(editing && selectedSetId == set.id ? Theme.row : Color.clear, in: .rect(cornerRadius: Tokens.Radius.chip))
                     if editing && selectedSetId == set.id {
                         SetEditor(set: set, exercise: line.exercise) { edit in apply(set, edit) }
                     }
@@ -166,9 +166,9 @@ struct WorkoutDetailView: View {
             Text(title).font(.headline)
             content()
         }
-        .padding(14)
+        .padding(Tokens.Space.m)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
+        .background(Theme.card, in: .rect(cornerRadius: Tokens.Radius.card))
     }
 
     // MARK: Data
