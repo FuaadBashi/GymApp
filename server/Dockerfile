@@ -4,6 +4,8 @@ WORKDIR /build
 COPY Package.swift Package.resolved ./
 RUN swift package resolve
 COPY Sources ./Sources
+# The manifest declares the test target, so its folder must exist even though only Run is built.
+COPY Tests ./Tests
 RUN swift build -c release --product Run --static-swift-stdlib \
     && mkdir /staging && cp "$(swift build -c release --show-bin-path)/Run" /staging/
 
