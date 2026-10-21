@@ -30,6 +30,11 @@ nonisolated struct WorkoutSnapshot: Equatable {
         var step: Double
         var allTimeSet: WorkoutSetRecord? = nil   // the set that made each best, for "70 × 12"
         var windowSet: WorkoutSetRecord? = nil
+        /// Rulebook §5b: the best of the last session, when there is no window best and that
+        /// session is 30 or more days old; the nearer target after a long break.
+        var lastSessionBest: Double? = nil
+        var lastSessionSet: WorkoutSetRecord? = nil
+        var lastSessionDate: Date? = nil
         var next: NextSet.Suggestion? = nil          // rulebook §13
     }
 }
@@ -98,10 +103,22 @@ nonisolated enum WorkoutQueries {
                 }?.1
             }
             let windowDays = TrainingMath.bestWindows.first { $0.months == window?.months }?.days ?? 0
+            let last = sessions.first
+            let lastBest = last?.sets.compactMap { set -> (Double, WorkoutSetRecord)? in
+                guard set.type != .warmUp, set.type != .drop, let load = set.loadHundredths,
+                      let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                else { return nil }
+                return (e, set)
+            }.max { $0.0 < $1.0 }
+            let longAgo = last.map { (startedAt ?? now).timeIntervalSince($0.workout.startedAt) >= Double(TrainingMath.breakDays) * 86_400 } ?? false
+            let showLast = window == nil && longAgo && (lastBest?.0 ?? .infinity) < (allTime ?? 0) - 0.01
             hints[exerciseId] = .init(allTime: allTime, windowMonths: window?.months,
                                       windowBest: window?.best, step: TrainingMath.step(loads: loads),
                                       allTimeSet: setMaking(allTime, since: .distantPast),
                                       windowSet: setMaking(window?.best, since: now.addingTimeInterval(-Double(windowDays) * 86_400)),
+                                      lastSessionBest: showLast ? lastBest?.0 : nil,
+                                      lastSessionSet: showLast ? lastBest?.1 : nil,
+                                      lastSessionDate: showLast ? last?.workout.startedAt : nil,
                                       next: NextSet.suggest(sessions: sessions, repRange: repRange(mine.first?.workoutExercise, defaultRange),
                                                             stepKg: TrainingMath.step(loads: loads), loadMode: loadMode, now: startedAt ?? now))
         }

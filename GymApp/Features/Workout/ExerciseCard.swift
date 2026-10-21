@@ -11,6 +11,10 @@ struct ExerciseCard: View {
     @State private var editingNote = false
     @State private var noteDraft = ""
     @State private var metadata: MetadataDraft?
+    @State private var showingPage = false
+    @State private var showDemo = false
+    @State private var showSticky = false
+    @State private var showWorkoutNote = false
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
@@ -22,6 +26,13 @@ struct ExerciseCard: View {
         .background(Theme.card, in: .rect(cornerRadius: 18))
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: 18).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
+        }
+        .sheet(isPresented: $showingPage) {
+            NavigationStack {
+                ExerciseDetailView(db: model.db, exerciseId: item.exercise.id)
+                    .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { showingPage = false } } }
+            }
+            .onAppear { model.db.count("tap.exercisePage") }
         }
         .sheet(isPresented: Binding(get: { metadata != nil }, set: { if !$0 { metadata = nil } })) {
             if let metadata {
@@ -74,7 +85,14 @@ struct ExerciseCard: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 6) {
                 if item.workoutExercise.supersetGroup != nil { supersetLabel }
-                Text(item.exercise.name).font(.title3.bold())
+                Button { showingPage = true } label: {
+                    HStack(spacing: 4) {
+                        Text(item.exercise.name).font(.title3.bold())
+                        Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens the exercise page")
                 MuscleTags(muscles: item.exercise.primaryMuscles)
             }
             Spacer()
@@ -114,41 +132,6 @@ struct ExerciseCard: View {
 
         CueStrip(exerciseId: item.exercise.id)
 
-        if let note = item.exercise.stickyNote {
-            Button(action: editNote) {
-                Label(note, systemImage: "pin.fill")
-                    .font(.subheadline).foregroundStyle(Theme.note)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: 10))
-            }
-            .buttonStyle(.plain)
-        }
-
-        if let target = item.studioTarget, let unit = target.unit, let reps = target.reps {
-            HStack {
-                Label("Studio: \(Load.format(Double(target.loadHundredths ?? 0) / 100)) \(unit.rawValue) × \(reps)", systemImage: "wand.and.stars")
-                    .font(.subheadline.weight(.semibold))
-                Spacer()
-                if !item.plannedSets.isEmpty {
-                    Button("Fill sets") { Task { await model.fillStudioTarget(item.id) } }
-                        .buttonStyle(.bordered).controlSize(.small)
-                }
-            }
-            .padding(10)
-            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
-            .accessibilityElement(children: .combine)
-        } else {
-            TodaySuggestion(item: item)
-        }
-
-        ExerciseMediaView(exercise: item.exercise)
-        Button {
-            metadata = MetadataDraft(kind: .exercise, id: item.id, note: item.workoutExercise.note ?? "")
-        } label: {
-            Label(item.workoutExercise.note ?? "Add a note for this workout", systemImage: "note.text")
-                .font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
-        }
         Text(todayLine).font(.caption.weight(.medium)).foregroundStyle(.secondary)
 
         VStack(spacing: 4) {
@@ -215,10 +198,64 @@ struct ExerciseCard: View {
             }
         }
 
+        if let target = item.studioTarget, let unit = target.unit, let reps = target.reps {
+            HStack {
+                Label("Studio: \(Load.format(Double(target.loadHundredths ?? 0) / 100)) \(unit.rawValue) × \(reps)", systemImage: "wand.and.stars")
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                if !item.plannedSets.isEmpty {
+                    Button("Fill sets") { Task { await model.fillStudioTarget(item.id) } }
+                        .buttonStyle(.bordered).controlSize(.small)
+                }
+            }
+            .padding(10)
+            .background(Theme.accent.opacity(0.12), in: .rect(cornerRadius: 10))
+            .accessibilityElement(children: .combine)
+        } else {
+            TodaySuggestion(item: item)
+        }
+
         Button("Add set", systemImage: "plus") { Task { await model.addSet(to: item.id) } }
             .font(.subheadline.weight(.semibold))
             .frame(maxWidth: .infinity)
             .buttonStyle(.bordered)
+
+        // Redesign R.4: rare items below the sets, closed until asked for.
+        HStack(spacing: 8) {
+            extraChip(showDemo ? "Hide demonstration" : "Demonstration") { showDemo.toggle() }
+            extraChip(item.exercise.stickyNote == nil ? "Sticky note" : (showSticky ? "Hide note" : "Sticky note")) {
+                if item.exercise.stickyNote == nil { editNote() } else { showSticky.toggle() }
+            }
+            extraChip(item.workoutExercise.note == nil ? "Workout note" : (showWorkoutNote ? "Hide workout note" : "Workout note")) {
+                if item.workoutExercise.note == nil {
+                    metadata = MetadataDraft(kind: .exercise, id: item.id, note: "")
+                } else { showWorkoutNote.toggle() }
+            }
+        }
+        if showDemo { ExerciseMediaView(exercise: item.exercise) }
+        if showSticky, let note = item.exercise.stickyNote {
+            Button(action: editNote) {
+                Label(note, systemImage: "pin.fill")
+                    .font(.subheadline).foregroundStyle(Theme.note)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
+                    .background(Theme.note.opacity(0.12), in: .rect(cornerRadius: 10))
+            }
+            .buttonStyle(.plain)
+        }
+        if showWorkoutNote, let note = item.workoutExercise.note {
+            Button { metadata = MetadataDraft(kind: .exercise, id: item.id, note: note) } label: {
+                Label(note, systemImage: "note.text").font(.subheadline).frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    private func extraChip(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(title, action: action)
+            .font(.caption.weight(.semibold))
+            .padding(.horizontal, 12).frame(minHeight: 36)
+            .background(Theme.row, in: Capsule())
+            .buttonStyle(.plain)
     }
 
     private var header: some View {

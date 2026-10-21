@@ -24,10 +24,17 @@ struct BestHintLine: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityIdentifier("this-set-e1rm")
                 HStack(spacing: 8) {
+                    if let lastBest = hint.lastSessionBest {
+                        tile("Best last time", lastBest, hint.lastSessionSet, colour: Theme.gold)
+                    }
                     tile("All-time best", best, hint.allTimeSet, colour: Theme.accent)
                     if let months = hint.windowMonths, let windowBest = hint.windowBest {
                         tile("\(months)-month best", windowBest, hint.windowSet, colour: Theme.gold)
                     }
+                }
+                if let date = hint.lastSessionDate {
+                    Text("Last done \(date.formatted(.relative(presentation: .named))), so there is no 12-, 6- or 1-month best. Your last session is the nearer target.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
             }
         }
@@ -52,7 +59,7 @@ struct BestHintLine: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Shows the weight and reps that beat it")
-        .accessibilityIdentifier(title == "All-time best" ? "best-all-time" : "best-window")
+        .accessibilityIdentifier(title == "All-time best" ? "best-all-time" : title == "Best last time" ? "best-last-time" : "best-window")
     }
 
     static func kg(_ value: Double) -> String { "\(Load.format((value * 10).rounded() / 10)) kg" }

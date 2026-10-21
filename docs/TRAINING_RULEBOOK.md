@@ -127,6 +127,10 @@ Below that, the app shows the all-time best. When rule 2 of §5a applies, it als
 window best. Each best shows the set that made it (weight × reps) and the difference: "X kg
 above", "X kg below" or "level with it" (within 0.01 kg).
 
+**Best last time.** If no window best applies and you last did the lift 30 days or more ago,
+the app also shows the best set of that last session. After a long break, this is the nearer
+target. The app shows it only when it is below the all-time best.
+
 When you tap a best, its beat table opens. For each rep count in the day's range, the table
 shows the lightest load, in the exercise's learnt step (§7a), whose estimated 1RM is more than
 0.01 kg above that best.

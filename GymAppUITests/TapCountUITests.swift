@@ -82,6 +82,15 @@ final class TapCountUITests: XCTestCase {
         record("6 lift history during a workout")
     }
 
+    // 6, R.4: the exercise name opens its page, history included
+    func testExercisePageFromTheWorkout() {
+        launch()
+        tap(buttonStarting("Test Bench"))
+        XCTAssertTrue(button("Close").waitForExistence(timeout: 10))
+        XCTAssertTrue(text("Best estimated 1RM").waitForExistence(timeout: 5))
+        record("6 lift page and history during a workout (R.4: tap the name)")
+    }
+
     // 7
     func testSwapDuringAWorkout() {
         launch()

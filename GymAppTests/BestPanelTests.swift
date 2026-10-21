@@ -51,4 +51,36 @@ struct BestPanelTests {
         #expect(hint.windowSet?.loadHundredths == 9000)
         #expect(hint.windowSet?.reps == 8)
     }
+
+    /// Rulebook §5b: no set in the last 12 months, so no window best; the last session's best
+    /// (80 × 8, 400 days ago) is shown as the nearer target.
+    @MainActor @Test func bestLastTimeAfterALongBreak() async throws {
+        let db = try AppDatabase.inMemory()
+        try await db.writer.write { db in
+            try TestData.exercise(db, id: "dl")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-800 * 86_400), exercises: [("dl", [(100, 5)])])
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-400 * 86_400), exercises: [("dl", [(80, 8), (70, 8)])])
+        }
+        let model = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        try await model.start(dayId: nil)
+        await model.addExercise("dl")
+        let hint = try #require(model.snapshot?.hints["dl"])
+        #expect(hint.windowMonths == nil)
+        #expect(hint.lastSessionSet?.loadHundredths == 8000)
+        let best: Double = 80 * (1 + 8.0 / 30)
+        #expect(abs((hint.lastSessionBest ?? 0) - best) < 0.01)
+    }
+
+    @MainActor @Test func noBestLastTimeWhenTheLiftIsRecent() async throws {
+        let db = try AppDatabase.inMemory()
+        try await db.writer.write { db in
+            try TestData.exercise(db, id: "dl")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-60 * 86_400), exercises: [("dl", [(100, 5)])])
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-5 * 86_400), exercises: [("dl", [(80, 8)])])
+        }
+        let model = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        try await model.start(dayId: nil)
+        await model.addExercise("dl")
+        #expect(model.snapshot?.hints["dl"]?.lastSessionBest == nil)
+    }
 }
