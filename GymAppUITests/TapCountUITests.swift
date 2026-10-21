@@ -104,13 +104,12 @@ final class TapCountUITests: XCTestCase {
         record("8 finish")
     }
 
-    // 9
+    // 9 (R.3: straight from Train)
     func testOpenAnExerciseOfTodaysPlan() {
         launch(workout: false)
-        tap(button("Exercises"))
         tap(buttonStarting("Test Bench"))
-        XCTAssertTrue(text("Best estimated 1RM").waitForExistence(timeout: 10))
-        record("9 open an exercise of today's plan (via Exercises; not possible from the day)")
+        XCTAssertTrue(text("In Day A").waitForExistence(timeout: 10))
+        record("9 open an exercise of today's plan")
     }
 
     // 10
@@ -131,12 +130,19 @@ final class TapCountUITests: XCTestCase {
     // Plan edits
     func testChangeADaysTargets() {
         launch(workout: false)
-        tap(buttonStarting("Next up"))
-        tap(buttonStarting("Test Bench"))   // the row's centre: until 20 Oct only its text answered
-        tap(app.buttons["Increment"].firstMatch)
-        tap(button("Save"))
-        XCTAssertTrue(text("3 ×").waitForExistence(timeout: 5))
+        tap(buttonStarting("Test Bench"))
+        tap(app.buttons["Increment"].firstMatch)   // saves at once
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Sets: 3")).firstMatch.waitForExistence(timeout: 5))
         record("plan: change a day's targets (+1 set)")
+    }
+
+    func testSwapAnExerciseInThePlan() {
+        launch(workout: false)
+        tap(buttonStarting("Test Bench"))
+        tap(button("Swap"))
+        tap(buttonStarting("Test Row"))
+        XCTAssertTrue(button("Start Day A").waitForExistence(timeout: 10))
+        record("plan: swap an exercise")
     }
 
     func testReorderADay() {

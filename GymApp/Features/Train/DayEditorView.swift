@@ -2,7 +2,6 @@ import SwiftUI
 
 struct DayEditorView: View {
     @State private var model: DayEditorViewModel
-    @State private var editingItem: DayItem?
     @State private var picking = false
     @State private var suggesting = false
     @State private var renaming = false
@@ -44,16 +43,9 @@ struct DayEditorView: View {
 
                 Section {
                     ForEach(card.detail.items) { item in
-                        Group {
-                            if Prototype.on {
-                                NavigationLink {
-                                    ExerciseDetailView(db: model.db, exerciseId: item.exercise.id, plan: (item.dayExercise, card.detail.day.name))
-                                } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
-                            } else {
-                                Button { editingItem = item } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
-                                    .buttonStyle(.plain)
-                            }
-                        }
+                        NavigationLink {
+                            ExerciseDetailView(db: model.db, exerciseId: item.exercise.id, plan: (item.dayExercise, card.detail.day.name))
+                        } label: { itemRow(item, lastTime: card.lastTime[item.id]) }
                             .contextMenu {
                                 // Card 7.6
                                 Menu("Superset with…", systemImage: "link") {
@@ -110,11 +102,6 @@ struct DayEditorView: View {
                         }
                     }
                 }
-            }
-        }
-        .sheet(item: $editingItem) { item in
-            DayItemEditor(item: item.dayExercise, exerciseName: item.exercise.name) { updated in
-                model.write { try ProgramWrites.updateItem($0, item: updated) }
             }
         }
         .sheet(isPresented: $picking, onDismiss: { Task { await model.reload() } }) {

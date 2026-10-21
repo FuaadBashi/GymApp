@@ -1,16 +1,8 @@
 import GRDB
 import SwiftUI
 
-/// Redesign R.0 prototype (R.3): an exercise opened from a day, with that day's targets edited
-/// in place, Swap and Remove. Shown on the exercise page; launch with -prototype to try it.
-enum Prototype {
-    #if DEBUG
-    static let on = ProcessInfo.processInfo.arguments.contains("-prototype")
-    #else
-    static let on = false
-    #endif
-}
-
+/// Redesign R.3: an exercise opened from a day, with that day's targets edited in place, Swap
+/// and Remove. Shown at the top of the exercise page.
 struct PlanItemHeader: View {
     let db: AppDatabase
     let dayName: String
@@ -33,6 +25,7 @@ struct PlanItemHeader: View {
                     ForEach(Array(stride(from: 0, through: 300, by: 15)), id: \.self) { Text(RestFormat.clock($0)).tag($0) }
                 }
             }
+            TextField("Note: cue, seat setting…", text: Binding(get: { item.note ?? "" }, set: { item.note = $0.isEmpty ? nil : $0 }), axis: .vertical)
             HStack(spacing: 8) {
                 Button("Swap") { swapping = true }.buttonStyle(SecondaryButtonStyle())
                 Button("Remove", role: .destructive) {

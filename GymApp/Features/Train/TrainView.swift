@@ -103,16 +103,12 @@ private struct NextUpCard: View {
     @Environment(ActiveWorkoutModel.self) private var workout
     @Environment(\.appDatabase) private var db
 
-    private var rows: some View {
-        VStack(spacing: 9) { ForEach(card.detail.items) { row($0) } }
-    }
-
     private func row(_ item: DayItem) -> some View {
         HStack(alignment: .firstTextBaseline) {
             Text(item.exercise.name).lineLimit(1)
             Spacer(minLength: 12)
             Text(card.lastTime[item.id] ?? "new").monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
-            if Prototype.on { Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary) }
+            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
         }
         .font(.subheadline)
     }
@@ -128,13 +124,12 @@ private struct NextUpCard: View {
                     }
                     Text(card.detail.day.name).font(.title2.bold())
                     Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
-                    if !Prototype.on { rows }
                 }
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            if Prototype.on, let db {
-                // Redesign R.0 prototype: each lift opens its page in the plan.
+            if let db {
+                // Redesign R.3: each lift opens its page in the plan.
                 VStack(spacing: 0) {
                     ForEach(card.detail.items) { item in
                         NavigationLink {
