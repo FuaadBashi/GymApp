@@ -96,8 +96,13 @@ struct ExerciseCard: View {
                 MuscleTags(muscles: item.exercise.primaryMuscles)
             }
             Spacer()
+            // Out of the menu: swapping mid-workout (a machine is taken) is a two-tap job.
+            Button { onAction(.swap) } label: {
+                Image(systemName: "arrow.triangle.2.circlepath").font(.headline).frame(width: 36, height: 36).background(Theme.row, in: Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Swap exercise")
             Menu {
-                Button("Swap exercise", systemImage: "arrow.triangle.2.circlepath") { onAction(.swap) }
                 if [.total, .perHand, .perSide].contains(item.exercise.loadMode) {
                     let hasWarmUps = item.sets.contains { $0.type == .warmUp && $0.completedAt == nil }
                     Toggle(isOn: Binding(get: { hasWarmUps }, set: { on in Task { await model.setWarmUps(item.id, on: on) } })) {
@@ -129,6 +134,7 @@ struct ExerciseCard: View {
             }
             .accessibilityLabel("Exercise options")
         }
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: name plus two buttons on one line
 
         CueStrip(exerciseId: item.exercise.id)
 

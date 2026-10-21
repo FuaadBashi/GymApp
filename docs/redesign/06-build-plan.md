@@ -69,6 +69,6 @@ The interactive prototypes are at https://claude.ai/artifact/Hncqj8wMbWEyKeLq5QK
 ## Status (21 October 2026)
 
 R.0–R.11 are complete and pushed. Tap counts before and after: [tap-counts.md](tap-counts.md).
-Two targets were not met: swap during a workout (3, target 2) and reorder a day (4, target 2).
+Two targets were missed at first and met on 21 October: swap during a workout (now 2) and reorder a day (now 2).
 Still owed by the owner: the gym timing (log a set, find what to beat, one hand) and a test with
 two people who do not know the app. These need people, not code.

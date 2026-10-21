@@ -20,6 +20,12 @@ final class TapCountUITests: XCTestCase {
         taps += 1
     }
 
+    private func waitUntil(_ timeout: TimeInterval = 5, _ condition: () -> Bool) -> Bool {
+        let end = Date().addingTimeInterval(timeout)
+        while Date() < end { if condition() { return true }; RunLoop.current.run(until: Date().addingTimeInterval(0.2)) }
+        return condition()
+    }
+
     private func record(_ task: String) { print("TAPCOUNT \(task): \(taps)") }
 
     private func button(_ label: String) -> XCUIElement { app.buttons[label].firstMatch }
@@ -94,7 +100,6 @@ final class TapCountUITests: XCTestCase {
     // 7
     func testSwapDuringAWorkout() {
         launch()
-        tap(button("Exercise options"))
         tap(button("Swap exercise"))
         tap(buttonStarting("Test Row"))
         XCTAssertTrue(text("Test Row").waitForExistence(timeout: 5))
@@ -172,12 +177,13 @@ final class TapCountUITests: XCTestCase {
     func testReorderADay() {
         launch(workout: false)
         tap(buttonStarting("Next up"))
-        tap(button("Edit"))
-        let handle = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Reorder'")).element(boundBy: 1)
-        XCTAssertTrue(handle.waitForExistence(timeout: 5))
-        handle.press(forDuration: 0.5, thenDragTo: app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Reorder'")).element(boundBy: 0))
+        // No Edit mode: press and hold the second row, then drag it above the first.
+        let first = buttonStarting("Test Bench"), second = buttonStarting("Test Row")
+        XCTAssertTrue(second.waitForExistence(timeout: 5))
+        XCTAssertLessThan(first.frame.minY, second.frame.minY)
+        second.press(forDuration: 1.0, thenDragTo: first)
         taps += 1
-        tap(button("Done"))
+        XCTAssertTrue(waitUntil { second.frame.minY < first.frame.minY }, "the drag reordered the day")
         record("plan: reorder a day")
     }
 }
