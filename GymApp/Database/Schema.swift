@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -111,6 +111,38 @@ nonisolated enum Schema {
                   lastAt TEXT NOT NULL
                 )
                 """)
+        }
+        migrator.registerMigration("v10") { db in
+            // docs/backend/01-plan.md: the sync outbox. Triggers record every change to a set,
+            // from any writer, but only once sync is enabled; enabling backfills the outbox.
+            // `applying` is set while pulled rows are written, so they are not sent back.
+            try db.execute(sql: """
+                CREATE TABLE syncState (
+                  key TEXT PRIMARY KEY NOT NULL,
+                  value TEXT NOT NULL
+                );
+                CREATE TABLE syncChange (
+                  seq INTEGER PRIMARY KEY AUTOINCREMENT,
+                  tableName TEXT NOT NULL,
+                  rowId TEXT NOT NULL,
+                  op TEXT NOT NULL CHECK (op IN ('upsert','delete')),
+                  changedAtMs INTEGER NOT NULL
+                );
+                CREATE INDEX syncChange_row ON syncChange(tableName, rowId);
+                CREATE TABLE syncParked (
+                  rowId TEXT PRIMARY KEY NOT NULL,
+                  payload BLOB NOT NULL
+                );
+                """)
+            let when = "WHEN EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled') AND NOT EXISTS (SELECT 1 FROM syncState WHERE key = 'applying')"
+            let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
+            for (event, row, op) in [("INSERT", "NEW", "upsert"), ("UPDATE", "NEW", "upsert"), ("DELETE", "OLD", "delete")] {
+                try db.execute(sql: """
+                    CREATE TRIGGER workoutSet_sync_\(event.lowercased()) AFTER \(event) ON workoutSet \(when) BEGIN
+                      INSERT INTO syncChange (tableName, rowId, op, changedAtMs) VALUES ('workoutSet', \(row).id, '\(op)', \(now));
+                    END
+                    """)
+            }
         }
         return migrator
     }

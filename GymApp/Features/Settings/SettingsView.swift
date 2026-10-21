@@ -110,6 +110,7 @@ struct SettingsView: View {
                     Text("Same day compares with the last time you did this routine day, falling back to any workout.")
                 }
                 AppleHealthSection(db: model.db)
+                SyncSection(db: model.db)
                 Section("Data") {
                     NavigationLink("Backups & recovery") { RecoveryView(db: model.db) }
                     Button("Import from JEFIT, Strong or Hevy…", systemImage: "square.and.arrow.down") { choosingFile = true }

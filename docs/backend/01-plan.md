@@ -79,8 +79,9 @@ changes from "learn and defend a backend" to "only back up my data".
 | First deploy | API on Render's free tier (it sleeps when idle) + Neon or Supabase free Postgres (0.5 GB) | Free |
 | Live at 1,000 users a day | Small always-on API instance + paid Postgres with point-in-time restore (2 GB/year fits the base plan) | About $25–35/month |
 
-Note: the free database tiers are full after about three months at full load (section 1).
-That is fine for practice.
+Decision (21 October): **free tiers first.** Move to a paid plan only when the database reaches
+80% of the free limit. At full load, that is after about three months. server/README.md has
+the size query to run each week.
 
 ## 3. Data model
 
@@ -408,4 +409,45 @@ App:
    nothing. A delete with a newer time leaves a tombstone, which a pull returns.
 6. The app's full test command passes (`** TEST SUCCEEDED **`).
 
-**Stop here: no code until the owner approves this part and the dependencies.**
+## Status: hello world built (21 October 2026)
+
+Approved and built: `server/` (Vapor, postgres-nio, JWT), migration v10, `GymApp/Sync/`, and
+Settings → Sync (beta).
+
+Results:
+
+| Check | Result |
+|---|---|
+| 1. k6 at 10× peak, 5 min, local server (debug build, Postgres 17 on the Mac) | p95 **10 ms**, 0 of 5,301 requests failed. A run against a deployed host is still to do. |
+| 2. Network drop, no loss | `SyncEngineTests.setsLoggedOfflineSyncAfterTheNetworkReturns`: 3 failed pushes, then all 5 sets arrive with the same values |
+| 3. Same push twice gives one row | `SyncTests.testSamePushTwiceGivesOneRow`, both in sequence and in parallel; `server_seq` does not move |
+| 4. Users are isolated | `SyncTests.testUsersCannotReadOrOverwriteEachOther` and the 401 test |
+| 5. Last writer wins, tombstones | `SyncTests.testLastWriterWinsAndTombstones` |
+| End to end | `SyncServerIntegrationTests`: a set from one in-memory phone reaches another through the real server |
+
+Changes from the plan, and the reasons:
+
+- **No `updatedAt` column on `workoutSet`.** The outbox's `changedAtMs` is the change time,
+  and a pulled row is not compared on the phone: the server has already applied
+  last-writer-wins. A pulled row with unsent local changes is skipped, and the local push
+  decides it.
+- **The triggers record changes only after sync is turned on.** Turning it on puts every
+  existing set in the outbox once. Users who never sync pay nothing.
+- **Sets whose workout is not on the phone yet are parked** in `syncParked`, and tried again
+  on each pull. This lasts until workouts and exercises sync too.
+- **Sign-in uses the development route only** (`AUTH_DEV=1`). The Apple route is written but
+  needs the Sign in with Apple entitlement (a project-file change) and a device to test.
+- **No dead-letter table yet.** A rejected push (4xx) stops the run, and the changes stay in the
+  outbox. Settings shows the error.
+- **Sync runs when the app opens and from Settings → Sync now.** A trigger on network-path
+  change and background refresh is not built yet.
+- **The phone can reach the server only on the simulator (localhost).** A real phone needs HTTPS
+  (a deployed host). Plain HTTP to a LAN address needs an App Transport Security exception,
+  which is an Info.plist change.
+
+Next:
+
+1. Sync `exercise`, `workout` and `workoutExercise` with the same pattern.
+2. Deploy to Render and Neon (free), then run k6 against the deployed host.
+3. Sign in with Apple.
+4. Account export and delete.
