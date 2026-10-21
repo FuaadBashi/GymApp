@@ -107,6 +107,34 @@ accounts):
 DELETE FROM users WHERE apple_sub LIKE 'dev:load-%' OR apple_sub LIKE 'dev:smoke-%';
 ```
 
+## Backups and the restore drill
+
+`./restore_drill.sh` proves the backup procedure on the Mac. It:
+
+1. syncs 450 rows, including one delete, into a fresh database through the API;
+2. dumps the database with `pg_dump`;
+3. restores the dump into a second database;
+4. checks that a server on the restored copy returns exactly the same rows (count and hash).
+
+Last run on 21 October 2026: PASS.
+
+The same backup of the hosted database. Run it on the Mac, with the Neon connection string in
+your shell only, never in a file in the repository:
+
+```bash
+pg_dump --format=custom --no-owner "$NEON_URL" > ~/Backups/bashi-$(date +%F).dump
+```
+
+To restore it into a new Neon branch or a local database:
+
+```bash
+pg_restore --no-owner --dbname="$TARGET_URL" ~/Backups/bashi-YYYY-MM-DD.dump
+```
+
+Neon's own restore (**Backup & Restore** in the console) brings a branch back to a past moment
+within the plan's history window. The free plan keeps a short window, so the weekly `pg_dump`
+is the backup that counts.
+
 ## Free tier first: when to pay
 
 Start on a free Postgres (Neon or Supabase, about 1 GB). Check the size each week:

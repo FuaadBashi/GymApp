@@ -182,6 +182,13 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D67 | **`DELETE /v1/account`** deletes the user; every row goes with it through the cascade. A token for a deleted user then gets 401 | The right to be forgotten, in one statement | Soft delete | Build |
 | D68 | **On the phone: Download server copy, and Delete server copy (with a confirmation).** Deleting also turns sync off and clears the queue, cursor, parked and refused rows; the training data on the phone is never touched. Turning sync on again sends everything | A delete that left sync on would recreate the account at the next set | A delete that keeps sync on | Build |
 
+### 3.14 Step 7: the restore drill (21 October)
+
+| # | Decision | Reason | Rejected | By |
+|---|---|---|---|---|
+| D69 | **`server/restore_drill.sh` tests the backup procedure from start to end on local Postgres.** It syncs 450 rows (one deleted) through the API, runs `pg_dump`, restores into a second database with `pg_restore`, and compares a server's pull of both copies (count, tombstones, hash). It passed | "A backup that was never restored is not proof" (section 5 of the plan). The drill uses the same tools that a Neon backup uses | A drill against Neon (it needs the owner's credentials, which stay with the owner) | Build |
+| D70 | **The weekly backup is a `pg_dump` run by the owner**, with the connection string only in the shell | The free plan's own restore window is short. The credentials never go into the repository | A scheduled job that holds the credentials | Build |
+
 ## 4. What was built
 
 ### Server (`server/`)
@@ -250,8 +257,7 @@ Not verified yet:
 3. No background refresh while the app is closed (D64).
 4. Sign-in is the development route; the hosted server is open to account creation (D44, D47).
 6. Render's free service sleeps; the first request after sleep takes about a minute.
-7. Backups depend on Neon's free tier. Point-in-time restore needs the paid plan. The restore
-   has not been tested.
+7. Backups: the procedure is tested locally (D69); a weekly `pg_dump` of Neon is the owner's job (D70).
 
 ## 7. Next steps, in order
 
