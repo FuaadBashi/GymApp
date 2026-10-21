@@ -85,11 +85,25 @@ nonisolated struct SyncPullPage: Codable, Equatable, Sendable {
     var hasMore: Bool
 }
 
-nonisolated enum SyncError: Error, Equatable {
+nonisolated enum SyncError: LocalizedError, Equatable {
     /// Worth retrying later: no network, a timeout, a 5xx or a 429.
     case transient(String)
     /// Retrying the same request cannot help (a 4xx other than 401 or 429).
     case rejected(Int)
+
+    var errorDescription: String? {
+        switch self {
+        case .transient(let why): "Could not reach the server (\(why))"
+        case .rejected(let status): "The server refused the data (HTTP \(status))"
+        }
+    }
+
+    /// A pasted address often ends in a space or a full stop; either breaks the secure connection.
+    static func cleanServer(_ text: String) -> String {
+        var s = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        while s.hasSuffix(".") || s.hasSuffix("/") { s.removeLast() }
+        return s
+    }
 }
 
 nonisolated protocol SyncTransport: Sendable {

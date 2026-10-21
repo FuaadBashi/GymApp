@@ -42,6 +42,7 @@ struct SyncSection: View {
 
     private func sync() {
         working = true
+        server = SyncError.cleanServer(server)
         status = "Syncing…"
         Task {
             defer { working = false; load() }

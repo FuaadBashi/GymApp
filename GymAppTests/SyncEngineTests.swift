@@ -213,6 +213,12 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         }
     }
 
+    @Test func aPastedServerAddressIsCleaned() {
+        #expect(SyncError.cleanServer(" https://bashi-gym-sync.onrender.com.\n") == "https://bashi-gym-sync.onrender.com")
+        #expect(SyncError.cleanServer("https://x.example/") == "https://x.example")
+        #expect(SyncError.transient("timed out").localizedDescription == "Could not reach the server (timed out)")
+    }
+
     @Test func backoffDoublesUpToFiveMinutes() {
         #expect(SyncEngine.delay(attempt: 0, jitter: 0) == 1)
         #expect(SyncEngine.delay(attempt: 3, jitter: 0) == 8)
