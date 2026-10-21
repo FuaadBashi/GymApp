@@ -25,11 +25,15 @@ struct StudioSuggestionsSheet: View {
     let db: AppDatabase
     var onDecided: () -> Void = {}
     @State private var inbox = StudioInbox.shared
+    @State private var selecting = false
+    @State private var selected: Set<String> = []
+    @State private var working = false
+    @State private var error: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
-            List {
+            List(selection: $selected) {
                 if inbox.pending.isEmpty {
                     Text("Nothing waiting. New suggestions appear when the studio publishes them to your backup folder.")
                         .foregroundStyle(.secondary)
@@ -45,13 +49,58 @@ struct StudioSuggestionsSheet: View {
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }
+                    .tag(s.id)
                 }
+                if let error { Text(error).foregroundStyle(Theme.danger) }
             }
+            .environment(\.editMode, .constant(selecting ? .active : .inactive))
             .themedList()
-            .navigationTitle("Studio suggestions")
+            .navigationTitle(selecting ? "\(selected.count) selected" : "Studio suggestions")
             .navigationBarTitleDisplayMode(.inline)
             .refreshable { await inbox.reload(db) }
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    if !inbox.pending.isEmpty {
+                        Button(selecting ? "Cancel" : "Select") { selecting.toggle(); selected = [] }
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    if selecting {
+                        let all = Set(inbox.pending.map(\.id))
+                        Button(selected == all ? "Select none" : "Select all") { selected = selected == all ? [] : all }
+                    } else {
+                        Button("Done") { dismiss() }
+                    }
+                }
+                if selecting {
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        Button("Use (\(selected.count))") { decide(accept: true) }
+                            .disabled(selected.isEmpty || working)
+                        Spacer()
+                        Button("Dismiss (\(selected.count))", role: .destructive) { decide(accept: false) }
+                            .disabled(selected.isEmpty || working)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Applies the choice to each selected suggestion in turn; one failure does not stop the rest.
+    private func decide(accept: Bool) {
+        let chosen = inbox.pending.filter { selected.contains($0.id) }
+        working = true
+        Task {
+            var failed: [String] = []
+            for s in chosen {
+                do {
+                    if accept { try await StudioInbox.shared.accept(s, db: db) } else { try await StudioInbox.shared.dismiss(s, db: db) }
+                } catch { failed.append(s.title) }
+            }
+            working = false
+            selected = []
+            selecting = false
+            error = failed.isEmpty ? nil : "Not applied: " + failed.joined(separator: ", ")
+            onDecided()
         }
     }
 }
