@@ -1,10 +1,11 @@
 :root {
-  /* Card 9.5: the app's Theme tokens (GymApp/App/Theme.swift), so both look like one product. */
-  --bg: #09090b; --panel: #0f0f11; --card: #17171a; --row: #232327; --raised: #313136; --line: rgba(255, 255, 255, .08);
-  --text: #f2f2f4; --dim: #9a9aa3; --faint: #6b6b73;
-  --volt: #c7f242; --volt-dim: rgba(199, 242, 66, .14); --gold: #ffc238; --gold-dim: rgba(255, 194, 56, .14);
-  --orange: #ff9945; --red: #ff5c5c; --note: #fad461; --blue: #73a8ff; --purple: #bf8cff;
-  --radius: 16px;
+  /* Card R.2: the shared tokens (tokens.css, generated from design/tokens.json) under the studio's short names. */
+  --bg: var(--color-background); --panel: var(--color-surface0); --card: var(--color-surface1); --row: var(--color-surface2);
+  --raised: var(--color-surface3); --line: var(--color-separator);
+  --text: var(--color-text-primary); --dim: var(--color-text-secondary); --faint: var(--color-text-tertiary);
+  --volt: var(--color-accent); --volt-dim: var(--color-accent-soft); --gold: var(--color-gold); --gold-dim: var(--color-gold-soft);
+  --orange: var(--color-warning); --red: var(--color-danger); --note: var(--color-note); --blue: var(--color-upper); --purple: var(--color-core);
+  --radius: var(--radius-card);
   --num: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   /* The Mac's system font: the same family as the app, and available offline. */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;

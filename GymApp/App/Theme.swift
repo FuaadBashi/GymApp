@@ -1,36 +1,36 @@
 import SwiftUI
 
-/// Decision #34, refined in card 9.1: a near-black base with three surface levels; colour
+/// Decision #34, refined in card 9.1; values from design/tokens.json via Tokens (card R.2): a near-black base with three surface levels; colour
 /// belongs to data and meaning. Volt marks progress and all-time bests, gold 1/6/12-month
 /// bests, orange warnings, red errors. Text stays in the system greys. Views use these
 /// tokens, never literal colours.
 enum Theme {
     // Surfaces, darkest first.
-    static let background = Color(red: 0.035, green: 0.035, blue: 0.043)
-    static let card = Color(red: 0.090, green: 0.090, blue: 0.102)       // surface 1
-    static let row = Color(red: 0.137, green: 0.137, blue: 0.153)        // surface 2
-    static let raised = Color(red: 0.192, green: 0.192, blue: 0.212)     // surface 3
-    static let separator = Color.white.opacity(0.08)
+    static let background = Tokens.background
+    static let card = Tokens.surface1
+    static let row = Tokens.surface2
+    static let raised = Tokens.surface3
+    static let separator = Tokens.separator
     /// Body-map regions: not trained, and no muscle at all.
-    static let idle = Color(white: 0.26)
-    static let inert = Color(white: 0.19)
+    static let idle = Tokens.idle
+    static let inert = Tokens.inert
 
     // Meaning.
-    static let accent = Color(red: 0.78, green: 0.95, blue: 0.26)       // volt
-    static let onAccent = Color.black
-    static let gold = Color(red: 1.0, green: 0.76, blue: 0.22)
-    static let warning = Color(red: 1.0, green: 0.60, blue: 0.27)
-    static let danger = Color(red: 1.0, green: 0.36, blue: 0.36)
-    static let note = Color(red: 0.98, green: 0.83, blue: 0.38)
+    static let accent = Tokens.accent       // volt
+    static let onAccent = Tokens.onAccent
+    static let gold = Tokens.gold
+    static let warning = Tokens.warning
+    static let danger = Tokens.danger
+    static let note = Tokens.note
 
     // Body regions and program days.
-    static let upper = Color(red: 0.45, green: 0.66, blue: 1.0)
-    static let lower = Color(red: 1.0, green: 0.62, blue: 0.35)
-    static let core = Color(red: 0.75, green: 0.55, blue: 1.0)
-    static let cardio = Color(red: 1.0, green: 0.45, blue: 0.70)
+    static let upper = Tokens.upper
+    static let lower = Tokens.lower
+    static let core = Tokens.core
+    static let cardio = Tokens.cardio
     static let dayPalette: [Color] = [accent, upper, lower, core, cardio,
                                       Color(red: 0.35, green: 0.85, blue: 0.85), gold, Color(red: 0.55, green: 0.95, blue: 0.75)]
-    static let neutral = Color(white: 0.55)
+    static let neutral = Tokens.neutral
 
     /// Competition plate colours (25 red, 20 blue, 15 yellow, 10 green), so the calculator
     /// looks like the bar in the gym.
