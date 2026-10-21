@@ -245,4 +245,29 @@ final class SyncTests: XCTestCase {
             try await push([Change(table: "dayExercise", id: "I", op: "upsert", updatedAt: at.addingTimeInterval(1), row: .object(o))],
                            token: a, expect: .unprocessableEntity) }
     }
+
+    func testExportHasEveryLiveRowAndDeleteRemovesTheAccount() async throws {
+        let a = try await token("alice")
+        let b = try await token("bob")
+        try await push([set("S1", at: 1_000), set("S2", at: 1_000)], token: a)
+        try await push([Change(table: "workoutSet", id: "S2", op: "delete", updatedAt: Date(timeIntervalSince1970: 2), row: nil)], token: a)
+        try await push([set("B1", at: 1_000)], token: b)
+
+        try await app.test(.GET, "v1/account/export", beforeRequest: { req async throws in req.headers.bearerAuthorization = .init(token: a) }) { res async throws in
+            XCTAssertEqual(res.status, .ok)
+            XCTAssertEqual(res.headers.contentDisposition?.filename, "bashi-gym-export.json")
+            let export = try JSONDecoder.sync.decode(AccountController.Export.self, from: Data(buffer: res.body))
+            XCTAssertEqual(export.rows.map(\.id), ["S1"], "live rows only, and only this user's")
+            XCTAssertEqual(export.rows.first?.row["loadHundredths"], .int(10_000))
+        }
+
+        try await app.test(.DELETE, "v1/account", beforeRequest: { req async throws in req.headers.bearerAuthorization = .init(token: a) }) { res async throws in
+            XCTAssertEqual(res.status, .noContent)
+        }
+        let left = try await app.db.query("SELECT count(*)::int FROM sync_row", logger: app.logger).collect().first!.decode(Int.self)
+        XCTAssertEqual(left, 1, "only bob's row is left")
+        // The deleted user's token no longer works for a push.
+        try await push([set("S3", at: 3_000)], token: a, expect: .unauthorized)
+        try await app.test(.GET, "v1/account/export") { res async throws in XCTAssertEqual(res.status, .unauthorized) }
+    }
 }

@@ -174,6 +174,14 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D64 | **No background refresh while the app is closed** | It needs the BackgroundTasks capability and an Info.plist entry, a project-file change. Syncing after each set and on network return covers the gym case | `BGAppRefreshTask` now | Build; ask the owner before adding |
 | D65 | **Dead letters replace D40.** When the server refuses a batch (4xx), the phone sends its changes one at a time; each refused change goes to `syncDeadLetter` (migration v13) with its status, and the rest still go. Settings shows the count | One bad row can no longer stop sync. The row itself stays on the phone | Stopping the run (D40) | Build |
 
+### 3.13 Step 6: export and delete (21 October)
+
+| # | Decision | Reason | Rejected | By |
+|---|---|---|---|---|
+| D66 | **`GET /v1/account/export`** returns every live row of the user as the phone sent it, as a JSON download; tombstones are left out | The right to take your data. The rows are the phone's own JSON, so the file is complete | A CSV per table | Build |
+| D67 | **`DELETE /v1/account`** deletes the user; every row goes with it through the cascade. A token for a deleted user then gets 401 | The right to be forgotten, in one statement | Soft delete | Build |
+| D68 | **On the phone: Download server copy, and Delete server copy (with a confirmation).** Deleting also turns sync off and clears the queue, cursor, parked and refused rows; the training data on the phone is never touched. Turning sync on again sends everything | A delete that left sync on would recreate the account at the next set | A delete that keeps sync on | Build |
+
 ## 4. What was built
 
 ### Server (`server/`)
@@ -241,7 +249,6 @@ Not verified yet:
 2. The clock rule: a phone with a wrong clock can win a conflict (D26).
 3. No background refresh while the app is closed (D64).
 4. Sign-in is the development route; the hosted server is open to account creation (D44, D47).
-5. Account export and delete endpoints are not built (plan section 5).
 6. Render's free service sleeps; the first request after sleep takes about a minute.
 7. Backups depend on Neon's free tier. Point-in-time restore needs the paid plan. The restore
    has not been tested.

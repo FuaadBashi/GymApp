@@ -38,6 +38,17 @@ nonisolated final class SyncEngine: Sendable {
         try set(db, "enabled", "1")
     }
 
+    /// Turns sync off and forgets what was sent, so turning it on again sends everything.
+    /// The phone's own training data is untouched.
+    static func disable(_ db: Database) throws {
+        try db.execute(sql: """
+            DELETE FROM syncState WHERE key IN ('enabled', 'cursor', 'applying');
+            DELETE FROM syncChange;
+            DELETE FROM syncParked;
+            DELETE FROM syncDeadLetter;
+            """)
+    }
+
     /// Rows with changes not yet sent.
     static func pending(_ db: Database) throws -> Int {
         try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM (SELECT DISTINCT tableName, rowId FROM syncChange)") ?? 0

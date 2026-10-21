@@ -251,6 +251,20 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         #expect(try record(db, sets[1].id) == sets[1], "the set itself stays on the phone")
     }
 
+    @Test func turningSyncOffForgetsTheQueueButKeepsTheTraining() async throws {
+        let server = FakeSyncServer()
+        server.refuse = ["nothing"]
+        let sets = try logSets(2)
+        try await db.writer.write(SyncEngine.disable)
+        #expect(try pending(db) == 0)
+        #expect(try count(db, "SELECT COUNT(*) FROM syncState WHERE key = 'enabled'") == 0)
+        #expect(try count(db, "SELECT COUNT(*) FROM workoutSet") == 2)
+        try await db.writer.write { try $0.execute(sql: "UPDATE workoutSet SET reps = 9 WHERE id = ?", arguments: [sets[0].id]) }
+        #expect(try pending(db) == 0, "nothing is recorded while sync is off")
+        try await db.writer.write(SyncEngine.enable)
+        #expect(try pending(db) == 2 + 3, "turning it on again queues everything")
+    }
+
     @Test func aPastedServerAddressIsCleaned() {
         #expect(SyncError.cleanServer(" https://bashi-gym-sync.onrender.com.\n") == "https://bashi-gym-sync.onrender.com")
         #expect(SyncError.cleanServer("https://x.example/") == "https://x.example")

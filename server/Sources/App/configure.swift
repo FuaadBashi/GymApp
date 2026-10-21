@@ -62,4 +62,5 @@ func routes(_ app: Application) throws {
     let v1 = app.grouped("v1")
     try v1.register(collection: AuthController())
     try v1.grouped(UserAuthenticator()).register(collection: SyncController())
+    try v1.grouped(UserAuthenticator()).register(collection: AccountController())
 }

@@ -158,6 +158,16 @@ nonisolated final class HTTPSyncTransport: SyncTransport, @unchecked Sendable {
         return try JSONDecoder.sync.decode(SyncPullPage.self, from: data)
     }
 
+    /// Everything the server holds for this account, as JSON.
+    func exportAccount() async throws -> Data {
+        try await send("v1/account/export", method: "GET", body: nil)
+    }
+
+    /// Deletes the account and every row on the server.
+    func deleteAccount() async throws {
+        _ = try await send("v1/account", method: "DELETE", body: nil)
+    }
+
     private func send(_ path: String, method: String, body: Data?, retried: Bool = false) async throws -> Data {
         let token = try await currentToken()
         var request = URLRequest(url: URL(string: path, relativeTo: base)!)
