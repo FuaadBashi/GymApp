@@ -42,6 +42,8 @@ flowchart LR
 | `7dad904` | Step 1 | The server, migration v10, the sync engine, Settings → Sync (beta). Sets only |
 | `587eed6` | Step 2 | Exercises, workouts and workout exercises. One generic server table. Migration v11 |
 | `9112689` | Step 3 (prepared) | Dockerfile, Render blueprint, `DATABASE_URL` with TLS, `/health` |
+| `ac75cba`, `8909bbf` | Step 3 | The server in Render's Ohio region next to Neon; Neon's free tier corrected to 1 GB |
+| `83519cd`, `6ed4a54` | Step 3 | Two first-build fixes: Swift 6.4.1 (the pinned packages need tools 6.4), and the test folder copied into the build (the manifest declares it). Deployed and live on 21 October |
 
 ## 3. Decisions
 
@@ -207,13 +209,12 @@ Endpoints:
 | Children before parents are parked, then written; a second workout in progress waits | Pass |
 | Each kind of row survives the wire exactly | Pass |
 | k6 at 10× peak, 5 minutes, local debug server | p95 **10 ms**, 0 of 5,301 requests failed |
+| k6 at 10× peak, 5 minutes, **hosted** (Render free in Ohio, Neon free in Ohio, run from the UK) | p95 **186 ms**, median 148 ms, 0 of 5,301 requests failed. The minimum, 125 ms, is the round trip across the Atlantic, so the server's own time is small. One request took 8 s, likely the first after the service woke |
+| Hosted smoke test | `/health` 200; sign-in; push 200 twice gives one row; pull returns it; no token gives 401; a second user sees nothing |
 | `tools/check.sh` (app tests, UI tests, literal and token checks, attribution) | Passed after steps 1 and 2: 286 app tests, 22 UI tests |
 
 Not verified yet:
 
-- the Docker build;
-- the hosted deploy;
-- k6 against a hosted server;
 - sync on the real iPhone;
 - the Sign in with Apple route.
 
@@ -232,8 +233,8 @@ Not verified yet:
 
 ## 7. Next steps, in order
 
-1. The owner signs up for Neon and Render and deploys (server/README.md, "Deploy").
-2. Run k6 against the hosted address; turn on sync on the iPhone.
+1. Done: hosted on Render and Neon, and k6 passed against the hosted address.
+2. Turn on sync on the iPhone (Settings → Sync (beta), server `https://bashi-gym-sync.onrender.com`).
 3. Sync programs, program days and day items; remove the shortcut in D36.
 4. Sign in with Apple (the entitlement is a project-file change), then remove `AUTH_DEV` from
    the hosted server.

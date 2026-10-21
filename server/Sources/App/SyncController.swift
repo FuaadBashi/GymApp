@@ -34,7 +34,7 @@ struct SyncController: RouteCollection {
                 }
                 try await conn.query("COMMIT", logger: req.logger)
             } catch {
-                try? await conn.query("ROLLBACK", logger: req.logger)
+                _ = try? await conn.query("ROLLBACK", logger: req.logger)
                 throw error
             }
         }

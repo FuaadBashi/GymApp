@@ -100,6 +100,13 @@ Free-tier limits:
 - `AUTH_DEV=1` lets anyone with the URL create an account. That is acceptable for practice
   only; replace it with Sign in with Apple before real users.
 
+Remove the load test's accounts and rows afterwards, in Neon's SQL editor (the rows go with the
+accounts):
+
+```sql
+DELETE FROM users WHERE apple_sub LIKE 'dev:load-%' OR apple_sub LIKE 'dev:smoke-%';
+```
+
 ## Free tier first: when to pay
 
 Start on a free Postgres (Neon or Supabase, about 1 GB). Check the size each week:
