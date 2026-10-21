@@ -21,6 +21,9 @@ nonisolated struct WorkoutSummary: Equatable {
         var lastTime: [WorkoutSetRecord]? = nil
         var e1RMChange: Double? = nil
         var volumeChange: Double? = nil
+        /// Redesign R.5: today's best estimated 1RM and the best before today, for "x% of best".
+        var todayBest: Double? = nil
+        var bestBefore: Double? = nil
         var id: String { exercise.id }
     }
 
@@ -94,6 +97,8 @@ nonisolated enum SummaryQueries {
             line.bests = ExerciseStats.statuses(line.sets, history: ExerciseStats.e1RMHistory(earlier, loadMode: loadMode),
                                                 loadMode: loadMode, fallbackDate: workout.startedAt).bests
             line.best = line.bests.values.max { rank($0) < rank($1) }
+            line.todayBest = TrainingMath.bests(SetFormat.pastSets(line.sets), loadMode: loadMode).bestE1RM
+            line.bestBefore = TrainingMath.bests(SetFormat.pastSets(earlier.flatMap(\.sets)), loadMode: loadMode).bestE1RM
             if let last = try ExerciseQueries.lastSession(db, exerciseId: line.exercise.id, preferringDays: Set(days),
                                                           before: workout.startedAt) {
                 line.lastTime = last.session.sets

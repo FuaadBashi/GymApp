@@ -12,6 +12,7 @@ struct SummaryView: View {
     @State private var loaded = false
     @State private var pending: Task<Void, Never>?
     @State private var saveError: String?
+    @State private var expanded: String?
 
     var body: some View {
         NavigationStack {
@@ -46,46 +47,65 @@ struct SummaryView: View {
         if let fresh = try? await model.db.reader.read({ try SummaryQueries.summary($0, workoutId: id) }) { summary = fresh }
     }
 
+    /// Redesign R.5: the bests and what went up first; detail one tap down; links obvious.
     private func content(_ s: WorkoutSummary) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
+        let up = s.exercises.filter { ($0.e1RMChange ?? 0) > 0.05 }.count
+        return VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Workout complete").font(.caption.weight(.semibold)).foregroundStyle(Theme.accent)
-                Text(s.workout.title).font(.largeTitle.bold())
-                Text(s.workout.startedAt.formatted(date: .complete, time: .shortened)).foregroundStyle(.secondary)
+                Text("\(s.workout.title) · \(s.workout.startedAt.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))) · workout complete")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Text(Self.headline(bests: s.records.count, up: up)).font(.largeTitle.bold())
             }
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                tile("Duration", Duration.seconds(s.duration).formatted(.time(pattern: s.duration >= 3600 ? .hourMinute : .minuteSecond)),
-                     s.previous.map { Self.change(s.duration / 60, $0.duration / 60, unit: " min") })
-                tile("Total lifted", "\(Load.format(s.volumeKg.rounded())) kg",
-                     s.previous.map { Self.change(s.volumeKg, $0.volumeKg, unit: " kg") })
-                tile("Sets", "\(s.setCount)", s.previous.map { Self.change(Double(s.setCount), Double($0.setCount), unit: "") })
-                tile("Records", "\(s.records.count)", s.previous.map { "last time \($0.records)" })
-            }
-            if let p = s.previous {
-                Text("Compared with \(p.workout.title), \(p.workout.startedAt.formatted(.dateTime.day().month(.abbreviated)))")
-                    .font(.caption).foregroundStyle(.secondary)
+            HStack(alignment: .top) {
+                stat(Duration.seconds(s.duration).formatted(.time(pattern: s.duration >= 3600 ? .hourMinute : .minuteSecond)), "duration")
+                stat("\(s.setCount)", "sets")
+                stat("\(Load.format(s.volumeKg.rounded())) kg",
+                     s.previous.map { Self.change(s.volumeKg, $0.volumeKg, unit: " kg") } ?? "volume")
             }
 
             if !s.records.isEmpty {
-                section("Records") {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Bests").font(.headline).padding(.bottom, 8)
                     ForEach(s.records) { r in
-                        HStack(alignment: .firstTextBaseline) {
-                            Image(systemName: "trophy.fill").foregroundStyle(Theme.accent)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(r.exercise.name).font(.headline)
-                                Text(r.kind.rawValue).font(.caption).foregroundStyle(.secondary)
+                        NavigationLink { ExerciseDetailView(db: model.db, exerciseId: r.exercise.id) } label: {
+                            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                                Image(systemName: "trophy.fill").foregroundStyle(Theme.accent).accessibilityHidden(true)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(r.exercise.name).font(.subheadline)
+                                    Text("\(r.kind.rawValue) · was \(Load.format((r.previousKg * 10).rounded() / 10)) kg")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text("\(Load.format((r.valueKg * 10).rounded() / 10)) kg").font(Theme.number(.subheadline))
+                                Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
                             }
-                            Spacer()
-                            Text("\(Load.format((r.valueKg * 10).rounded() / 10)) kg, was \(Load.format((r.previousKg * 100).rounded() / 100)) kg")
-                                .font(.subheadline.monospacedDigit())
+                            .padding(.vertical, 10)
+                            .contentShape(.rect)
                         }
+                        .buttonStyle(.plain)
+                        Divider()
                     }
                 }
             }
 
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Against last time").font(.headline)
+                    Spacer()
+                    Text("est. 1RM · tap for sets").font(.caption).foregroundStyle(.secondary)
+                }
+                .padding(.bottom, 8)
+                ForEach(s.exercises) { line in
+                    lineRow(line)
+                    Divider()
+                }
+                Text("Bar: today against last time. The share is today against the lift's best before today.")
+                    .font(.caption2).foregroundStyle(.secondary).padding(.top, 6)
+            }
+
             if !s.muscles.isEmpty {
-                section("Muscles trained") {
+                DisclosureGroup("Muscles worked") {
                     BodyMapView(sets: Dictionary(uniqueKeysWithValues: s.muscles.map { ($0.muscle, $0.sets) })) { sets in
                         sets < 0.5 ? Theme.idle : Theme.accent.opacity(min(1, 0.3 + sets / 6))
                     }
@@ -100,22 +120,25 @@ struct SummaryView: View {
                         }
                     }
                 }
+                .font(.headline).tint(Theme.accent)
             }
 
-            section("Exercises") {
-                ForEach(s.exercises) { line in
-                    NavigationLink {
-                        WorkoutDetailView(db: model.db, workoutId: workoutId)
-                    } label: {
-                        exerciseRow(line)
-                    }
-                    .buttonStyle(.plain)
+            VStack(spacing: 0) {
+                NavigationLink { WorkoutDetailView(db: model.db, workoutId: workoutId) } label: {
+                    linkRow("Full workout and edit sets")
                 }
-                Text("Tap an exercise to fix or delete a set.").font(.caption2).foregroundStyle(.secondary)
+                Divider()
+                if let p = s.previous {
+                    NavigationLink { WorkoutDetailView(db: model.db, workoutId: p.workout.id) } label: {
+                        linkRow("Last time: \(p.workout.title), \(p.workout.startedAt.formatted(.dateTime.day().month(.abbreviated)))")
+                    }
+                }
             }
+            .buttonStyle(.plain)
 
             if let saveError { Text(saveError).font(.caption).foregroundStyle(Theme.warning) }
-            section("How did it feel?") {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("How did it feel?").font(.headline)
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 6) {
                         ForEach(1...10, id: \.self) { n in
@@ -132,36 +155,96 @@ struct SummaryView: View {
         .padding(16)
     }
 
-    private func exerciseRow(_ line: WorkoutSummary.ExerciseLine) -> some View {
-        let tint: Color? = line.best.map { $0.color }
-        return VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(line.exercise.name).font(.headline)
-                if let best = line.best { BestBadge(status: best) }
-                Spacer()
-                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+    /// "2 bests, 5 lifts up", "5 lifts up", "Matched last time".
+    static func headline(bests: Int, up: Int) -> String {
+        var parts: [String] = []
+        if bests > 0 { parts.append("\(bests) best\(bests == 1 ? "" : "s")") }
+        if up > 0 { parts.append("\(up) lift\(up == 1 ? "" : "s") up") }
+        return parts.isEmpty ? "Workout logged" : parts.joined(separator: ", ")
+    }
+
+    /// "37% of best", or "new best" when today is above every earlier set.
+    static func shareOfBest(today: Double?, before: Double?) -> String? {
+        guard let today, let before, before > 0 else { return nil }
+        return today - before > 0.01 ? "new best" : "\(Int((today / before * 100).rounded()))% of best"
+    }
+
+    private func lineRow(_ line: WorkoutSummary.ExerciseLine) -> some View {
+        let open = expanded == line.id
+        let change = line.e1RMChange
+        let colour: Color = (change ?? 0) > 0.05 ? Theme.accent : (change ?? 0) < -0.05 ? Theme.warning : .secondary
+        let lastBest = (line.todayBest ?? 0) - (change ?? 0)
+        let scale = max(line.todayBest ?? 0, lastBest, 1)
+        return VStack(alignment: .leading, spacing: 8) {
+            Button { expanded = open ? nil : line.id } label: {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(line.exercise.name).font(.subheadline)
+                        if let best = line.best { BestBadge(status: best) }
+                        Spacer()
+                        Text(change.map { "\($0 >= 0 ? "↑ +" : "↓ −")\(Load.format((abs($0) * 10).rounded() / 10)) kg" } ?? "—")
+                            .font(Theme.number(.subheadline)).foregroundStyle(colour)
+                    }
+                    if change != nil {
+                        HStack(spacing: 8) {
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule().fill(Theme.row)
+                                    Capsule().fill(Theme.neutral).frame(width: geo.size.width * lastBest / scale)
+                                    Capsule().fill(colour).frame(width: geo.size.width * (line.todayBest ?? 0) / scale, height: 3)
+                                }
+                            }
+                            .frame(height: 6)
+                            .accessibilityHidden(true)
+                            if let share = Self.shareOfBest(today: line.todayBest, before: line.bestBefore) {
+                                Text(share).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 10)
+                .contentShape(.rect)
             }
-            if let best = line.best {
-                Text(best.title).font(.caption.weight(.semibold)).foregroundStyle(best.color)
+            .buttonStyle(.plain)
+            .accessibilityHint(open ? "Hides the sets" : "Shows the sets")
+            if open {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Today  " + SetFormat.line(line.sets, loadMode: line.exercise.loadMode))
+                    if let last = line.lastTime { Text("Last  " + SetFormat.line(last, loadMode: line.exercise.loadMode)).foregroundStyle(.secondary) }
+                    HStack(spacing: 10) {
+                        if let c = line.e1RMChange { changeChip("est. 1RM", c, unit: " kg") }
+                        if let c = line.volumeChange { changeChip("volume", c, unit: " kg") }
+                    }
+                    if let note = line.note { Text(note).foregroundStyle(Theme.note) }
+                    NavigationLink { ExerciseDetailView(db: model.db, exerciseId: line.exercise.id) } label: {
+                        Label("Open \(line.exercise.name)", systemImage: "chevron.right")
+                            .font(.caption.weight(.semibold)).padding(.horizontal, 12).frame(minHeight: 36)
+                            .background(Theme.row, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.top, 4)
+                }
+                .font(.caption.monospacedDigit())
+                .padding(.bottom, 10)
             }
-            Text(SetFormat.line(line.sets, loadMode: line.exercise.loadMode))
-                .font(.subheadline.monospacedDigit()).foregroundStyle(.primary.opacity(0.85))
-            if let last = line.lastTime {
-                Text("Last time: " + SetFormat.line(last, loadMode: line.exercise.loadMode))
-                    .font(.caption.monospacedDigit()).foregroundStyle(.secondary).lineLimit(2)
-            }
-            HStack(spacing: 10) {
-                if let c = line.e1RMChange { changeChip("e1RM", c, unit: " kg") }
-                if let c = line.volumeChange { changeChip("volume", c, unit: " kg") }
-            }
-            if let note = line.note { Text(note).font(.caption).foregroundStyle(Theme.note) }
         }
-        .padding(10)
+    }
+
+    private func stat(_ value: String, _ caption: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(Theme.number(.title3, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(caption).font(.caption).foregroundStyle(.secondary)
+        }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background((tint ?? .clear).opacity(tint == nil ? 0 : 0.12), in: .rect(cornerRadius: 12))
-        .overlay {
-            if let tint { RoundedRectangle(cornerRadius: 12).strokeBorder(tint.opacity(0.5), lineWidth: 1) }
+    }
+
+    private func linkRow(_ title: String) -> some View {
+        HStack {
+            Text(title).font(.subheadline)
+            Spacer()
+            Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.tertiary)
         }
+        .padding(.vertical, 14)
         .contentShape(.rect)
     }
 
@@ -176,27 +259,6 @@ struct SummaryView: View {
     static func change(_ now: Double, _ before: Double, unit: String) -> String {
         let d = ((now - before) * 10).rounded() / 10
         return d == 0 ? "same as last" : "\(d > 0 ? "+" : "")\(Load.format(d.rounded()))\(unit) vs last"
-    }
-
-    private func tile(_ title: String, _ value: String, _ caption: String? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(Theme.number(.title2, weight: .bold)).rollingNumber(value).lineLimit(1).minimumScaleFactor(0.6)
-            Text(caption ?? " ").font(.caption).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
-    }
-
-    private func section<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title.uppercased()).font(.caption.weight(.bold)).foregroundStyle(.secondary)
-            content()
-        }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
     }
 
     private func autosave() {

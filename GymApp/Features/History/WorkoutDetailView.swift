@@ -52,12 +52,11 @@ struct WorkoutDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 header(s)
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    tile("Duration", WorkoutRow.duration(s.duration))
-                    tile("Volume", "\(Load.format(s.volumeKg.rounded())) kg",
-                         s.previousVolumeKg.map { "last time \(Load.format($0.rounded())) kg" })
-                    tile("Sets", "\(s.setCount)")
-                    tile("Records", "\(s.records.count)")
+                // Redesign R.5: one row of figures, not four equal tiles.
+                HStack(alignment: .top) {
+                    stat(WorkoutRow.duration(s.duration), "duration")
+                    stat("\(s.setCount)", s.records.isEmpty ? "sets" : "sets · \(s.records.count) best\(s.records.count == 1 ? "" : "s")")
+                    stat("\(Load.format(s.volumeKg.rounded())) kg", s.previousVolumeKg.map { "last time \(Load.format($0.rounded())) kg" } ?? "volume")
                 }
                 if !s.records.isEmpty {
                     card("Records") {
@@ -154,15 +153,12 @@ struct WorkoutDetailView: View {
         }
     }
 
-    private func tile(_ title: String, _ value: String, _ caption: String? = nil) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title.uppercased()).font(.caption2.weight(.bold)).foregroundStyle(.secondary)
-            Text(value).font(Theme.number(.title2, weight: .bold)).rollingNumber(value).lineLimit(1).minimumScaleFactor(0.6)
-            Text(caption ?? " ").font(.caption).foregroundStyle(.secondary)
+    private func stat(_ value: String, _ caption: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(Theme.number(.title3, weight: .bold)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(caption).font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Theme.card, in: .rect(cornerRadius: 16))
     }
 
     private func card<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {

@@ -109,7 +109,7 @@ final class TapCountUITests: XCTestCase {
         taps = 0
         tap(button("Finish"))
         tap(app.buttons.matching(identifier: "Finish").element(boundBy: 1))
-        XCTAssertTrue(text("Workout complete").waitForExistence(timeout: 10))
+        XCTAssertTrue(text("workout complete").waitForExistence(timeout: 10))
         record("8 finish")
     }
 
