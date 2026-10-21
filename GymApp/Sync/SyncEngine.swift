@@ -134,6 +134,9 @@ nonisolated final class SyncEngine: Sendable {
     private static func fetch(_ table: String, _ id: String, _ db: Database) throws -> SyncRecord? {
         switch table {
         case "exercise": try ExerciseRecord.fetchOne(db, key: id).map(SyncRecord.exercise)
+        case "program": try ProgramRecord.fetchOne(db, key: id).map(SyncRecord.program)
+        case "programDay": try ProgramDayRecord.fetchOne(db, key: id).map(SyncRecord.programDay)
+        case "dayExercise": try DayExerciseRecord.fetchOne(db, key: id).map(SyncRecord.dayExercise)
         case "workout": try WorkoutRecord.fetchOne(db, key: id).map(SyncRecord.workout)
         case "workoutExercise": try WorkoutExerciseRecord.fetchOne(db, key: id).map(SyncRecord.workoutExercise)
         case "workoutSet": try WorkoutSetRecord.fetchOne(db, key: id).map(SyncRecord.workoutSet)
@@ -162,10 +165,8 @@ nonisolated final class SyncEngine: Sendable {
         var progress = true
         while progress {
             progress = false
-            let parked = try Data.fetchAll(db, sql: """
-                SELECT payload FROM syncParked ORDER BY CASE tableName
-                  WHEN 'exercise' THEN 0 WHEN 'workout' THEN 1 WHEN 'workoutExercise' THEN 2 ELSE 3 END
-                """)
+            let order = SyncRecord.tables.enumerated().map { "WHEN '\($1)' THEN \($0)" }.joined(separator: " ")
+            let parked = try Data.fetchAll(db, sql: "SELECT payload FROM syncParked ORDER BY CASE tableName \(order) END")
             for payload in parked {
                 let change = try JSONDecoder.sync.decode(SyncChange.self, from: payload)
                 if let row = change.row, try write(row, in: db) {
@@ -179,9 +180,8 @@ nonisolated final class SyncEngine: Sendable {
     }
 
     /// Saves (update, else insert: never REPLACE, which would cascade-delete children) when the
-    /// parents are here. A link to a program day or library entry this phone lacks is dropped.
-    /// shortcut: a dropped program-day link goes back to the server if this row is edited here;
-    /// fix when programs sync.
+    /// parents are here; otherwise the row is parked until they arrive. A link to a library entry
+    /// this phone lacks (an older bundled library) is dropped, since it never syncs.
     private static func write(_ row: SyncRecord, in db: Database) throws -> Bool {
         func exists(_ table: String, _ id: String?) throws -> Bool {
             guard let id else { return true }
@@ -194,12 +194,20 @@ nonisolated final class SyncEngine: Sendable {
                 case .exercise(var r):
                     if try !exists("exercise", r.libraryId) { r.libraryId = nil }
                     try r.save(db)
-                case .workout(var r):
-                    if try !exists("programDay", r.programDayId) { r.programDayId = nil }
+                case .program(let r):
                     try r.save(db)
-                case .workoutExercise(var r):
-                    guard try exists("workout", r.workoutId), try exists("exercise", r.exerciseId) else { return .rollback }
-                    if try !exists("dayExercise", r.dayExerciseId) { r.dayExerciseId = nil }
+                case .programDay(let r):
+                    guard try exists("program", r.programId), try exists("programDay", r.copiedFromDayId) else { return .rollback }
+                    try r.save(db)
+                case .dayExercise(let r):
+                    guard try exists("programDay", r.dayId), try exists("exercise", r.exerciseId) else { return .rollback }
+                    try r.save(db)
+                case .workout(let r):
+                    guard try exists("programDay", r.programDayId) else { return .rollback }
+                    try r.save(db)
+                case .workoutExercise(let r):
+                    guard try exists("workout", r.workoutId), try exists("exercise", r.exerciseId),
+                          try exists("dayExercise", r.dayExerciseId) else { return .rollback }
                     try r.save(db)
                 case .workoutSet(let r):
                     guard try exists("workoutExercise", r.workoutExerciseId) else { return .rollback }

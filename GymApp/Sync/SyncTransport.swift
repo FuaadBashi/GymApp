@@ -3,15 +3,21 @@ import Foundation
 /// A synced row: the phone's own record, sent as its JSON. Tables are listed parents first.
 nonisolated enum SyncRecord: Equatable, Sendable {
     case exercise(ExerciseRecord)
+    case program(ProgramRecord)
+    case programDay(ProgramDayRecord)
+    case dayExercise(DayExerciseRecord)
     case workout(WorkoutRecord)
     case workoutExercise(WorkoutExerciseRecord)
     case workoutSet(WorkoutSetRecord)
 
-    static let tables = ["exercise", "workout", "workoutExercise", "workoutSet"]
+    static let tables = ["exercise", "program", "programDay", "dayExercise", "workout", "workoutExercise", "workoutSet"]
 
     var table: String {
         switch self {
         case .exercise: "exercise"
+        case .program: "program"
+        case .programDay: "programDay"
+        case .dayExercise: "dayExercise"
         case .workout: "workout"
         case .workoutExercise: "workoutExercise"
         case .workoutSet: "workoutSet"
@@ -21,6 +27,9 @@ nonisolated enum SyncRecord: Equatable, Sendable {
     var id: String {
         switch self {
         case .exercise(let r): r.id
+        case .program(let r): r.id
+        case .programDay(let r): r.id
+        case .dayExercise(let r): r.id
         case .workout(let r): r.id
         case .workoutExercise(let r): r.id
         case .workoutSet(let r): r.id
@@ -56,6 +65,9 @@ nonisolated struct SyncChange: Codable, Equatable, Sendable {
         if try !c.contains(.row) || c.decodeNil(forKey: .row) { row = nil; return }
         switch table {
         case "exercise": row = .exercise(try c.decode(ExerciseRecord.self, forKey: .row))
+        case "program": row = .program(try c.decode(ProgramRecord.self, forKey: .row))
+        case "programDay": row = .programDay(try c.decode(ProgramDayRecord.self, forKey: .row))
+        case "dayExercise": row = .dayExercise(try c.decode(DayExerciseRecord.self, forKey: .row))
         case "workout": row = .workout(try c.decode(WorkoutRecord.self, forKey: .row))
         case "workoutExercise": row = .workoutExercise(try c.decode(WorkoutExerciseRecord.self, forKey: .row))
         case "workoutSet": row = .workoutSet(try c.decode(WorkoutSetRecord.self, forKey: .row))
@@ -71,6 +83,9 @@ nonisolated struct SyncChange: Codable, Equatable, Sendable {
         try c.encode(updatedAt, forKey: .updatedAt)
         switch row {
         case .exercise(let r): try c.encode(r, forKey: .row)
+        case .program(let r): try c.encode(r, forKey: .row)
+        case .programDay(let r): try c.encode(r, forKey: .row)
+        case .dayExercise(let r): try c.encode(r, forKey: .row)
         case .workout(let r): try c.encode(r, forKey: .row)
         case .workoutExercise(let r): try c.encode(r, forKey: .row)
         case .workoutSet(let r): try c.encode(r, forKey: .row)

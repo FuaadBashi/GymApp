@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -168,6 +168,25 @@ nonisolated enum Schema {
                         END
                         """)
                 }
+            }
+        }
+        migrator.registerMigration("v12") { db in
+            // Programs, their days and day items sync too. A phone that already syncs queues its
+            // existing rows of these tables once, parents first.
+            let when = "EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled') AND NOT EXISTS (SELECT 1 FROM syncState WHERE key = 'applying')"
+            let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
+            for table in ["program", "programDay", "dayExercise"] {
+                for (event, row, op) in [("INSERT", "NEW", "upsert"), ("UPDATE", "NEW", "upsert"), ("DELETE", "OLD", "delete")] {
+                    try db.execute(sql: """
+                        CREATE TRIGGER \(table)_sync_\(event.lowercased()) AFTER \(event) ON \(table) WHEN \(when) BEGIN
+                          INSERT INTO syncChange (tableName, rowId, op, changedAtMs) VALUES ('\(table)', \(row).id, '\(op)', \(now));
+                        END
+                        """)
+                }
+                try db.execute(sql: """
+                    INSERT INTO syncChange (tableName, rowId, op, changedAtMs)
+                    SELECT '\(table)', id, 'upsert', \(now) FROM \(table) WHERE EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled')
+                    """)
             }
         }
         return migrator

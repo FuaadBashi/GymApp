@@ -166,7 +166,7 @@ final class SyncTests: XCTestCase {
         otherId.id = "S2"
         try await push([otherId], token: a, expect: .unprocessableEntity)
         var unknown = set("S1", at: 1)
-        unknown.table = "program"
+        unknown.table = "bodyEntry"
         try await push([unknown], token: a, expect: .unprocessableEntity)
         try await push((0...SyncController.maxPush).map { set("S\($0)", at: 1) }, token: a, expect: .payloadTooLarge)
         let count = try await count("S1")
@@ -225,5 +225,24 @@ final class SyncTests: XCTestCase {
         XCTAssertTrue(String(describing: c.tls).contains("require"), "TLS is required for a hosted database")
         XCTAssertThrowsError(try databaseConfig("mysql://a@b/c"))
         XCTAssertThrowsError(try databaseConfig("not a url"))
+    }
+
+    func testProgramsRoundTripAndAreChecked() async throws {
+        let a = try await token("alice")
+        let at = Date(timeIntervalSince1970: 1_790_000_000)
+        let program: JSON = .object(["id": .string("P"), "name": .string("Full Body"), "split": .string("fullBody"),
+                                     "isActive": .bool(true), "sessionsPerWeekGoal": .int(3)])
+        let day: JSON = .object(["id": .string("D"), "programId": .string("P"), "name": .string("Full Body 1"),
+                                 "focus": .string("fullBody"), "position": .int(0)])
+        let item: JSON = .object(["id": .string("I"), "dayId": .string("D"), "exerciseId": .string("bench"), "position": .int(0),
+                                  "targetSets": .int(3), "repMin": .int(8), "repMax": .int(12), "restSeconds": .int(90)])
+        try await push([("program", "P", program), ("programDay", "D", day), ("dayExercise", "I", item)]
+            .map { Change(table: $0.0, id: $0.1, op: "upsert", updatedAt: at, row: $0.2) }, token: a)
+        let pulled = try await pull(token: a)
+        XCTAssertEqual(pulled.changes.map(\.row), [program, day, item])
+
+        if case .object(var o) = item { o["repMax"] = .int(4); o["repMin"] = .int(8)
+            try await push([Change(table: "dayExercise", id: "I", op: "upsert", updatedAt: at.addingTimeInterval(1), row: .object(o))],
+                           token: a, expect: .unprocessableEntity) }
     }
 }

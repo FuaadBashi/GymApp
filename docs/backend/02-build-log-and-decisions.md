@@ -15,8 +15,8 @@ The app can now send its training log to a server and get it back on another pho
 - **Server:** one Vapor process and one Postgres database. Each user's rows are stored by
   `(user, table, id)` with last-writer-wins and tombstones.
 - **What syncs:** exercises, workouts, workout exercises and sets.
-- **What does not sync yet:** programs, program days, day items, notes, body entries, form cues,
-  settings.
+- **What does not sync yet:** notes, body entries, form cues, settings. (Programs, program days
+  and day items sync since step 4.)
 - **State:**
   - It runs on the Mac and in the simulator.
   - The hosting is prepared, but it is not deployed: it needs the owner's own sign-ups.
@@ -157,6 +157,15 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D57 | **k6 runs at 10× peak:** 14 pushes/s and 3 pulls/s, for 5 minutes, from 200 accounts. It passes if p95 < 300 ms and fewer than 0.1% of requests fail | The plan's figures | — | Plan |
 | D58 | **The SchemaTests table list gains the three sync tables** | The test lists each table by design; the new tables are part of the spec. No check was weakened | — | Build |
 
+### 3.11 Step 4: programs (21 October)
+
+| # | Decision | Reason | Rejected | By |
+|---|---|---|---|---|
+| D59 | **Programs, program days and day items sync** with the same triggers, outbox and server table. Migration v12 adds the triggers, and on a phone that already syncs it queues the existing rows of these tables once | The owner asked for it. A workout on a second phone now keeps its link to its program day | — | Owner |
+| D60 | **D36 replaced:** a workout whose program day has not arrived, a workout exercise whose day item has not arrived, and a day copied from a day that has not arrived are **parked**, no longer stripped of the link | Now that the parents sync, a missing parent means "not here yet". Stripping the link would send the empty link back to the server. Library links are still dropped, because the library never syncs | Keeping D36 | Build |
+| D61 | **The server's CHECK on `table_name` is dropped.** The list of tables lives only in `Change.rowTypes` | Each new table would otherwise need a schema change on the server | Keeping the CHECK | Build |
+| D62 | **Deploy the server before installing the phone build** | An older server answers 422 to the new tables, which would stop the phone's sync | — | Rule for this change |
+
 ## 4. What was built
 
 ### Server (`server/`)
@@ -220,8 +229,7 @@ Not verified yet:
 
 ## 6. Known limits and open items
 
-1. Programs, program days, day items, notes, body entries and form cues do not sync. The
-   links to them are dropped on the receiving phone (D36).
+1. Notes, body entries and form cues do not sync.
 2. The clock rule: a phone with a wrong clock can win a conflict (D26).
 3. There is no dead-letter table (D40), no sync on network change, and no background refresh
    (D41).

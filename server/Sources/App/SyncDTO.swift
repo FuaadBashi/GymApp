@@ -109,9 +109,49 @@ struct WorkoutExerciseRow: SyncRow {
     }
 }
 
+struct ProgramRow: SyncRow {
+    var id: String
+    var name: String
+    var sessionsPerWeekGoal: Int
+
+    func validate() throws {
+        try require(!name.trimmingCharacters(in: .whitespaces).isEmpty && name.count <= 200
+            && (1...7).contains(sessionsPerWeekGoal), "program \(id)")
+    }
+}
+
+struct ProgramDayRow: SyncRow {
+    var id: String
+    var programId: String
+    var name: String
+    var position: Int
+
+    func validate() throws {
+        try require(!programId.isEmpty && !name.trimmingCharacters(in: .whitespaces).isEmpty && name.count <= 200
+            && position >= 0, "program day \(id)")
+    }
+}
+
+struct DayExerciseRow: SyncRow {
+    var id: String
+    var dayId: String
+    var exerciseId: String
+    var position: Int
+    var targetSets: Int
+    var repMin: Int
+    var repMax: Int
+    var restSeconds: Int
+
+    func validate() throws {
+        try require(!dayId.isEmpty && !exerciseId.isEmpty && position >= 0 && (1...20).contains(targetSets)
+            && repMin >= 1 && repMax >= repMin && (0...900).contains(restSeconds), "day exercise \(id)")
+    }
+}
+
 struct Change: Codable, Equatable {
     static let rowTypes: [String: any SyncRow.Type] = [
-        "exercise": ExerciseRow.self, "workout": WorkoutRow.self,
+        "exercise": ExerciseRow.self, "program": ProgramRow.self, "programDay": ProgramDayRow.self,
+        "dayExercise": DayExerciseRow.self, "workout": WorkoutRow.self,
         "workoutExercise": WorkoutExerciseRow.self, "workoutSet": SetRow.self,
     ]
 

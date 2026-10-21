@@ -161,7 +161,8 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         let server = FakeSyncServer()
         try await db.writer.write { db in
             try SyncEngine.enable(db)
-            let day = try TestData.day(db, programId: TestData.program(db).id, name: "A day only this phone has", position: 0)
+            try TestData.exercise(db, id: "bench")
+            let day = try TestData.day(db, programId: TestData.program(db).id, name: "Full Body 1", position: 0, items: ["bench"])
             try WorkoutRecord(id: "remote", startedAt: TestData.base, endedAt: nil, programDayId: day.id, title: "Remote",
                               note: nil, effort: nil, restEndsAt: nil, restDurationSeconds: nil, source: .app, externalId: nil).insert(db)
         }
@@ -181,8 +182,31 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         try await other.writer.write { try $0.execute(sql: "UPDATE workout SET endedAt = ? WHERE id = 'local'", arguments: [TestData.day(2)]) }
         try await phone2.syncOnce()
         #expect(try count(other, "SELECT COUNT(*) FROM workout") == 2)
-        #expect(try count(other, "SELECT COUNT(*) FROM workout WHERE id = 'remote' AND programDayId IS NULL") == 1,
-                "a link to a program day this phone lacks is dropped")
+        #expect(try count(other, "SELECT COUNT(*) FROM workout w JOIN programDay d ON d.id = w.programDayId WHERE w.id = 'remote' AND d.name = 'Full Body 1'") == 1,
+                "the program, its day and its items arrive first, so the workout keeps its day")
+        #expect(try count(other, "SELECT COUNT(*) FROM dayExercise") == 1)
+    }
+
+    @Test func aDayItemWaitsForItsDayThenLands() async throws {
+        let server = FakeSyncServer()
+        try await db.writer.write { db in
+            try SyncEngine.enable(db)
+            try TestData.exercise(db, id: "bench")
+            try TestData.day(db, programId: TestData.program(db).id, name: "Full Body 1", position: 0, items: ["bench"])
+        }
+        try await SyncEngine(db: db, transport: server, sleep: { _ in }).syncOnce()
+        let depth = ["dayExercise": 0, "programDay": 1, "program": 2, "exercise": 3]
+        server.reorder { depth[$0.table, default: 9] < depth[$1.table, default: 9] }
+
+        let other = try AppDatabase.inMemory()
+        try await other.writer.write(SyncEngine.enable)
+        let page = try await server.pull(since: 0)
+        try await other.writer.write { try SyncEngine.apply(SyncPullPage(changes: Array(page.changes.prefix(1)), nextCursor: 1, hasMore: false), in: $0) }
+        #expect(try count(other, "SELECT COUNT(*) FROM syncParked WHERE tableName = 'dayExercise'") == 1)
+        try await SyncEngine(db: other, transport: server, sleep: { _ in }).syncOnce()
+        #expect(try count(other, "SELECT COUNT(*) FROM dayExercise") == 1)
+        #expect(try count(other, "SELECT COUNT(*) FROM syncParked") == 0)
+        #expect(try pending(other) == 0)
     }
 
     @Test func untouchedLibraryExercisesAreNeverSent() throws {

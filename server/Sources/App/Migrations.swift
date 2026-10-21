@@ -17,7 +17,7 @@ enum Migrations {
         """
         CREATE TABLE IF NOT EXISTS sync_row (
           user_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-          table_name  text NOT NULL CHECK (table_name IN ('exercise','workout','workoutExercise','workoutSet')),
+          table_name  text NOT NULL,
           id          text NOT NULL,
           payload     jsonb,
           updated_at  timestamptz NOT NULL,
@@ -28,6 +28,8 @@ enum Migrations {
         )
         """,
         "CREATE INDEX IF NOT EXISTS sync_row_pull ON sync_row(user_id, server_seq)",
+        // The table list lives in SyncDTO's Change.rowTypes; a CHECK here needed a migration per table.
+        "ALTER TABLE sync_row DROP CONSTRAINT IF EXISTS sync_row_table_name_check",
     ]
 
     static func run(_ client: PostgresClient, logger: Logger) async throws {
