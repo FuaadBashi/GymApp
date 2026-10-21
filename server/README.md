@@ -70,8 +70,9 @@ passes when p95 is under 300 ms and fewer than 0.1% of requests fail.
 
 You do these steps yourself: each needs an account.
 
-1. **Neon** (neon.tech): sign up and create a project named `bashi`, in the region nearest to
-   you. Copy the connection string. It looks like
+1. **Neon** (neon.tech): sign up and create a project named `bashi`, in AWS US East 2 (Ohio):
+   render.yaml puts the server in Ohio too, so the two are close. Under **Connect**, turn **connection pooling off** (the server keeps its own pool) and copy the
+   connection string. It looks like
    `postgresql://user:password@ep-….neon.tech/neondb?sslmode=require`.
 2. **Render** (render.com): sign up with GitHub. Choose **New → Blueprint**, then pick this
    repository. Render reads `render.yaml` at the repository root.

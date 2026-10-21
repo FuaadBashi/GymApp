@@ -4,6 +4,7 @@ services:
     name: bashi-gym-sync
     runtime: docker
     plan: free
+    region: ohio           # next to the Neon database (AWS US East 2, Ohio)
     rootDir: server
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
