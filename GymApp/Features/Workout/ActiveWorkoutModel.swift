@@ -118,6 +118,7 @@ final class ActiveWorkoutModel {
         let itemId = snapshot?.items.first { $0.sets.contains { $0.id == setId } }?.id
         guard await change({ try WorkoutWrites.logSet($0, setId: setId, now: .now) }) != nil else { return }
         db.count("tap.log")
+        Task { [db] in await SyncScheduler.shared.kick(db) }
         showBanner(for: setId)
         advance(from: itemId)
     }

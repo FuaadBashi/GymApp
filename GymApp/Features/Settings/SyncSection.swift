@@ -8,6 +8,7 @@ struct SyncSection: View {
     @State private var account = ""
     @State private var enabled = false
     @State private var pending = 0
+    @State private var refused = 0
     @State private var working = false
     @State private var status: String?
 
@@ -25,7 +26,8 @@ struct SyncSection: View {
         } header: {
             Text("Sync (beta)")
         } footer: {
-            Text(enabled ? "\(pending) sets waiting to send. Sets are saved on this phone first; sync never blocks logging."
+            Text(enabled ? "\(pending) changes waiting to send" + (refused > 0 ? ", \(refused) refused by the server" : "")
+                           + ". Everything is saved on this phone first; sync never blocks logging."
                          : "Sends your sets to your own server. Off until you turn it on.")
         }
         .task { load() }
@@ -35,6 +37,7 @@ struct SyncSection: View {
         try? db.reader.read { db in
             enabled = try SyncEngine.isEnabled(db)
             pending = try SyncEngine.pending(db)
+            refused = try SyncEngine.refused(db)
             server = try SyncEngine.value(db, "server") ?? server
             account = try SyncEngine.value(db, "account") ?? account
         }

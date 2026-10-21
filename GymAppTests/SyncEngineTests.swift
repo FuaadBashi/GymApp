@@ -11,10 +11,12 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
     private var seq: Int64 = 0
     var failuresLeft = 0
     var pushes = 0
+    var refuse: Set<String> = []   // ids the server answers 422 for
 
     func push(_ changes: [SyncChange]) async throws {
         try lock.withLock {
             if failuresLeft > 0 { failuresLeft -= 1; throw SyncError.transient("offline") }
+            if changes.contains(where: { refuse.contains($0.id) }) { throw SyncError.rejected(422) }
             pushes += 1
             for change in changes {
                 seq += 1
@@ -235,6 +237,18 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
             let back = try JSONDecoder.sync.decode(SyncChange.self, from: JSONEncoder.sync.encode(change))
             #expect(back == change)
         }
+    }
+
+    @Test func aRefusedChangeIsSetAsideAndTheRestStillGo() async throws {
+        let server = FakeSyncServer()
+        let sets = try logSets(4)
+        server.refuse = [sets[1].id]
+        try await SyncEngine(db: db, transport: server, sleep: { _ in }).syncOnce()
+        #expect(Set(server.storedSets.map(\.id)) == Set(sets.map(\.id)).subtracting([sets[1].id]))
+        #expect(try pending(db) == 0)
+        #expect(try count(db, "SELECT COUNT(*) FROM syncDeadLetter") == 1)
+        #expect(try count(db, "SELECT COUNT(*) FROM syncDeadLetter WHERE rowId = '\(sets[1].id)' AND status = 422") == 1)
+        #expect(try record(db, sets[1].id) == sets[1], "the set itself stays on the phone")
     }
 
     @Test func aPastedServerAddressIsCleaned() {

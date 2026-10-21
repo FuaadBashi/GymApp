@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -188,6 +188,19 @@ nonisolated enum Schema {
                     SELECT '\(table)', id, 'upsert', \(now) FROM \(table) WHERE EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled')
                     """)
             }
+        }
+        migrator.registerMigration("v13") { db in
+            // Changes the server refused (a 4xx), kept so one bad row never blocks the rest.
+            try db.execute(sql: """
+                CREATE TABLE syncDeadLetter (
+                  tableName TEXT NOT NULL,
+                  rowId TEXT NOT NULL,
+                  payload BLOB NOT NULL,
+                  status INTEGER NOT NULL,
+                  failedAtMs INTEGER NOT NULL,
+                  PRIMARY KEY (tableName, rowId)
+                )
+                """)
         }
         return migrator
     }

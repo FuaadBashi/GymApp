@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import Network
 
 /// Sends the outbox and applies the server's changes (docs/backend/01-plan.md §4). Logging a set
 /// never waits for this: the set is in the database before the outbox row exists.
@@ -89,11 +90,24 @@ nonisolated final class SyncEngine: Sendable {
 
     func syncOnce() async throws {
         while let (changes, sent) = try nextBatch() {
-            try await transport.push(changes)
-            try await db.writer.write { db in
-                for (table, rowId, seq) in sent {
-                    try db.execute(sql: "DELETE FROM syncChange WHERE tableName = ? AND rowId = ? AND seq <= ?",
-                                   arguments: [table, rowId, seq])
+            do {
+                try await transport.push(changes)
+                try await markSent(sent)
+            } catch SyncError.rejected {
+                // Find the change the server refuses: send one at a time, and set aside each
+                // refused one so the rest still go.
+                for (change, entry) in zip(changes, sent) {
+                    do {
+                        try await transport.push([change])
+                    } catch SyncError.rejected(let status) {
+                        try await db.writer.write { db in
+                            try db.execute(sql: """
+                                INSERT OR REPLACE INTO syncDeadLetter (tableName, rowId, payload, status, failedAtMs)
+                                VALUES (?, ?, ?, ?, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER))
+                                """, arguments: [change.table, change.id, try JSONEncoder.sync.encode(change), status])
+                        }
+                    }
+                    try await markSent([entry])
                 }
             }
         }
@@ -104,6 +118,19 @@ nonisolated final class SyncEngine: Sendable {
             cursor = page.nextCursor
             if !page.hasMore { break }
         }
+    }
+
+    private func markSent(_ sent: [(String, String, Int64)]) async throws {
+        try await db.writer.write { db in
+            for (table, rowId, seq) in sent {
+                try db.execute(sql: "DELETE FROM syncChange WHERE tableName = ? AND rowId = ? AND seq <= ?",
+                               arguments: [table, rowId, seq])
+            }
+        }
+    }
+
+    static func refused(_ db: Database) throws -> Int {
+        try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM syncDeadLetter") ?? 0
     }
 
     /// The newest change of up to `batchSize` rows, in the order they were first changed, so a
@@ -220,5 +247,40 @@ nonisolated final class SyncEngine: Sendable {
         } catch let error as DatabaseError where error.resultCode == .SQLITE_CONSTRAINT {
             return false
         }
+    }
+}
+
+/// Runs sync when the app opens, after each logged set and when the network comes back. One
+/// run at a time; a request during a run queues exactly one more.
+/// shortcut: no background refresh while the app is closed; it needs the BackgroundTasks
+/// entitlement and an Info.plist entry (a project-file change).
+actor SyncScheduler {
+    static let shared = SyncScheduler()
+    private var running = false
+    private var again = false
+    private var monitor: NWPathMonitor?
+
+    func kick(_ db: AppDatabase) async {
+        watchNetwork(db)
+        if running { again = true; return }
+        running = true
+        repeat {
+            again = false
+            await SyncEngine.configured(db)?.run(maxAttempts: 6)
+        } while again
+        running = false
+    }
+
+    private func watchNetwork(_ db: AppDatabase) {
+        guard monitor == nil else { return }
+        let m = NWPathMonitor()
+        var wasOnline = true
+        m.pathUpdateHandler = { path in
+            let online = path.status == .satisfied
+            if online && !wasOnline { Task { await SyncScheduler.shared.kick(db) } }
+            wasOnline = online
+        }
+        m.start(queue: DispatchQueue(label: "sync.network"))
+        monitor = m
     }
 }

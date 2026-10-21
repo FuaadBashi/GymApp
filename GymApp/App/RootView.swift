@@ -49,7 +49,7 @@ struct RootView: View {
                     Task { await workout.returnedToForeground() }
                     Task { try? await HealthService.shared.sync(into: db) }
                     Task { await StudioInbox.shared.reload(db) }
-                    Task { await SyncEngine.configured(db)?.run() }
+                    Task { await SyncScheduler.shared.kick(db) }
                 }
             }
     }

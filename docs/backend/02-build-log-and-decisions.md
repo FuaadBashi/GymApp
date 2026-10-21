@@ -166,6 +166,14 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D61 | **The server's CHECK on `table_name` is dropped.** The list of tables lives only in `Change.rowTypes` | Each new table would otherwise need a schema change on the server | Keeping the CHECK | Build |
 | D62 | **Deploy the server before installing the phone build** | An older server answers 422 to the new tables, which would stop the phone's sync | — | Rule for this change |
 
+### 3.12 Step 5: sync without opening Settings (21 October)
+
+| # | Decision | Reason | Rejected | By |
+|---|---|---|---|---|
+| D63 | **A `SyncScheduler` runs sync when the app opens, after each logged set (also from the lock screen) and when the network comes back** (`NWPathMonitor`). One run at a time; a request during a run queues one more | Sets reach the server within seconds when there is signal, without a tap | A timer; syncing inside the write (logging must never wait) | Build |
+| D64 | **No background refresh while the app is closed** | It needs the BackgroundTasks capability and an Info.plist entry, a project-file change. Syncing after each set and on network return covers the gym case | `BGAppRefreshTask` now | Build; ask the owner before adding |
+| D65 | **Dead letters replace D40.** When the server refuses a batch (4xx), the phone sends its changes one at a time; each refused change goes to `syncDeadLetter` (migration v13) with its status, and the rest still go. Settings shows the count | One bad row can no longer stop sync. The row itself stays on the phone | Stopping the run (D40) | Build |
+
 ## 4. What was built
 
 ### Server (`server/`)
@@ -231,8 +239,7 @@ Not verified yet:
 
 1. Notes, body entries and form cues do not sync.
 2. The clock rule: a phone with a wrong clock can win a conflict (D26).
-3. There is no dead-letter table (D40), no sync on network change, and no background refresh
-   (D41).
+3. No background refresh while the app is closed (D64).
 4. Sign-in is the development route; the hosted server is open to account creation (D44, D47).
 5. Account export and delete endpoints are not built (plan section 5).
 6. Render's free service sleeps; the first request after sleep takes about a minute.
