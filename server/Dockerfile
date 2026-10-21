@@ -1,5 +1,5 @@
-# Build: Swift 6 on Ubuntu 24.04, release mode, static Swift standard library.
-FROM swift:6.1-noble AS build
+# Build: Swift 6.4.1 on Ubuntu 24.04 (the pinned packages need Swift tools 6.4), release mode, static Swift standard library.
+FROM swift:6.4.1-noble AS build
 WORKDIR /build
 COPY Package.swift Package.resolved ./
 RUN swift package resolve

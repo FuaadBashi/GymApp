@@ -139,7 +139,7 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | # | Decision | Reason | Rejected | By |
 |---|---|---|---|---|
 | D48 | **Render (free web service, Docker) and Neon (free Postgres, 1 GB)** | Both free. Neon is plain Postgres, so moving later is a `pg_dump` and a restore | Fly.io (no longer free); Supabase (also fine; Neon chosen for plain Postgres) | Plan, with D4 |
-| D49 | **A Dockerfile with a release build** (Swift 6.1 on Ubuntu 24.04, static standard library), run as a user that is not root | A small, standard image. Render builds it | Render's native Swift runtime (not offered) | Build |
+| D49 | **A Dockerfile with a release build** (Swift 6.4.1 on Ubuntu 24.04, static standard library), run as a user that is not root | A small, standard image. Render builds it | Render's native Swift runtime (not offered) | Build |
 | D50 | **render.yaml blueprint:** free plan, health check `/health`, `JWT_SECRET` generated, `DATABASE_URL` pasted by hand, auto-deploy off | The secrets never go in git. Deploys happen only when chosen | Auto-deploy on each push | Build |
 | D51 | **The owner signs up for Render and Neon** | Creating accounts and entering their credentials is the owner's job | — | Rule |
 | D52 | **The phone reaches the server only by HTTPS** (the hosted address). On the Mac, only the simulator reaches `localhost` | Plain HTTP to a local network address needs an App Transport Security exception, which is an Info.plist change. HTTPS avoids it | Adding the exception | Build |
