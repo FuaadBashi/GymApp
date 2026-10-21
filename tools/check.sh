@@ -17,7 +17,7 @@ words=$(git grep -n -I -i -E 'co-authored-by|claude-session|claude code|generate
 trailers=$(git log -50 --format=%B | grep -i -E 'co-authored-by|claude-session|generated with' || true)
 [ -n "$trailers" ] && { note "FAIL attribution in recent commit messages"; fail=1; } || note "ok   recent commit messages clean"
 
-python3 -I tools/build_tokens.py && git diff --quiet -- GymApp/App/Tokens.swift studio/web/tokens.css \
+python3 -I tools/build_tokens.py --check 2>/dev/null \
   && note "ok   tokens match design/tokens.json" \
   || { note "FAIL tokens: GymApp/App/Tokens.swift or studio/web/tokens.css differ from design/tokens.json (edit the JSON, run tools/build_tokens.py)"; fail=1; }
 

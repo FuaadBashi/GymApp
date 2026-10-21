@@ -1,10 +1,12 @@
 """Write the app's and the studio's design tokens from design/tokens.json (redesign card R.2).
 
-Usage: python3 -I tools/build_tokens.py
+Usage: python3 -I tools/build_tokens.py [--check]
 Writes GymApp/App/Tokens.swift and studio/web/tokens.css. Edit design/tokens.json, never the
-outputs: tools/check.sh regenerates them and fails if they differ from what is committed.
+outputs. With --check it writes nothing and exits 1 if either file differs from what the JSON
+gives (a hand edit, or a JSON change not rebuilt); tools/check.sh runs it.
 """
 import json
+import sys
 import re
 from pathlib import Path
 
@@ -70,8 +72,16 @@ def css(t: dict) -> str:
 
 def main() -> None:
     tokens = json.loads(SOURCE.read_text())
-    SWIFT.write_text(swift(tokens))
-    CSS.write_text(css(tokens))
+    outputs = {SWIFT: swift(tokens), CSS: css(tokens)}
+    if "--check" in sys.argv:
+        stale = [str(path.relative_to(ROOT)) for path, text in outputs.items()
+                 if not path.exists() or path.read_text() != text]
+        if stale:
+            print("Not from design/tokens.json: " + ", ".join(stale), file=sys.stderr)
+            sys.exit(1)
+        return
+    for path, text in outputs.items():
+        path.write_text(text)
 
 
 if __name__ == "__main__":
