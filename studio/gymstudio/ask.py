@@ -11,6 +11,7 @@ local model through Ollama. Both use plain HTTPS from the standard library.
 from __future__ import annotations
 
 import json
+import time
 import sqlite3
 import subprocess
 import urllib.request
@@ -25,6 +26,9 @@ KEYCHAIN_SERVICE = "GymApp Studio"
 KEYCHAIN_ACCOUNT = "anthropic"
 CLAUDE_MODELS = ["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"]
 MAX_STEPS = 8
+LOCAL_DEADLINE = 180      # seconds for one local answer; a laptop model must stop, not run for 40 minutes
+LOCAL_TOOL_CHARS = 12000  # about 3,000 tokens: fits the local context below
+LOCAL_CONTEXT = 8192      # tokens; Ollama's smaller default silently drops long tool results
 
 SYSTEM = """You are the analysis assistant inside GymApp Studio, a private training analysis tool for one lifter.
 Answer from the tools only. Every number you state must come from a tool result; never estimate, compute or invent figures.
@@ -210,11 +214,13 @@ def claude_turn(messages: list, ts: list[Tool], model: str, key: str, system: st
                  {"x-api-key": key, "anthropic-version": "2023-06-01"})
 
 
-def ollama_turn(messages: list, ts: list[Tool], model: str, system: str) -> dict:
+def ollama_turn(messages: list, ts: list[Tool], model: str, system: str, timeout: float = LOCAL_DEADLINE) -> dict:
+    # keep_alive frees the model's memory two minutes after the answer, so the Mac recovers.
     return _post("http://127.0.0.1:11434/api/chat",
-                 {"model": model, "stream": False, "messages": [{"role": "system", "content": system}] + messages,
+                 {"model": model, "stream": False, "keep_alive": "2m", "options": {"num_ctx": LOCAL_CONTEXT},
+                  "messages": [{"role": "system", "content": system}] + messages,
                   "tools": [{"type": "function", "function": {"name": t.name, "description": t.description, "parameters": t.parameters}} for t in ts]},
-                 {}, timeout=300)
+                 {}, timeout=max(1, int(timeout)))
 
 
 @dataclass
@@ -286,8 +292,19 @@ def ask(h: History, s: analysis.Settings, question: str, history: list | None = 
             msgs.append({"role": "user", "content": results})
     else:
         model = model or (local_models() or ["llama3.2"])[0]
+        deadline = time.monotonic() + LOCAL_DEADLINE
         for _ in range(MAX_STEPS):
-            r = ollama(msgs, ts, model, system)
+            left = deadline - time.monotonic()
+            if left <= 0:
+                return Answer(f"The local model ({model}) took more than {LOCAL_DEADLINE // 60} minutes, so I stopped it. "
+                              "Pick a smaller model, ask a narrower question, or use Summaries only.", calls, provider, model)
+            try:
+                r = ollama(msgs, ts, model, system, left)
+            except (TimeoutError, OSError) as e:
+                if "timed out" not in str(e):
+                    raise
+                return Answer(f"The local model ({model}) took more than {LOCAL_DEADLINE // 60} minutes, so I stopped it. "
+                              "Pick a smaller model, ask a narrower question, or use Summaries only.", calls, provider, model)
             m = r["message"]
             uses = m.get("tool_calls") or []
             if not uses:
@@ -302,6 +319,8 @@ def ask(h: History, s: analysis.Settings, question: str, history: list | None = 
                 calls.append({"tool": fn["name"], "input": args})
                 out = call_tool(ts, fn["name"], args)
                 outputs.append(out)
+                if len(out) > LOCAL_TOOL_CHARS:
+                    out = out[:LOCAL_TOOL_CHARS] + '..."(truncated: ask a narrower question for the rest)"'
                 msgs.append({"role": "tool", "content": out})
     return Answer("I ran out of steps before finishing. Try a narrower question.", calls, provider, model)
 
@@ -309,8 +328,10 @@ def ask(h: History, s: analysis.Settings, question: str, history: list | None = 
 def local_models() -> list[str]:
     try:
         with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=2) as r:
-            names = [m["name"] for m in json.loads(r.read())["models"]]
-            return sorted(names, key=lambda n: ("vision" in n, n))   # text models answer faster
+            models = json.loads(r.read())["models"]
+            # Text models first, smallest first: the first is the default, and a small model
+            # answers in seconds where a 14B one can fill a 16 GB Mac's memory.
+            return [m["name"] for m in sorted(models, key=lambda m: ("vision" in m["name"], m.get("size", 0), m["name"]))]
     except (OSError, ValueError, KeyError):
         return []
 

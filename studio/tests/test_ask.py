@@ -62,6 +62,40 @@ class AskTests(unittest.TestCase):
         a = ask.ask(self.h, self.s, "Overview?", provider="local", ollama=lambda *a: next(replies))
         self.assertEqual((a.text, a.tool_calls[0]["tool"]), ("All good.", "overview"))
 
+    def test_a_slow_local_model_is_stopped_with_a_clear_message(self):
+        def slow(*a):
+            raise TimeoutError("timed out")
+        a = ask.ask(self.h, self.s, "Overview?", provider="local", model="big", ollama=slow)
+        self.assertIn("took more than 3 minutes", a.text)
+        with mock.patch.object(ask, "LOCAL_DEADLINE", 0):
+            a = ask.ask(self.h, self.s, "Overview?", provider="local", model="big", ollama=lambda *a: self.fail("not called"))
+        self.assertIn("so I stopped it", a.text)
+
+    def test_long_tool_results_are_shortened_for_a_local_model(self):
+        seen = []
+        replies = iter([
+            {"message": {"role": "assistant", "content": "", "tool_calls": [{"function": {"name": "overview", "arguments": {}}}]}},
+            {"message": {"role": "assistant", "content": "Done."}},
+        ])
+        def turn(msgs, *a):
+            seen.append([m for m in msgs if m.get("role") == "tool"])
+            return next(replies)
+        with mock.patch.object(ask, "call_tool", return_value="x" * 50000):
+            a = ask.ask(self.h, self.s, "Overview?", provider="local", model="m", ollama=turn)
+        self.assertEqual(a.text, "Done.")
+        tool_msg = seen[1][0]["content"]
+        self.assertLess(len(tool_msg), ask.LOCAL_TOOL_CHARS + 100)
+        self.assertIn("truncated", tool_msg)
+
+    def test_the_smallest_text_model_is_the_default(self):
+        body = json.dumps({"models": [{"name": "qwen2.5-coder:14b", "size": 9_000_000_000},
+                                      {"name": "llama3.2-vision:latest", "size": 7_900_000_000},
+                                      {"name": "llama3.2:latest", "size": 2_000_000_000}]}).encode()
+        resp = mock.MagicMock()
+        resp.__enter__.return_value.read.return_value = body
+        with mock.patch.object(ask.urllib.request, "urlopen", return_value=resp):
+            self.assertEqual(ask.local_models(), ["llama3.2:latest", "qwen2.5-coder:14b", "llama3.2-vision:latest"])
+
     def test_invented_figures_are_flagged(self):
         outs = ['{"best_e1rm_kg": 93.3, "best_e1rm_date": "2026-03-14", "sessions": 77}']
         self.assertEqual(ask.unverified_numbers("Best is 93.3 kg (93 rounded) on 2026-03-14 over 77 sessions, 3 weeks.", outs), [])
