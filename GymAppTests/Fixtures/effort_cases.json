@@ -1,0 +1,172 @@
+[
+ {
+  "name": "same as the recent best",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 70,
+  "reference": 70,
+  "expected": 1
+ },
+ {
+  "name": "exactly 85% of the best",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 85,
+  "reference": 100,
+  "expected": 1
+ },
+ {
+  "name": "72.5% slides to half",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 72.5,
+  "reference": 100,
+  "expected": 0.5
+ },
+ {
+  "name": "exactly 60% counts nothing",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 60,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "well below the best",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 50,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "40 kg x 5 after 60 kg x 5",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 46.66666666666667,
+  "reference": 70.0,
+  "expected": 0.266667
+ },
+ {
+  "name": "no e1RM (body weight)",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": null,
+  "reference": 100,
+  "expected": 1
+ },
+ {
+  "name": "no history in the window",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 50,
+  "reference": null,
+  "expected": 1
+ },
+ {
+  "name": "warm-up",
+  "type": "warmUp",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "drop row",
+  "type": "drop",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "deload label wins",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [
+   "deload"
+  ],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "injury label wins",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [
+   "injury"
+  ],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "max rep wins over a light load",
+  "type": "working",
+  "repsInReserve": 0,
+  "annotations": [],
+  "e1RM": 40,
+  "reference": 100,
+  "expected": 1
+ },
+ {
+  "name": "MR -2 wins over a light load",
+  "type": "working",
+  "repsInReserve": 2,
+  "annotations": [],
+  "e1RM": 40,
+  "reference": 100,
+  "expected": 1
+ },
+ {
+  "name": "MR -3 counts nothing",
+  "type": "working",
+  "repsInReserve": 3,
+  "annotations": [],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "deload beats max rep",
+  "type": "working",
+  "repsInReserve": 0,
+  "annotations": [
+   "deload"
+  ],
+  "e1RM": 100,
+  "reference": 100,
+  "expected": 0
+ },
+ {
+  "name": "failed set slides like a working set",
+  "type": "failed",
+  "repsInReserve": null,
+  "annotations": [],
+  "e1RM": 72.5,
+  "reference": 100,
+  "expected": 0.5
+ },
+ {
+  "name": "form label changes nothing",
+  "type": "working",
+  "repsInReserve": null,
+  "annotations": [
+   "form"
+  ],
+  "e1RM": 72.5,
+  "reference": 100,
+  "expected": 0.5
+ }
+]

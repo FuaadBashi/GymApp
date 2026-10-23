@@ -8,6 +8,21 @@ nonisolated enum TrainingMath {
         reps <= 1 ? kg : kg * (1 + Double(reps) / 30)
     }
 
+    /// §6a: how far back "recent best" looks when judging a set's effort.
+    static let effortWindowDays: Double = 56
+
+    /// §6a: how much a completed set counts as a hard set, from 0 to 1. Labels win: a deload,
+    /// injury or 3-in-reserve set counts 0, a max-rep or 1–2-in-reserve set counts 1. Otherwise
+    /// the set's e1RM against the exercise's best in the window: 85% or more counts 1, 60% or
+    /// less counts 0, and it slides in between. No reference (new lift, body weight) counts 1.
+    static func effort(type: SetType, repsInReserve: Int?, annotations: [SetAnnotation], e1RM: Double?, reference: Double?) -> Double {
+        guard type != .warmUp, type != .drop else { return 0 }
+        if annotations.contains(.deload) || annotations.contains(.injury) { return 0 }
+        if let repsInReserve { return repsInReserve <= 2 ? 1 : 0 }
+        guard let e1RM, let reference, reference > 0 else { return 1 }
+        return min(1, max(0, (e1RM / reference - 0.60) / 0.25))
+    }
+
     /// §4: shown only for 1–12 reps, where the estimate means something. Body-weight loads
     /// have no honest 1RM.
     static func displayableE1RM(kg: Double, reps: Int, loadMode: LoadMode) -> Double? {

@@ -48,3 +48,17 @@ class RulebookTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EffortCasesTest(unittest.TestCase):
+    """§6a: the cases shared with the app's EffortTests (GymAppTests/Fixtures/effort_cases.json)."""
+
+    def test_shared_cases_match(self):
+        import json
+        from pathlib import Path
+        path = Path(__file__).resolve().parents[2] / "GymAppTests" / "Fixtures" / "effort_cases.json"
+        cases = json.loads(path.read_text())
+        self.assertGreaterEqual(len(cases), 18)
+        for c in cases:
+            got = rb.set_effort(c["type"], c["repsInReserve"], c["annotations"], c["e1RM"], c["reference"])
+            self.assertAlmostEqual(got, c["expected"], places=6, msg=c["name"])

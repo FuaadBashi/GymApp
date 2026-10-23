@@ -115,7 +115,7 @@ nonisolated enum SummaryQueries {
         return WorkoutSummary(workout: workout, duration: (workout.endedAt ?? .now).timeIntervalSince(workout.startedAt),
                               volumeKg: volume, previousVolumeKg: previousVolume,
                               setCount: hardSetCount(lines),
-                              records: records, muscles: muscles(lines), exercises: annotated, previous: previous)
+                              records: records, muscles: try muscles(db, lines: lines, workout: workout), exercises: annotated, previous: previous)
     }
 
     /// Orders statuses for "the best this exercise reached": all-time, then longer windows.
@@ -147,23 +147,11 @@ nonisolated enum SummaryQueries {
         return records
     }
 
-    /// Hard sets per muscle (rulebook §6): 1 per primary, 0.5 per secondary, for each completed
-    /// set that is neither a warm-up nor a drop row (a drop row belongs to the set before it).
-    /// Rulebook §6: a hard set is a completed set that is neither a warm-up nor a drop row.
-    static func isHard(_ set: WorkoutSetRecord) -> Bool {
-        set.completedAt != nil && set.type != .warmUp && set.type != .drop
-    }
-
-    static func muscles(_ lines: [WorkoutSummary.ExerciseLine]) -> [(muscle: Muscle, sets: Double)] {
+    /// Hard sets per muscle (rulebook §6, each set weighted by its effort, §6a).
+    static func muscles(_ db: Database, lines: [WorkoutSummary.ExerciseLine], workout: WorkoutRecord) throws -> [(muscle: Muscle, sets: Double)] {
         var counts: [Muscle: Double] = [:]
-        for line in lines {
-            let hard = line.sets.filter(isHard).count
-            guard hard > 0 else { continue }
-            for m in line.exercise.primaryMuscles { counts[m, default: 0] += Double(hard) }
-            for m in line.exercise.secondaryMuscles { counts[m, default: 0] += Double(hard) * 0.5 }
-        }
-        return counts.map { ($0.key, $0.value) }
-            .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0.rawValue < $1.0.rawValue }
+        try EffortQueries.addMuscles(db, lines: lines, workout: workout, into: &counts)
+        return EffortQueries.sorted(counts)
     }
 
     static func exerciseLines(_ db: Database, workoutId: String) throws -> [WorkoutSummary.ExerciseLine] {

@@ -6,6 +6,7 @@ finished workouts and completed sets.
 """
 from __future__ import annotations
 
+import json
 import shutil
 import sqlite3
 import tempfile
@@ -32,6 +33,14 @@ class Exercise:
     is_archived: bool
 
 
+def _annotations(text) -> list[str]:
+    try:
+        value = json.loads(text or "[]")
+        return [a for a in value if isinstance(a, str)] if isinstance(value, list) else []
+    except ValueError:
+        return []
+
+
 @dataclass
 class SetRow:
     id: str
@@ -43,6 +52,7 @@ class SetRow:
     completed_at: Optional[datetime]
     reps_in_reserve: Optional[int]
     note: Optional[str]
+    annotations: list[str] = field(default_factory=list)
 
     @property
     def kg(self) -> float:
@@ -144,7 +154,8 @@ class History:
                 continue
             s.sets.append(SetRow(r["id"], r["position"], r["loadHundredths"], r["unit"], r["reps"], r["type"],
                                  parse_time(r["completedAt"]),
-                                 r["repsInReserve"] if has_v2 else None, r["note"] if has_v2 else None))
+                                 r["repsInReserve"] if has_v2 else None, r["note"] if has_v2 else None,
+                                 _annotations(r["annotations"]) if has_v2 else []))
         for s in sessions.values():
             if s.sets:
                 self.workouts[s.workout_id].sessions.append(s)

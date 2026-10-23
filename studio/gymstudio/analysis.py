@@ -353,7 +353,7 @@ def balance(h: History, s: Settings, days: int = 28, today: Optional[datetime] =
         ex = h.exercises.get(x.exercise_id)
         if not ex:
             continue
-        hard = sum(1 for y in x.sets if rulebook.is_hard_set(y.type))
+        hard = stats.session_hard_sets(h, x)
         for side, pats in PUSH_PULL.items():
             if ex.movement_pattern in pats:
                 pp[side] += hard
@@ -361,8 +361,8 @@ def balance(h: History, s: Settings, days: int = 28, today: Optional[datetime] =
     def ratio(a, b):
         return round(a / b, 2) if b else None
     return {"days": days,
-            "push_pull": {"push": pp["push"], "pull": pp["pull"], "ratio": ratio(pp["push"], pp["pull"])},
-            "upper_lower": {"upper": region["upper"], "lower": region["lower"], "ratio": ratio(region["upper"], region["lower"])},
+            "push_pull": {"push": round(pp["push"], 1), "pull": round(pp["pull"], 1), "ratio": ratio(pp["push"], pp["pull"])},
+            "upper_lower": {"upper": round(region["upper"], 1), "lower": round(region["lower"], 1), "ratio": ratio(region["upper"], region["lower"])},
             "quads_hamstrings": {"ratio": ratio(m.get("quadriceps", 0), m.get("hamstrings", 0))},
             "chest_back": {"ratio": ratio(m.get("chest", 0), m.get("lats", 0) + m.get("middleBack", 0))}}
 

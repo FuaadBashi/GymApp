@@ -139,10 +139,43 @@ shows the lightest load, in the exercise's learnt step (§7a), whose estimated 1
 
 - **Volume** = Σ (calculation load × reps) over the sets that count for volume (§2, §3), in kg.
   JEFIT uses a different definition, so the two figures do not agree.
-- **Hard sets per muscle:** each hard set (§3) counts 1 for each primary muscle and 0.5 for each
-  secondary muscle.
+- **Hard sets per muscle:** each set counts its effort (§6a), from 0 to 1, times 1 for each
+  primary muscle and 0.5 for each secondary muscle.
 - **Week:** starts on the day set in Settings (default Sunday). A workout belongs to the local
   date on which it started, also when it continues after midnight.
+
+## §6a How hard a set was (22 October)
+
+A set does not always count as a full hard set. The app judges each set against the same
+exercise's recent work. The result is a number from 0 to 1. Recovery, the weekly sets per muscle,
+the muscles on the end-of-workout screen, and the studio's balance and reports all use it.
+
+1. **Warm-up and drop rows** count 0, as in §3.
+2. **Labels win over the calculation:**
+   - deload or injury: 0, because the set was light on purpose;
+   - MR −3 (3 reps in reserve): 0;
+   - max rep, MR −1 or MR −2: 1, at any load.
+3. **Otherwise, compare with the recent best.** The reference is the best Epley e1RM (§4) of the
+   exercise's working and failed sets in other finished workouts that started in the
+   **56 days** before this workout. The set's own e1RM is divided by that reference:
+   - 85% or more: 1;
+   - 60% or less: 0;
+   - in between, a straight line. For example, 72.5% counts 0.5.
+4. **No reference counts 1:**
+   - a new exercise, or none of it in the last 56 days;
+   - body-weight and reps-only exercises, which have no honest e1RM.
+
+The e1RM includes the reps, so a light load taken for many reps can still count as hard.
+For example, 40 kg × 20 has an e1RM of 66.7 kg.
+
+Example: bench at 60 kg × 5 last week and 40 kg × 5 today. 46.7 ÷ 70 = 67%, so each of today's
+sets counts 0.27.
+
+The "sets" figure on a workout is still the number of sets logged. Only the hard-set counts use
+this rule.
+
+The app (`TrainingMath.effort`, `EffortQueries`) and the studio (`rulebook.set_effort`,
+`stats.session_hard_sets`) check the same cases in `GymAppTests/Fixtures/effort_cases.json`.
 
 ## §7 Last-time values
 

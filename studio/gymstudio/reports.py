@@ -120,7 +120,7 @@ def _totals(h: History, start: datetime, end: datetime) -> dict:
     ws = [w for w in h.workouts.values() if start <= w.started_at < end]
     return {"workouts": len(ws), "seconds": sum(w.duration_s for w in ws),
             "volume_kg": sum(stats.workout_volume_kg(h, w.id) for w in ws),
-            "hard_sets": sum(1 for w in ws for x in w.sessions for st in x.sets if rulebook.is_hard_set(st.type)),
+            "hard_sets": round(sum(stats.session_hard_sets(h, x) for w in ws for x in w.sessions), 1),
             "sessions": [x for w in ws for x in w.sessions], "workout_list": ws}
 
 

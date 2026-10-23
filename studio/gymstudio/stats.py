@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from . import rulebook
@@ -87,14 +87,36 @@ def records(history: History, exercise_id: str) -> Records:
     return Records(heaviest, e1rm, volume, sorted(reps.values(), key=lambda m: -m.value_kg))
 
 
+def effort_reference(history: History, session: Session) -> Optional[float]:
+    """§6a (EffortQueries.reference): the exercise's best e1RM over working and failed sets in
+    other workouts that started in the 56 days before this one."""
+    ex = history.exercises.get(session.exercise_id)
+    if ex is None or ex.load_mode in ("bodyweightPlus", "repsOnly"):
+        return None
+    since = session.started_at - timedelta(days=rulebook.EFFORT_WINDOW_DAYS)
+    values = [rulebook.e1rm_epley(x.kg, x.reps) for s in history.sessions_for(session.exercise_id)
+              if s.workout_id != session.workout_id and since <= s.started_at < session.started_at
+              for x in s.sets if x.type in ("working", "failed") and x.kg > 0 and x.reps >= 1]
+    return max(values) if values else None
+
+
+def session_hard_sets(history: History, session: Session) -> float:
+    """§6a: the session's sets, each weighted by its effort."""
+    reference = effort_reference(history, session)
+    return sum(rulebook.set_effort(x.type, x.reps_in_reserve, x.annotations,
+                                   rulebook.e1rm_epley(x.kg, x.reps) if x.kg > 0 and x.reps >= 1 else None, reference)
+               for x in session.sets)
+
+
 def hard_sets_per_muscle(history: History, sessions: list[Session]) -> dict[str, float]:
-    """Rulebook §6, fractional: 1 per primary muscle, ½ per secondary (SummaryQueries.muscles)."""
+    """Rulebook §6, fractional: each set's effort (§6a) counts 1× per primary muscle and ½× per
+    secondary (EffortQueries.addMuscles)."""
     counts: dict[str, float] = defaultdict(float)
     for s in sessions:
         ex = history.exercises.get(s.exercise_id)
         if ex is None:
             continue
-        hard = sum(1 for x in s.sets if rulebook.is_hard_set(x.type))
+        hard = session_hard_sets(history, s)
         for m in ex.primary_muscles:
             counts[m] += hard
         for m in ex.secondary_muscles:

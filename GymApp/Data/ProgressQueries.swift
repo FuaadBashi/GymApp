@@ -70,11 +70,14 @@ nonisolated enum ProgressQueries {
     /// Hard sets per muscle (rulebook §6) over the finished workouts that started in
     /// [from, to).
     static func muscles(_ db: Database, from: Date, to: Date) throws -> [(muscle: Muscle, sets: Double)] {
-        let ids = try String.fetchAll(db, sql: "SELECT id FROM workout WHERE endedAt IS NOT NULL AND startedAt >= ? AND startedAt < ?",
-                                      arguments: [from, to])
+        let workouts = try WorkoutRecord.fetchAll(db, sql: "SELECT * FROM workout WHERE endedAt IS NOT NULL AND startedAt >= ? AND startedAt < ?",
+                                                  arguments: [from, to])
         // Only the sets are needed: a full summary also compares with last time and replays records.
-        let lines = try ids.flatMap { try SummaryQueries.exerciseLines(db, workoutId: $0) }
-        return SummaryQueries.muscles(lines)
+        var counts: [Muscle: Double] = [:]
+        for workout in workouts {
+            try EffortQueries.addMuscles(db, lines: try SummaryQueries.exerciseLines(db, workoutId: workout.id), workout: workout, into: &counts)
+        }
+        return EffortQueries.sorted(counts)
     }
 
     /// Records set by beating every earlier session, newest first. One pass per exercise over
@@ -126,27 +129,33 @@ nonisolated enum ProgressQueries {
     static let recoveryHours: Double = 72
 
     /// Hard sets per muscle (rulebook §6: 1 per primary, ½ per secondary) logged in the last
-    /// 72 hours, each weighted by how recent it is: a set counts fully just after it is done
-    /// and nothing once 72 hours have passed, falling linearly. Unfinished workouts count.
+    /// 72 hours. Each set counts its effort (§6a), times how recent it is: fully just after it
+    /// is done and nothing once 72 hours have passed, falling linearly. Unfinished workouts count.
     static func recovery(_ db: Database, now: Date) throws -> [(muscle: Muscle, sets: Double)] {
         let since = now.addingTimeInterval(-recoveryHours * 3600)
         let rows = try Row.fetchAll(db, sql: """
-            SELECT s.*, we.exerciseId AS exerciseId FROM workoutSet s JOIN workoutExercise we ON we.id = s.workoutExerciseId
+            SELECT s.*, we.exerciseId AS exerciseId, w.id AS workoutId, w.startedAt AS workoutStart
+            FROM workoutSet s JOIN workoutExercise we ON we.id = s.workoutExerciseId JOIN workout w ON w.id = we.workoutId
             WHERE s.completedAt IS NOT NULL AND s.completedAt >= ? AND s.completedAt <= ?
             """, arguments: [since, now])
         let ids = Set(rows.map { $0["exerciseId"] as String })
         let exercises = Dictionary(uniqueKeysWithValues: try ExerciseRecord.filter(keys: ids).fetchAll(db).map { ($0.id, $0) })
+        var references: [String: Double?] = [:]
         var counts: [Muscle: Double] = [:]
         for row in rows {
             let set = try WorkoutSetRecord(row: row)
-            let exerciseId: String = row["exerciseId"]
-            guard SummaryQueries.isHard(set), let done = set.completedAt, let exercise = exercises[exerciseId] else { continue }
-            let weight = max(0, 1 - now.timeIntervalSince(done) / (recoveryHours * 3600))
+            let exerciseId: String = row["exerciseId"], workoutId: String = row["workoutId"]
+            guard let done = set.completedAt, let exercise = exercises[exerciseId] else { continue }
+            let key = exerciseId + "|" + workoutId
+            if references[key] == nil {
+                references[key] = try EffortQueries.reference(db, exercise: exercise, before: row["workoutStart"], excluding: workoutId)
+            }
+            let weight = EffortQueries.weight(set, reference: references[key] ?? nil)
+                * max(0, 1 - now.timeIntervalSince(done) / (recoveryHours * 3600))
             for m in exercise.primaryMuscles { counts[m, default: 0] += weight }
             for m in exercise.secondaryMuscles { counts[m, default: 0] += weight * 0.5 }
         }
-        return counts.filter { $0.value > 0.005 }.map { ($0.key, $0.value) }
-            .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0.rawValue < $1.0.rawValue }
+        return EffortQueries.sorted(counts)
     }
 
     static let trackedPatterns: [MovementPattern] = [.squat, .hinge, .horizontalPush, .verticalPush, .horizontalPull, .verticalPull]

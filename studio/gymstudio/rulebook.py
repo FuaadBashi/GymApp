@@ -91,6 +91,26 @@ def is_hard_set(set_type: str) -> bool:
     return set_type not in ("warmUp", "drop")
 
 
+EFFORT_WINDOW_DAYS = 56
+
+
+def set_effort(set_type: str, reps_in_reserve: Optional[int], annotations: list[str],
+               e1rm: Optional[float], reference: Optional[float]) -> float:
+    """§6a (TrainingMath.effort): how much a set counts as a hard set, 0 to 1. Labels win:
+    deload, injury or 3 in reserve count 0; max rep or 1-2 in reserve count 1. Otherwise the
+    set's e1RM against the exercise's best in the window: 85%+ counts 1, 60% or less counts 0,
+    sliding in between. No reference (new lift, body weight) counts 1."""
+    if set_type in ("warmUp", "drop"):
+        return 0.0
+    if "deload" in annotations or "injury" in annotations:
+        return 0.0
+    if reps_in_reserve is not None:
+        return 1.0 if reps_in_reserve <= 2 else 0.0
+    if e1rm is None or not reference or reference <= 0:
+        return 1.0
+    return min(1.0, max(0.0, (e1rm / reference - 0.60) / 0.25))
+
+
 def e1rm_marzagao(kg: float, reps: int) -> float:
     """Load-dependent equation fitted on 303,494 near-failure sets (Marzagao 2026, arXiv
     2603.17495): 1RM = w·(1 + (r−1)^0.85 / (−2.55 + 4.58·ln w)). Used only in the formula
