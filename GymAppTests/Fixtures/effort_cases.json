@@ -130,13 +130,13 @@
   "expected": 1
  },
  {
-  "name": "MR -3 counts nothing",
+  "name": "MR -3 counts as a full set",
   "type": "working",
   "repsInReserve": 3,
   "annotations": [],
   "e1RM": 100,
   "reference": 100,
-  "expected": 0
+  "expected": 1
  },
  {
   "name": "deload beats max rep",

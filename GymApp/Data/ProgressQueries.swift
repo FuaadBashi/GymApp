@@ -18,6 +18,21 @@ nonisolated struct StepsSummary: Equatable {
     var thisWeek: Int?
     var lastWeek: Int?
 
+    /// The line under Recovery: steps on the three days the recovery window covers, against the
+    /// 30-day average. Shown for context only; steps never change the recovery figures.
+    func recoveryLine(today: String, yesterday: String, dayBefore: String) -> String? {
+        let byDay = Dictionary(days.map { ($0.day, $0.steps) }, uniquingKeysWith: { _, b in b })
+        let parts = [(today, "today"), (yesterday, "yesterday"), (dayBefore, "the day before")]
+            .compactMap { day, name in byDay[day].map { "\($0.formatted()) \(name)" } }
+        guard !parts.isEmpty else { return nil }
+        var line = "Steps: " + parts.joined(separator: " · ")
+        if let dailyAverage { line += " (30-day average \(dailyAverage.formatted()))" }
+        line += ". Not counted in recovery."
+        let big = [today, yesterday, dayBefore].compactMap { byDay[$0] }.contains { s in dailyAverage.map { Double(s) >= 1.5 * Double($0) } ?? false }
+        if big { line += " A big walking day can leave your legs more tired than this shows." }
+        return line
+    }
+
     static func == (a: StepsSummary, b: StepsSummary) -> Bool {
         a.days.map(\.day) == b.days.map(\.day) && a.days.map(\.steps) == b.days.map(\.steps)
             && a.dailyAverage == b.dailyAverage && a.thisWeek == b.thisWeek && a.lastWeek == b.lastWeek

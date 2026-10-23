@@ -97,7 +97,7 @@ EFFORT_WINDOW_DAYS = 56
 def set_effort(set_type: str, reps_in_reserve: Optional[int], annotations: list[str],
                e1rm: Optional[float], reference: Optional[float]) -> float:
     """§6a (TrainingMath.effort): how much a set counts as a hard set, 0 to 1. Labels win:
-    deload, injury or 3 in reserve count 0; max rep or 1-2 in reserve count 1. Otherwise the
+    deload or injury count 0; an effort label (max rep or 1-3 in reserve) counts 1. Otherwise the
     set's e1RM against the exercise's best in the window: 85%+ counts 1, 60% or less counts 0,
     sliding in between. No reference (new lift, body weight) counts 1."""
     if set_type in ("warmUp", "drop"):
@@ -105,7 +105,7 @@ def set_effort(set_type: str, reps_in_reserve: Optional[int], annotations: list[
     if "deload" in annotations or "injury" in annotations:
         return 0.0
     if reps_in_reserve is not None:
-        return 1.0 if reps_in_reserve <= 2 else 0.0
+        return 1.0
     if e1rm is None or not reference or reference <= 0:
         return 1.0
     return min(1.0, max(0.0, (e1rm / reference - 0.60) / 0.25))

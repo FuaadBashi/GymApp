@@ -68,4 +68,17 @@ import Testing
         let week = try db.reader.read { try ProgressQueries.muscles($0, from: TestData.day(59), to: TestData.day(61)) }
         #expect(week.first { $0.muscle == .chest }?.sets == 1)
     }
+
+    @Test func theStepsLineShowsTheRecoveryDaysAgainstTheAverage() {
+        let s = StepsSummary(days: [("2026-10-20", 18_400), ("2026-10-21", 9_200), ("2026-10-22", 6_100)],
+                             dailyAverage: 7_900, thisWeek: nil, lastWeek: nil)
+        let line = s.recoveryLine(today: "2026-10-22", yesterday: "2026-10-21", dayBefore: "2026-10-20")
+        #expect(line?.hasPrefix("Steps: \(6_100.formatted()) today · \(9_200.formatted()) yesterday · \(18_400.formatted()) the day before") == true)
+        #expect(line?.contains("30-day average \(7_900.formatted())") == true)
+        #expect(line?.contains("big walking day") == true, "18,400 is more than 1.5 × 7,900")
+        let quiet = StepsSummary(days: [("2026-10-22", 6_100)], dailyAverage: 7_900, thisWeek: nil, lastWeek: nil)
+        #expect(quiet.recoveryLine(today: "2026-10-22", yesterday: "2026-10-21", dayBefore: "2026-10-20")?.contains("big") == false)
+        #expect(StepsSummary(days: [], dailyAverage: nil, thisWeek: nil, lastWeek: nil)
+            .recoveryLine(today: "2026-10-22", yesterday: "2026-10-21", dayBefore: "2026-10-20") == nil)
+    }
 }

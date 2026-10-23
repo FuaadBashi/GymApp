@@ -144,7 +144,7 @@ shows the lightest load, in the exercise's learnt step (§7a), whose estimated 1
 - **Week:** starts on the day set in Settings (default Sunday). A workout belongs to the local
   date on which it started, also when it continues after midnight.
 
-## §6a How hard a set was (22 October)
+## §6a How hard a set was (22 October; effort labels changed 23 October)
 
 A set does not always count as a full hard set. The app judges each set against the same
 exercise's recent work. The result is a number from 0 to 1. Recovery, the weekly sets per muscle,
@@ -153,8 +153,7 @@ the muscles on the end-of-workout screen, and the studio's balance and reports a
 1. **Warm-up and drop rows** count 0, as in §3.
 2. **Labels win over the calculation:**
    - deload or injury: 0, because the set was light on purpose;
-   - MR −3 (3 reps in reserve): 0;
-   - max rep, MR −1 or MR −2: 1, at any load.
+   - any effort label (max rep, MR −1, MR −2 or MR −3): 1, at any load.
 3. **Otherwise, compare with the recent best.** The reference is the best Epley e1RM (§4) of the
    exercise's working and failed sets in other finished workouts that started in the
    **56 days** before this workout. The set's own e1RM is divided by that reference:

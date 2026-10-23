@@ -276,9 +276,19 @@ struct ProgressTab: View {
                     Text(Load.format((m.sets * 10).rounded() / 10)).font(.caption.monospacedDigit()).frame(width: 34, alignment: .trailing)
                 }
             }
-            Text("Hard sets weighted by time since: a set counts fully when done and nothing after 72 hours.")
+            if let line = stepsLine {
+                Label(line, systemImage: "figure.walk").font(.caption).foregroundStyle(.secondary)
+            }
+            Text("Hard sets weighted by effort against your recent best and by time since: a set counts fully when done and nothing after 72 hours.")
                 .font(.caption2).foregroundStyle(.secondary)
         }
+    }
+
+    private var stepsLine: String? {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        func day(_ offset: Int) -> String { DayString.from(calendar.date(byAdding: .day, value: -offset, to: today) ?? today) }
+        return model.steps?.recoveryLine(today: day(0), yesterday: day(1), dayBefore: day(2))
     }
 
     // MARK: Movement patterns (card 6.5)
