@@ -270,4 +270,22 @@ final class SyncTests: XCTestCase {
         try await push([set("S3", at: 3_000)], token: a, expect: .unauthorized)
         try await app.test(.GET, "v1/account/export") { res async throws in XCTAssertEqual(res.status, .unauthorized) }
     }
+
+    func testNotesBodyEntriesAndCuesRoundTripAndAreChecked() async throws {
+        let a = try await token("alice")
+        let at = Date(timeIntervalSince1970: 1_790_000_000)
+        let note: JSON = .object(["id": .string("N"), "exerciseId": .string("bench"), "date": .string("2026-10-23"),
+                                  "text": .string("Seat on 4"), "source": .string("app")])
+        let body: JSON = .object(["id": .string("B"), "date": .string("2026-10-23"), "weightHundredths": .int(8_250),
+                                  "weightUnit": .string("kg"), "measurements": .object([:]), "source": .string("app")])
+        let cue: JSON = .object(["id": .string("C"), "exerciseId": .string("bench"), "kind": .string("setup"),
+                                 "text": .string("Shoulder blades back"), "position": .int(0), "showOnOpen": .bool(true), "source": .string("owner")])
+        try await push([("exerciseNote", "N", note), ("bodyEntry", "B", body), ("formCue", "C", cue)]
+            .map { Change(table: $0.0, id: $0.1, op: "upsert", updatedAt: at, row: $0.2) }, token: a)
+        let pulled = try await pull(token: a)
+        XCTAssertEqual(pulled.changes.map(\.row), [note, body, cue])
+        if case .object(var o) = body { o["weightUnit"] = .string("stone")
+            try await push([Change(table: "bodyEntry", id: "B", op: "upsert", updatedAt: at.addingTimeInterval(1), row: .object(o))],
+                           token: a, expect: .unprocessableEntity) }
+    }
 }

@@ -9,8 +9,12 @@ nonisolated enum SyncRecord: Equatable, Sendable {
     case workout(WorkoutRecord)
     case workoutExercise(WorkoutExerciseRecord)
     case workoutSet(WorkoutSetRecord)
+    case exerciseNote(ExerciseNoteRecord)
+    case bodyEntry(BodyEntryRecord)
+    case formCue(FormCueRecord)
 
-    static let tables = ["exercise", "program", "programDay", "dayExercise", "workout", "workoutExercise", "workoutSet"]
+    static let tables = ["exercise", "program", "programDay", "dayExercise", "workout", "workoutExercise", "workoutSet",
+                         "exerciseNote", "bodyEntry", "formCue"]
 
     var table: String {
         switch self {
@@ -21,6 +25,9 @@ nonisolated enum SyncRecord: Equatable, Sendable {
         case .workout: "workout"
         case .workoutExercise: "workoutExercise"
         case .workoutSet: "workoutSet"
+        case .exerciseNote: "exerciseNote"
+        case .bodyEntry: "bodyEntry"
+        case .formCue: "formCue"
         }
     }
 
@@ -33,6 +40,9 @@ nonisolated enum SyncRecord: Equatable, Sendable {
         case .workout(let r): r.id
         case .workoutExercise(let r): r.id
         case .workoutSet(let r): r.id
+        case .exerciseNote(let r): r.id
+        case .bodyEntry(let r): r.id
+        case .formCue(let r): r.id
         }
     }
 }
@@ -71,6 +81,9 @@ nonisolated struct SyncChange: Codable, Equatable, Sendable {
         case "workout": row = .workout(try c.decode(WorkoutRecord.self, forKey: .row))
         case "workoutExercise": row = .workoutExercise(try c.decode(WorkoutExerciseRecord.self, forKey: .row))
         case "workoutSet": row = .workoutSet(try c.decode(WorkoutSetRecord.self, forKey: .row))
+        case "exerciseNote": row = .exerciseNote(try c.decode(ExerciseNoteRecord.self, forKey: .row))
+        case "bodyEntry": row = .bodyEntry(try c.decode(BodyEntryRecord.self, forKey: .row))
+        case "formCue": row = .formCue(try c.decode(FormCueRecord.self, forKey: .row))
         default: row = nil
         }
     }
@@ -89,6 +102,9 @@ nonisolated struct SyncChange: Codable, Equatable, Sendable {
         case .workout(let r): try c.encode(r, forKey: .row)
         case .workoutExercise(let r): try c.encode(r, forKey: .row)
         case .workoutSet(let r): try c.encode(r, forKey: .row)
+        case .exerciseNote(let r): try c.encode(r, forKey: .row)
+        case .bodyEntry(let r): try c.encode(r, forKey: .row)
+        case .formCue(let r): try c.encode(r, forKey: .row)
         case nil: try c.encodeNil(forKey: .row)
         }
     }

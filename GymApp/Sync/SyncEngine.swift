@@ -1,3 +1,4 @@
+import BackgroundTasks
 import Foundation
 import GRDB
 import Network
@@ -28,7 +29,8 @@ nonisolated final class SyncEngine: Sendable {
     static func enable(_ db: Database) throws {
         guard try !isEnabled(db) else { return }
         let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
-        let filters = ["exercise": "WHERE source != 'library' OR isFavorite = 1 OR isArchived = 1 OR stickyNote IS NOT NULL"]
+        let filters = ["exercise": "WHERE source != 'library' OR isFavorite = 1 OR isArchived = 1 OR stickyNote IS NOT NULL",
+                       "formCue": "WHERE source = 'owner'"]
         for table in SyncRecord.tables {
             try db.execute(sql: """
                 INSERT INTO syncChange (tableName, rowId, op, changedAtMs)
@@ -178,6 +180,9 @@ nonisolated final class SyncEngine: Sendable {
         case "workout": try WorkoutRecord.fetchOne(db, key: id).map(SyncRecord.workout)
         case "workoutExercise": try WorkoutExerciseRecord.fetchOne(db, key: id).map(SyncRecord.workoutExercise)
         case "workoutSet": try WorkoutSetRecord.fetchOne(db, key: id).map(SyncRecord.workoutSet)
+        case "exerciseNote": try ExerciseNoteRecord.fetchOne(db, key: id).map(SyncRecord.exerciseNote)
+        case "bodyEntry": try BodyEntryRecord.fetchOne(db, key: id).map(SyncRecord.bodyEntry)
+        case "formCue": try FormCueRecord.fetchOne(db, key: id).map(SyncRecord.formCue)
         default: nil
         }
     }
@@ -250,6 +255,14 @@ nonisolated final class SyncEngine: Sendable {
                 case .workoutSet(let r):
                     guard try exists("workoutExercise", r.workoutExerciseId) else { return .rollback }
                     try r.save(db)
+                case .exerciseNote(let r):
+                    guard try exists("exercise", r.exerciseId) else { return .rollback }
+                    try r.save(db)
+                case .bodyEntry(let r):
+                    try r.save(db)
+                case .formCue(let r):
+                    guard try exists("exercise", r.exerciseId) else { return .rollback }
+                    try r.save(db)
                 }
                 written = true
                 return .commit
@@ -261,10 +274,8 @@ nonisolated final class SyncEngine: Sendable {
     }
 }
 
-/// Runs sync when the app opens, after each logged set and when the network comes back. One
-/// run at a time; a request during a run queues exactly one more.
-/// shortcut: no background refresh while the app is closed; it needs the BackgroundTasks
-/// entitlement and an Info.plist entry (a project-file change).
+/// Runs sync when the app opens, after each logged set, when the network comes back, and in
+/// background refresh (BackgroundSync). One run at a time; a request during a run queues one more.
 actor SyncScheduler {
     static let shared = SyncScheduler()
     private var running = false
@@ -293,5 +304,31 @@ actor SyncScheduler {
         }
         m.start(queue: DispatchQueue(label: "sync.network"))
         monitor = m
+    }
+}
+
+/// Sync while the app is closed: iOS runs this refresh task when it chooses (often a few
+/// times a day, more for an app used daily). The identifier is listed in GymApp/Info.plist.
+enum BackgroundSync {
+    static let identifier = "com.fuaadshurie.GymApp.sync"
+
+    /// Must run before the app finishes launching.
+    static func register() {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: identifier, using: .main) { task in
+            MainActor.assumeIsolated {
+                schedule()
+                guard let db = WorkoutHub.db else { return task.setTaskCompleted(success: false) }
+                nonisolated(unsafe) let task = task
+                let work = Task { await SyncScheduler.shared.kick(db); task.setTaskCompleted(success: !Task.isCancelled) }
+                task.expirationHandler = { work.cancel() }
+            }
+        }
+    }
+
+    /// Asks for the next run; iOS decides when. Called when the app goes to the background.
+    static func schedule() {
+        let request = BGAppRefreshTaskRequest(identifier: identifier)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60)
+        try? BGTaskScheduler.shared.submit(request)
     }
 }

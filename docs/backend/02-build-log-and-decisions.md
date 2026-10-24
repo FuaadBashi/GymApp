@@ -189,6 +189,15 @@ Each decision gives what was chosen, the reason, what was rejected, and who deci
 | D69 | **`server/restore_drill.sh` tests the backup procedure from start to end on local Postgres.** It syncs 450 rows (one deleted) through the API, runs `pg_dump`, restores into a second database with `pg_restore`, and compares a server's pull of both copies (count, tombstones, hash). It passed | "A backup that was never restored is not proof" (section 5 of the plan). The drill uses the same tools that a Neon backup uses | A drill against Neon (it needs the owner's credentials, which stay with the owner) | Build |
 | D70 | **The weekly backup is a `pg_dump` run by the owner**, with the connection string only in the shell | The free plan's own restore window is short. The credentials never go into the repository | A scheduled job that holds the credentials | Build |
 
+### 3.15 Step 8: the rest of the data, and sync while closed (24 October)
+
+| # | Decision | Reason | Rejected | By |
+|---|---|---|---|---|
+| D71 | **Exercise notes, body entries and the owner's own form cues sync** (migration v14; server rows checked like the others) | The owner asked for the rest of the data | — | Owner |
+| D72 | **Library form cues stay on each phone.** Each phone makes them from the bundled library, with new random ids, the first time an exercise opens; syncing them would duplicate every cue on a second phone. Triggers and the backfill take only `source = 'owner'` | No duplicates. Limit: a library cue the owner edits keeps `source = 'library'` and does not sync, and `formCueSeed` (which library cues were seeded) is not synced | Syncing every cue | Build |
+| D73 | **Background refresh** (`BGAppRefreshTask`, id `com.fuaadshurie.GymApp.sync`) runs the same `SyncScheduler`. It is scheduled each time the app goes to the background; iOS chooses when it runs | Sets logged just before leaving the gym reach the server without opening the app again. Replaces D64 | — | Owner approved the project change |
+| D74 | **The project change:** `GymApp/Info.plist` holds only `BGTaskSchedulerPermittedIdentifiers` and `UIBackgroundModes = fetch`; it is merged with the generated keys (`INFOPLIST_FILE`) and excluded from the synced folder's resources, as the widget extension already does | Arrays cannot be set as `INFOPLIST_KEY_` build settings. The built app was checked: both keys present, the display name, Live Activities and Health text unchanged | Moving every key into the file | Build |
+
 ## 4. What was built
 
 ### Server (`server/`)
@@ -254,7 +263,7 @@ Not verified yet:
 
 1. Notes, body entries and form cues do not sync.
 2. The clock rule: a phone with a wrong clock can win a conflict (D26).
-3. No background refresh while the app is closed (D64).
+3. Background refresh runs when iOS chooses (D73); it is not instant.
 4. Sign-in is the development route; the hosted server is open to account creation (D44, D47).
 6. Render's free service sleeps; the first request after sleep takes about a minute.
 7. Backups: the procedure is tested locally (D69); a weekly `pg_dump` of Neon is the owner's job (D70).

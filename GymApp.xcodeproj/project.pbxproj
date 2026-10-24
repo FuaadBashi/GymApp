@@ -63,6 +63,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A1000000000000000000D001 /* Exceptions for "GymApp" folder in "GymApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1000000000000000000A006 /* GymApp */;
+		};
 		F22F192B307C1A41008A3B3C /* Exceptions for "GymAppWidgets" folder in "GymAppWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -80,6 +87,9 @@
 		};
 		A1000000000000000000A002 /* GymApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A1000000000000000000D001 /* Exceptions for "GymApp" folder in "GymApp" target */,
+			);
 			path = GymApp;
 			sourceTree = "<group>";
 		};
@@ -550,6 +560,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = BashiIcon;
+				INFOPLIST_FILE = GymApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bashi Gym";
 				CODE_SIGN_ENTITLEMENTS = GymApp/GymApp.entitlements;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "GymApp reads your daily steps and body weight to show them beside your training and to use your weight in body-weight exercise volume.";
@@ -584,6 +595,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = BashiIcon;
+				INFOPLIST_FILE = GymApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bashi Gym";
 				CODE_SIGN_ENTITLEMENTS = GymApp/GymApp.entitlements;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "GymApp reads your daily steps and body weight to show them beside your training and to use your weight in body-weight exercise volume.";

@@ -211,6 +211,30 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         #expect(try pending(other) == 0)
     }
 
+    @Test func notesBodyEntriesAndOwnCuesArriveButLibraryCuesStayLocal() async throws {
+        let server = FakeSyncServer()
+        try await db.writer.write { db in
+            try SyncEngine.enable(db)
+            try TestData.exercise(db, id: "bench")
+            try ExerciseNoteRecord(id: "N", exerciseId: "bench", date: "2026-10-23", text: "Seat on 4", source: .app, externalId: nil).insert(db)
+            try BodyEntryRecord(id: "B", date: "2026-10-23", weightHundredths: 8_250, weightUnit: .kg, bodyFatPercent: nil,
+                                measurements: [:], source: .app, externalId: nil).insert(db)
+            try FormCueRecord(id: "mine", exerciseId: "bench", kind: .setup, text: "Shoulder blades back", position: 0, showOnOpen: true, source: .owner).insert(db)
+            try FormCueRecord(id: "lib", exerciseId: "bench", kind: .movement, text: "Lower to the chest", position: 1, showOnOpen: false, source: .library).insert(db)
+        }
+        try await SyncEngine(db: db, transport: server, sleep: { _ in }).syncOnce()
+        #expect(Set(server.stored.map(\.table)) == ["exercise", "exerciseNote", "bodyEntry", "formCue"])
+        #expect(server.stored.filter { $0.table == "formCue" }.map(\.id) == ["mine"])
+
+        let other = try AppDatabase.inMemory()
+        try await other.writer.write(SyncEngine.enable)
+        try await SyncEngine(db: other, transport: server, sleep: { _ in }).syncOnce()
+        #expect(try count(other, "SELECT COUNT(*) FROM exerciseNote WHERE text = 'Seat on 4'") == 1)
+        #expect(try count(other, "SELECT COUNT(*) FROM bodyEntry WHERE weightHundredths = 8250 AND weightUnit = 'kg'") == 1)
+        #expect(try count(other, "SELECT COUNT(*) FROM formCue") == 1)
+        #expect(try pending(other) == 0)
+    }
+
     @Test func untouchedLibraryExercisesAreNeverSent() throws {
         try db.writer.write { db in
             try TestData.exercise(db, id: "lib-a", source: .library)

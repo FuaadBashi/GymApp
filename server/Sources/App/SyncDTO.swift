@@ -148,8 +148,47 @@ struct DayExerciseRow: SyncRow {
     }
 }
 
+struct ExerciseNoteRow: SyncRow {
+    var id: String
+    var exerciseId: String
+    var date: String
+    var text: String
+
+    func validate() throws {
+        try require(!exerciseId.isEmpty && date.count == 10 && !text.trimmingCharacters(in: .whitespaces).isEmpty
+            && text.count <= 5_000, "exercise note \(id)")
+    }
+}
+
+struct BodyEntryRow: SyncRow {
+    var id: String
+    var date: String
+    var weightHundredths: Int?
+    var weightUnit: String
+    var bodyFatPercent: Double?
+
+    func validate() throws {
+        try require(date.count == 10 && ["kg", "lb"].contains(weightUnit) && weightHundredths.map { $0 > 0 } ?? true
+            && bodyFatPercent.map { $0 > 0 && $0 < 100 } ?? true, "body entry \(id)")
+    }
+}
+
+struct FormCueRow: SyncRow {
+    var id: String
+    var exerciseId: String
+    var kind: String
+    var text: String
+    var position: Int
+
+    func validate() throws {
+        try require(!exerciseId.isEmpty && ["setup", "movement", "mistake"].contains(kind)
+            && !text.trimmingCharacters(in: .whitespaces).isEmpty && text.count <= 1_000 && position >= 0, "form cue \(id)")
+    }
+}
+
 struct Change: Codable, Equatable {
     static let rowTypes: [String: any SyncRow.Type] = [
+        "exerciseNote": ExerciseNoteRow.self, "bodyEntry": BodyEntryRow.self, "formCue": FormCueRow.self,
         "exercise": ExerciseRow.self, "program": ProgramRow.self, "programDay": ProgramDayRow.self,
         "dayExercise": DayExerciseRow.self, "workout": WorkoutRow.self,
         "workoutExercise": WorkoutExerciseRow.self, "workoutSet": SetRow.self,

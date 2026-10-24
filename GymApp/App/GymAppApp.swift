@@ -11,6 +11,7 @@ struct GymAppApp: App {
         _database = State(initialValue: database)
         if case .success(let db) = database { WorkoutHub.db = db }
         WorkoutHub.install()
+        BackgroundSync.register()
     }
 
     var body: some Scene {

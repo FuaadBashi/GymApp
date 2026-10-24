@@ -181,7 +181,8 @@ final class TapCountUITests: XCTestCase {
         let first = buttonStarting("Test Bench"), second = buttonStarting("Test Row")
         XCTAssertTrue(second.waitForExistence(timeout: 5))
         XCTAssertLessThan(first.frame.minY, second.frame.minY)
-        second.press(forDuration: 1.0, thenDragTo: first)
+        // A slow drag that holds at the end: a quick one is sometimes read as a scroll.
+        second.press(forDuration: 1.2, thenDragTo: first, withVelocity: .slow, thenHoldForDuration: 0.6)
         taps += 1
         XCTAssertTrue(waitUntil { second.frame.minY < first.frame.minY }, "the drag reordered the day")
         record("plan: reorder a day")

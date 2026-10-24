@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -201,6 +201,27 @@ nonisolated enum Schema {
                   PRIMARY KEY (tableName, rowId)
                 )
                 """)
+        }
+        migrator.registerMigration("v14") { db in
+            // Exercise notes, body entries and the owner's own form cues sync too. Library cues
+            // are made on each phone from the bundled library, with new ids, so they stay local.
+            let when = "EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled') AND NOT EXISTS (SELECT 1 FROM syncState WHERE key = 'applying')"
+            let now = "CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER)"
+            for table in ["exerciseNote", "bodyEntry", "formCue"] {
+                for (event, row, op) in [("INSERT", "NEW", "upsert"), ("UPDATE", "NEW", "upsert"), ("DELETE", "OLD", "delete")] {
+                    let owner = table == "formCue" ? " AND \(row).source = 'owner'" : ""
+                    try db.execute(sql: """
+                        CREATE TRIGGER \(table)_sync_\(event.lowercased()) AFTER \(event) ON \(table) WHEN \(when)\(owner) BEGIN
+                          INSERT INTO syncChange (tableName, rowId, op, changedAtMs) VALUES ('\(table)', \(row).id, '\(op)', \(now));
+                        END
+                        """)
+                }
+                let filter = table == "formCue" ? " AND source = 'owner'" : ""
+                try db.execute(sql: """
+                    INSERT INTO syncChange (tableName, rowId, op, changedAtMs)
+                    SELECT '\(table)', id, 'upsert', \(now) FROM \(table) WHERE EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled')\(filter)
+                    """)
+            }
         }
         return migrator
     }
