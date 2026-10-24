@@ -289,6 +289,20 @@ nonisolated final class FakeSyncServer: SyncTransport, @unchecked Sendable {
         #expect(try pending(db) == 2 + 3, "turning it on again queues everything")
     }
 
+    @Test func theStatusLineSaysWhenItLastSyncedAndWhatIsWaiting() async throws {
+        #expect(try await db.reader.read(SyncEngine.status) == nil, "hidden while sync is off")
+        _ = try logSets(2)
+        let before = try #require(try await db.reader.read(SyncEngine.status))
+        #expect(before.lastSynced == nil && before.pending == 5)
+        #expect(before.line(now: .now) == "Not synced yet · 5 waiting")
+        try await SyncEngine(db: db, transport: FakeSyncServer(), sleep: { _ in }).syncOnce()
+        let after = try #require(try await db.reader.read(SyncEngine.status))
+        #expect(after.pending == 0 && after.lastSynced != nil)
+        #expect(after.line(now: .now) == "Synced just now")
+        let old = SyncStatus(lastSynced: Date(timeIntervalSince1970: 0), pending: 0, refused: 2)
+        #expect(old.line(now: Date(timeIntervalSince1970: 3_600)).hasSuffix("· 2 refused"))
+    }
+
     @Test func aPastedServerAddressIsCleaned() {
         #expect(SyncError.cleanServer(" https://bashi-gym-sync.onrender.com.\n") == "https://bashi-gym-sync.onrender.com")
         #expect(SyncError.cleanServer("https://x.example/") == "https://x.example")

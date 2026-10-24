@@ -131,6 +131,14 @@ nonisolated final class SyncEngine: Sendable {
             cursor = page.nextCursor
             if !page.hasMore { break }
         }
+        try await db.writer.write { try Self.set($0, "lastSyncedAtMs", String(Int64(Date().timeIntervalSince1970 * 1000))) }
+    }
+
+    /// For the status line on Train: nil while sync is off.
+    static func status(_ db: Database) throws -> SyncStatus? {
+        guard try isEnabled(db) else { return nil }
+        let last = try value(db, "lastSyncedAtMs").flatMap(Double.init).map { Date(timeIntervalSince1970: $0 / 1000) }
+        return SyncStatus(lastSynced: last, pending: try pending(db), refused: try refused(db))
     }
 
     private func markSent(_ sent: [(String, String, Int64)]) async throws {
@@ -271,6 +279,20 @@ nonisolated final class SyncEngine: Sendable {
         } catch let error as DatabaseError where error.resultCode == .SQLITE_CONSTRAINT {
             return false
         }
+    }
+}
+
+nonisolated struct SyncStatus: Equatable, Sendable {
+    var lastSynced: Date?
+    var pending: Int
+    var refused: Int
+
+    func line(now: Date) -> String {
+        var parts = [lastSynced.map { "Synced " + ($0 > now.addingTimeInterval(-60) ? "just now" : $0.formatted(.relative(presentation: .named, unitsStyle: .abbreviated))) }
+                     ?? "Not synced yet"]
+        if pending > 0 { parts.append("\(pending.formatted()) waiting") }
+        if refused > 0 { parts.append("\(refused.formatted()) refused") }
+        return parts.joined(separator: " · ")
     }
 }
 

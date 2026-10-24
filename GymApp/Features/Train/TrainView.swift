@@ -24,6 +24,7 @@ struct TrainView: View {
                     if !inbox.pending.isEmpty {
                         StudioSuggestionsCard(count: inbox.pending.count) { showingSuggestions = true }
                     }
+                    SyncStatusLine(db: model.db)
                     if let program = model.program {
                         Text(program.name.uppercased())
                             .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
