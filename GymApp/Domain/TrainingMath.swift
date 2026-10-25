@@ -8,6 +8,29 @@ nonisolated enum TrainingMath {
         reps <= 1 ? kg : kg * (1 + Double(reps) / 30)
     }
 
+    /// §8: one session's progress score: best Epley e1RM of working or failed sets of 1–20
+    /// reps, or the most reps for body-weight and reps-only exercises.
+    static func progressScore(_ sets: [PastSet], loadMode: LoadMode) -> Double? {
+        let work = sets.filter { $0.type == .working || $0.type == .failed }
+        if loadMode == .repsOnly || loadMode == .bodyweightPlus { return work.map { Double($0.reps) }.max() }
+        return work.filter { (1...20).contains($0.reps) && $0.kg > 0 }.map { e1RM(kg: $0.kg, reps: $0.reps) }.max()
+    }
+
+    struct Plateau: Equatable {
+        var recentBest: Double
+        var recentSessions: Int
+        var earlierBest: Double
+    }
+
+    /// §8: 3+ sessions in the last `weeks`, 1+ in the `weeks` before, and no higher best.
+    static func plateau(_ scores: [(date: Date, score: Double)], weeks: Int = 3, now: Date) -> Plateau? {
+        let w = Double(weeks) * 7 * 86_400
+        let recent = scores.filter { $0.date > now.addingTimeInterval(-w) && $0.date <= now }
+        let earlier = scores.filter { $0.date > now.addingTimeInterval(-2 * w) && $0.date <= now.addingTimeInterval(-w) }
+        guard recent.count >= 3, let r = recent.map(\.score).max(), let e = earlier.map(\.score).max(), r <= e else { return nil }
+        return Plateau(recentBest: r, recentSessions: recent.count, earlierBest: e)
+    }
+
     /// §17: the usual first working set: the median e1RM of the first working set of up to five
     /// recent sessions (the 56 days before), when there are at least three.
     static func usualFirstSet(_ firstSets: [Double]) -> Double? {

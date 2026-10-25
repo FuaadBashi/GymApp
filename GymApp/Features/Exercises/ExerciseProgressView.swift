@@ -178,6 +178,12 @@ struct ExerciseProgressView: View {
 
     /// Card 10.6: the one dominant figure, the best estimated 1RM (or best volume), with the
     /// latest session beside it for context.
+    private var plateau: TrainingMath.Plateau? {
+        TrainingMath.plateau(sessions.compactMap { s in
+            TrainingMath.progressScore(SetFormat.pastSets(s.sets), loadMode: loadMode).map { (s.workout.startedAt, $0) }
+        }, now: .now)
+    }
+
     private var rebuild: TrainingMath.Rebuild? {
         TrainingMath.rebuild(points.compactMap { p in p.bestE1RM.map { (p.date, $0) } }, now: .now)
     }
@@ -197,6 +203,10 @@ struct ExerciseProgressView: View {
                      + (latest.map { " · latest \(Load.format(($0 * 10).rounded() / 10)) kg" } ?? ""))
                     .font(.caption).foregroundStyle(.secondary)
                 if hasLoadRecords, let r = rebuild { RebuildBar(rebuild: r).padding(.top, Tokens.Space.xs) }
+                if let p = plateau {
+                    Label("Stalled: " + PlateauText.line(p, loadMode: loadMode), systemImage: "pause.circle")
+                        .font(.caption).foregroundStyle(Theme.note).padding(.top, Tokens.Space.xs)
+                }
             }
             .accessibilityElement(children: .combine)
         }

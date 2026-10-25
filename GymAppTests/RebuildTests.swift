@@ -50,4 +50,32 @@ import Testing
         #expect(abs((TrainingMath.tiredDayShortfall(first: 88, usual: 100) ?? 0) - 0.12) < 1e-9)
         #expect(TrainingMath.tiredDayShortfall(first: 80, usual: nil) == nil)
     }
+
+    // Rulebook §8
+
+    func scores(_ pairs: [(Int, Double)]) -> [(date: Date, score: Double)] { pairs.map { (TestData.day($0.0), $0.1) } }
+
+    @Test func aPlateauIsThreeSessionsWithNoBetterBestThanTheWeeksBefore() throws {
+        let now = TestData.day(42)
+        let p = try #require(TrainingMath.plateau(scores([(15, 100), (25, 98), (30, 100), (40, 99)]), now: now))
+        #expect(p == TrainingMath.Plateau(recentBest: 100, recentSessions: 3, earlierBest: 100))
+        #expect(TrainingMath.plateau(scores([(15, 100), (25, 98), (30, 101), (40, 99)]), now: now) == nil, "one better session is progress")
+        #expect(TrainingMath.plateau(scores([(15, 100), (35, 99), (40, 99)]), now: now) == nil, "only two sessions in the window")
+        #expect(TrainingMath.plateau(scores([(30, 90), (35, 90), (40, 90)]), now: now) == nil, "a return from a break: nothing before")
+    }
+
+    @Test func oneMoreRepCountsAsProgressForBodyweightLifts() {
+        let a = [PastSet(kg: 0, reps: 8, type: .working), PastSet(kg: 0, reps: 10, type: .working), PastSet(kg: 0, reps: 15, type: .warmUp)]
+        #expect(TrainingMath.progressScore(a, loadMode: .repsOnly) == 10)
+        let b = [PastSet(kg: 100, reps: 5, type: .working), PastSet(kg: 60, reps: 25, type: .working)]
+        #expect(TrainingMath.progressScore(b, loadMode: .total) == TrainingMath.e1RM(kg: 100, reps: 5), "25 reps is outside 1–20")
+    }
+
+    @Test func theDeloadPromptNeedsTwoStalledLifts() throws {
+        let p = TrainingMath.Plateau(recentBest: 1, recentSessions: 3, earlierBest: 1)
+        let db = try AppDatabase.inMemory()
+        let (a, b) = try db.writer.write { db in (try TestData.exercise(db, id: "Bench"), try TestData.exercise(db, id: "Row")) }
+        #expect(ProgressQueries.deloadMessage([(a, p)]) == nil)
+        #expect(ProgressQueries.deloadMessage([(a, p), (b, p)])?.hasPrefix("2 lifts have stalled for 3 weeks: Bench, Row.") == true)
+    }
 }

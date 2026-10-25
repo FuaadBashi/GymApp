@@ -139,6 +139,36 @@ nonisolated enum ProgressQueries {
         try BodyQueries.weights(db).map { ($0.day, $0.kg) }
     }
 
+    // MARK: Plateaus (rulebook §8) and the deload prompt
+
+    static func plateau(_ db: Database, exercise: ExerciseRecord, now: Date) throws -> TrainingMath.Plateau? {
+        let scores = try ExerciseQueries.sessions(db, exerciseId: exercise.id).compactMap { s in
+            TrainingMath.progressScore(SetFormat.pastSets(s.sets), loadMode: exercise.loadMode).map { (s.workout.startedAt, $0) }
+        }
+        return TrainingMath.plateau(scores, now: now)
+    }
+
+    /// Exercises of the active program that are on a plateau, in program order.
+    static func plateaus(_ db: Database, now: Date) throws -> [(exercise: ExerciseRecord, plateau: TrainingMath.Plateau)] {
+        guard let program = try ProgramQueries.activeProgram(db) else { return [] }
+        let ids = try String.fetchAll(db, sql: """
+            SELECT de.exerciseId FROM dayExercise de JOIN programDay d ON d.id = de.dayId
+            WHERE d.programId = ? GROUP BY de.exerciseId ORDER BY MIN(d.position * 100 + de.position)
+            """, arguments: [program.id])
+        let exercises = Dictionary(uniqueKeysWithValues: try ExerciseRecord.filter(keys: ids).fetchAll(db).map { ($0.id, $0) })
+        return try ids.compactMap { id in
+            guard let e = exercises[id], let p = try plateau(db, exercise: e, now: now) else { return nil }
+            return (e, p)
+        }
+    }
+
+    /// The deload prompt: two or more program lifts on a plateau at once.
+    static func deloadMessage(_ stalled: [(exercise: ExerciseRecord, plateau: TrainingMath.Plateau)]) -> String? {
+        guard stalled.count >= 2 else { return nil }
+        let names = stalled.prefix(3).map(\.exercise.name).joined(separator: ", ") + (stalled.count > 3 ? " and \(stalled.count - 3) more" : "")
+        return "\(stalled.count) lifts have stalled for 3 weeks: \(names). Try a deload week: same exercises, about 10% lighter and one set fewer, then build again."
+    }
+
     // MARK: Rebuild (rulebook §15)
 
     /// Lifts trained in the last 28 days that are below their peak, furthest from it first.

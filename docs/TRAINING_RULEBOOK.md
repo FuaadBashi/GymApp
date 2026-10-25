@@ -229,6 +229,17 @@ It never makes a change without you.
 The explanation always has this form: *"Best set in the last 3 weeks (3 sessions): 60 kg × 10.
 Best in the 3 weeks before: 60 kg × 10."*
 
+**Built on the phone (25 October 2026).** The window is fixed at 3 weeks for now. The app gives
+the scores as an estimated 1RM, or as reps for body-weight lifts. It shows them in three places:
+
+- on the exercise screen, under the best figure;
+- in Progress → *Stalled lifts*, for the lifts of the active program;
+- on Train, as a **deload prompt** when two or more program lifts are on a plateau at once: "a
+  deload week: same exercises, about 10% lighter and one set fewer". The 10% is the studio's
+  `deload_fraction`.
+
+Swap, Keep for now and Dismiss are not built yet. A mid-workout swap already exists.
+
 **Movement pattern.** Each exercise has a tag (`movementPattern`) that names the movement that
 it trains. The tags are precise, so a swap gives an equivalent exercise. The full list is in
 `specs/00-foundation.md`, card 0.1. Examples:

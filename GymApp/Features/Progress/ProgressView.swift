@@ -14,6 +14,7 @@ final class ProgressModel {
     private(set) var recovery: [(muscle: Muscle, sets: Double)] = []
     private(set) var patterns: [PatternTrend] = []
     private(set) var rebuilds: [(exercise: ExerciseRecord, rebuild: TrainingMath.Rebuild)] = []
+    private(set) var plateaus: [(exercise: ExerciseRecord, plateau: TrainingMath.Plateau)] = []
     private(set) var settings = AppSettings()
     private(set) var loaded = false
 
@@ -37,9 +38,10 @@ final class ProgressModel {
                     try ProgressQueries.steps(db, now: now, weekStartsOn: settings.weekStartsOn),
                     try ProgressQueries.recovery(db, now: now),
                     try ProgressQueries.patterns(db, now: now, weekStartsOn: settings.weekStartsOn),
-                    try ProgressQueries.rebuilds(db, now: now))
+                    try ProgressQueries.rebuilds(db, now: now),
+                    try ProgressQueries.plateaus(db, now: now))
         }) else { return }
-        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns, rebuilds) = result
+        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns, rebuilds, plateaus) = result
         loaded = true
     }
 
@@ -68,6 +70,7 @@ struct ProgressTab: View {
                         .buttonStyle(.plain)
                     liftsSummary
                     if !model.rebuilds.isEmpty { rebuildCard }
+                    if !model.plateaus.isEmpty { plateauCard }
                     VStack(spacing: 0) {
                         NavigationLink { ReportsView(db: model.db) } label: { linkRow("Reports") }
                         Divider()
@@ -131,6 +134,22 @@ struct ProgressTab: View {
                 RebuildBar(rebuild: r.rebuild, title: r.exercise.name)
             }
             Text("Best estimated 1RM in the last 4 weeks against your all-time best.").font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    /// Rulebook §8: program lifts with no progress for 3 weeks, and the deload prompt.
+    private var plateauCard: some View {
+        card("Stalled lifts") {
+            if let message = ProgressQueries.deloadMessage(model.plateaus) {
+                Label(message, systemImage: "arrow.down.right.circle").font(.subheadline).foregroundStyle(Theme.accent)
+            }
+            ForEach(model.plateaus, id: \.exercise.id) { p in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(p.exercise.name).font(.subheadline.weight(.semibold))
+                    Text(PlateauText.line(p.plateau, loadMode: p.exercise.loadMode)).font(.caption).foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+            }
         }
     }
 

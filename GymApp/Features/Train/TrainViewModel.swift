@@ -16,6 +16,7 @@ final class TrainViewModel {
     private(set) var others: [DayCardData] = []
     private(set) var loaded = false
     private(set) var breakGuard: BreakGuard.Status?
+    private(set) var deload: String?
     var lastError: String?
 
     init(db: AppDatabase) { self.db = db }
@@ -36,6 +37,7 @@ final class TrainViewModel {
             }
             (program, next, others) = result
             breakGuard = try? await db.reader.read { try BreakGuardService.status($0, now: .now) }
+            deload = try? await db.reader.read { try ProgressQueries.deloadMessage(ProgressQueries.plateaus($0, now: .now)) }
             loaded = true
         } catch {
             lastError = error.localizedDescription
