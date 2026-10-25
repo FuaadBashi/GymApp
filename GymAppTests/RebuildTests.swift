@@ -109,4 +109,15 @@ import Testing
         let pairs = try db.reader.read { try ProgressQueries.restPairs($0) }
         #expect(pairs == [TrainingMath.RestPair(restSeconds: 120, repsBefore: 10, repsAfter: 8)], "60 → 70 kg is a new weight, not a rest pair")
     }
+
+    // Rulebook §5c
+
+    @Test func repRecordsNeedSomethingToBeat() {
+        let earlier = [(kg: 60.0, reps: 8), (kg: 70.0, reps: 5)]
+        #expect(TrainingMath.repRecord(kg: 60, reps: 9, earlier: earlier) == .mostReps(kg: 60, beat: 8))
+        #expect(TrainingMath.repRecord(kg: 72.5, reps: 5, earlier: earlier) == .heaviest(reps: 5, beatKg: 70))
+        #expect(TrainingMath.repRecord(kg: 60, reps: 8, earlier: earlier) == nil, "a tie is not a record")
+        #expect(TrainingMath.repRecord(kg: 65, reps: 7, earlier: earlier) == nil, "nothing at 65 kg or for 7 reps to beat")
+        #expect(TrainingMath.repRecord(kg: 60, reps: 9, earlier: []) == nil)
+    }
 }

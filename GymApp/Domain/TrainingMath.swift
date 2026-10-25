@@ -152,6 +152,24 @@ nonisolated enum TrainingMath {
         )
     }
 
+    // MARK: §5c Rep records
+
+    enum RepRecord: Equatable {
+        case mostReps(kg: Double, beat: Int)
+        case heaviest(reps: Int, beatKg: Double)
+    }
+
+    /// §5c: more reps than any earlier set at the same load (0.01 kg), else a heavier load than
+    /// any earlier set of the same reps. There must be an earlier set to beat.
+    static func repRecord(kg: Double, reps: Int, earlier: [(kg: Double, reps: Int)]) -> RepRecord? {
+        guard kg > 0, reps > 0 else { return nil }
+        let sameLoad = earlier.filter { abs($0.kg - kg) < 0.01 }.map(\.reps)
+        if let most = sameLoad.max(), reps > most { return .mostReps(kg: kg, beat: most) }
+        let sameReps = earlier.filter { $0.reps == reps }.map(\.kg)
+        if let heaviest = sameReps.max(), kg > heaviest + 0.01 { return .heaviest(reps: reps, beatKg: heaviest) }
+        return nil
+    }
+
     // MARK: §5a Time-window bests
 
     /// §5a: what a set's estimated 1RM beat.

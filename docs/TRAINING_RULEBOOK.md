@@ -135,6 +135,18 @@ When you tap a best, its beat table opens. For each rep count in the day's range
 shows the lightest load, in the exercise's learnt step (§7a), whose estimated 1RM is more than
 0.01 kg above that best.
 
+## §5c Rep records (25 October 2026)
+
+A set can be a record without a higher estimated 1RM.
+
+- **Most reps at a load:** more reps than any earlier working or failed set of the exercise at
+  the same load (within 0.01 kg).
+- **Heaviest for a rep count:** otherwise, a heavier load than any earlier set with the same reps.
+- **Earlier** means the finished history plus the sets logged before it today. There must be one
+  set to beat, and a tie is not a record. Body-weight and reps-only exercises are left out.
+- **When it shows:** the banner shows a rep record only when the set is not an estimated-1RM
+  best (§5a), because that one leads. The set row keeps no badge for a rep record.
+
 ## §6 Volume and sets per muscle
 
 - **Volume** = Σ (calculation load × reps) over the sets that count for volume (§2, §3), in kg.

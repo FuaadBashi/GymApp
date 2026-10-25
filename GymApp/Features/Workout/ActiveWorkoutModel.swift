@@ -128,15 +128,19 @@ final class ActiveWorkoutModel {
         var status: TrainingMath.BestStatus
         var exerciseName: String
         var e1RM: Double
+        var repRecord: TrainingMath.RepRecord? = nil
     }
 
     private func showBanner(for setId: String) {
-        guard let status = snapshot?.bests[setId],
+        let status = snapshot?.bests[setId], record = snapshot?.repRecords[setId]
+        guard status != nil || record != nil,
               let item = snapshot?.items.first(where: { $0.sets.contains { $0.id == setId } }),
-              let set = item.sets.first(where: { $0.id == setId }), let load = set.loadHundredths,
-              let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: item.exercise.loadMode)
+              let set = item.sets.first(where: { $0.id == setId }), let load = set.loadHundredths
         else { return }
-        let banner = BestBanner(status: status, exerciseName: item.exercise.name, e1RM: e)
+        let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: item.exercise.loadMode) ?? 0
+        // The e1RM best leads (rulebook §5a); a rep record (§5c) shows when there is none.
+        let banner = BestBanner(status: status ?? .none, exerciseName: item.exercise.name, e1RM: e,
+                                repRecord: status == nil ? record : nil)
         self.banner = banner
         Task {
             try? await Task.sleep(for: .seconds(3))

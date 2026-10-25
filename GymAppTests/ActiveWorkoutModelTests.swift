@@ -200,6 +200,25 @@ struct BestBannerTests {
         #expect(model.snapshot?.bests[set.id] == nil)
     }
 
+    /// Rulebook §5c: more reps at a load, without a better e1RM, still gets a banner.
+    @Test func aRepRecordWithoutAnE1RMBestShowsItsOwnBanner() async throws {
+        try await db.writer.write { db in
+            try TestData.exercise(db, id: "row", name: "Row")
+            // 80 × 5 (e1RM 93.3) and 60 × 8 (e1RM 76) before; today 60 × 9 is more reps at 60
+            // kg but an e1RM of 78, below 93.3.
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: Date.now.addingTimeInterval(-7 * 86_400),
+                                         exercises: [("row", [(80, 5), (60, 8)])])
+        }
+        let model = ActiveWorkoutModel(db: db, notifier: FakeNotifier())
+        try await model.start(dayId: nil)
+        await model.addExercise("row")
+        let set = try #require(model.snapshot?.items.first?.sets.first)
+        await model.update(set.id, edit: SetEdit(loadHundredths: 6000, unit: .kg, reps: 9, type: .working))
+        await model.log(set.id)
+        #expect(model.snapshot?.bests[set.id] == nil)
+        #expect(model.banner?.repRecord == .mostReps(kg: 60, beat: 8))
+    }
+
 }
 
 extension ActiveWorkoutModelTests {

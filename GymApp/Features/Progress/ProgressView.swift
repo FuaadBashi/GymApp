@@ -299,8 +299,14 @@ struct ProgressTab: View {
                     .frame(width: 120, height: 8)
                     Text(Load.format(m.sets)).font(.caption.monospacedDigit()).frame(width: 34, alignment: .trailing)
                 }
+                if !lastWeek && m.sets < 10 {
+                    // How far to the start of the 10–20 band, rounded up to half a set.
+                    Text("\(Load.format((10 - m.sets) * 2 >= 0 ? ((10 - m.sets) * 2).rounded(.up) / 2 : 0)) to go")
+                        .font(.caption2).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
-            Text("Hard sets: 1 per primary muscle, ½ per secondary. Shaded band: 10–20 a week.")
+            Text("Hard sets: 1 per primary muscle, ½ per secondary, weighted by effort. Shaded band: 10–20 a week.")
                 .font(.caption2).foregroundStyle(.secondary)
         }
     }

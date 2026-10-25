@@ -20,6 +20,7 @@ nonisolated struct WorkoutSnapshot: Equatable {
     var totalSetCount: Int
     var bests: [String: TrainingMath.BestStatus] = [:]   // card 7.2: set id → status
     var hints: [String: BestHint] = [:]                   // card 7.3: exercise id → marks
+    var repRecords: [String: TrainingMath.RepRecord] = [:]  // rulebook §5c: set id → record
     var defaultRepRange: ClosedRange<Int> = 8...12
 
     /// Card 7.3: what a set is measured against, including sets logged in this workout.
@@ -66,11 +67,36 @@ nonisolated enum WorkoutQueries {
         let all = items.flatMap(\.sets)
         var hints: [String: WorkoutSnapshot.BestHint] = [:]
         let range = settings.defaultRepMin...max(settings.defaultRepMin, settings.defaultRepMax)
-        return WorkoutSnapshot(workout: workout, items: items,
+        var snapshot = WorkoutSnapshot(workout: workout, items: items,
                                completedSetCount: all.filter { $0.completedAt != nil }.count, totalSetCount: all.count,
                                bests: try bests(db, items: items, hints: &hints, defaultRange: range, startedAt: workout.startedAt),
                                hints: hints,
                                defaultRepRange: range)
+        snapshot.repRecords = try repRecords(db, items: items)
+        return snapshot
+    }
+
+    /// Rulebook §5c, for every logged working set, judged against the exercise's finished
+    /// history and the sets logged before it today.
+    static func repRecords(_ db: Database, items: [WorkoutSnapshot.Item]) throws -> [String: TrainingMath.RepRecord] {
+        var out: [String: TrainingMath.RepRecord] = [:]
+        for exerciseId in Set(items.map(\.exercise.id)) {
+            let mine = items.filter { $0.exercise.id == exerciseId }
+            guard let loadMode = mine.first?.exercise.loadMode, loadMode != .bodyweightPlus, loadMode != .repsOnly else { continue }
+            func work(_ sets: [WorkoutSetRecord]) -> [(kg: Double, reps: Int)] {
+                sets.filter { $0.type == .working || $0.type == .failed }.compactMap { set in
+                    set.loadHundredths.map { (Load(hundredths: $0, unit: set.unit).kg, set.reps) }
+                }
+            }
+            var earlier = work(try ExerciseQueries.sessions(db, exerciseId: exerciseId).flatMap(\.sets))
+            let today = mine.flatMap(\.sets).filter { $0.completedAt != nil }.sorted { ($0.completedAt ?? .distantPast) < ($1.completedAt ?? .distantPast) }
+            for set in today {
+                guard let w = work([set]).first else { continue }
+                if let r = TrainingMath.repRecord(kg: w.kg, reps: w.reps, earlier: earlier) { out[set.id] = r }
+                earlier.append(w)
+            }
+        }
+        return out
     }
 
     /// Card 7.2 (rulebook §5a): the best status of every logged set in the workout, each judged
