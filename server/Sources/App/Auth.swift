@@ -1,3 +1,4 @@
+import Crypto
 import JWT
 import PostgresNIO
 import Vapor
@@ -18,14 +19,18 @@ struct UserToken: JWTPayload, Authenticatable {
 struct TokenResponse: Content {
     var accessToken: String
     var expiresIn: Int
+    /// Long-lived (90 days), single use: each refresh returns a new one and retires the old.
+    var refreshToken: String?
 }
 
 struct AuthController: RouteCollection {
     static let lifetime: TimeInterval = 15 * 60
+    static let refreshLifetime: TimeInterval = 90 * 86_400
 
     func boot(routes: any RoutesBuilder) throws {
         let auth = routes.grouped("auth")
         auth.post("apple", use: apple)
+        auth.post("refresh", use: refresh)
         if Environment.get("AUTH_DEV") == "1" { auth.post("dev", use: dev) }
     }
 
@@ -46,6 +51,19 @@ struct AuthController: RouteCollection {
         return try await issue(req, subject: "dev:" + body.subject)
     }
 
+    /// Body: { "refreshToken": "…" }. Swaps a valid refresh token for a new pair; the old one
+    /// stops working. Unknown, used or expired tokens get 401.
+    func refresh(req: Request) async throws -> TokenResponse {
+        struct Body: Content { var refreshToken: String }
+        let body = try req.content.decode(Body.self)
+        let rows = try await req.application.db.query("""
+            DELETE FROM refresh_token WHERE token_hash = \(Self.hash(body.refreshToken)) AND expires_at > now()
+            RETURNING user_id
+            """, logger: req.logger)
+        guard let user = try await rows.collect().first?.decode(UUID.self) else { throw Abort(.unauthorized) }
+        return try await tokens(req, user: user)
+    }
+
     private func issue(_ req: Request, subject: String) async throws -> TokenResponse {
         let rows = try await req.application.db.query("""
             INSERT INTO users (apple_sub) VALUES (\(subject))
@@ -53,8 +71,23 @@ struct AuthController: RouteCollection {
             RETURNING id
             """, logger: req.logger)
         guard let id = try await rows.collect().first?.decode(UUID.self) else { throw Abort(.internalServerError) }
-        let token = UserToken(sub: .init(value: id.uuidString), exp: .init(value: Date().addingTimeInterval(Self.lifetime)))
-        return TokenResponse(accessToken: try await req.jwt.sign(token), expiresIn: Int(Self.lifetime))
+        return try await tokens(req, user: id)
+    }
+
+    private func tokens(_ req: Request, user: UUID) async throws -> TokenResponse {
+        let token = UserToken(sub: .init(value: user.uuidString), exp: .init(value: Date().addingTimeInterval(Self.lifetime)))
+        let refresh = Data([UInt8].random(count: 32)).base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        let expires = Date().addingTimeInterval(Self.refreshLifetime)
+        try await req.application.db.query(
+            "INSERT INTO refresh_token (token_hash, user_id, expires_at) VALUES (\(Self.hash(refresh)), \(user), \(expires))",
+            logger: req.logger)
+        return TokenResponse(accessToken: try await req.jwt.sign(token), expiresIn: Int(Self.lifetime), refreshToken: refresh)
+    }
+
+    /// Only a hash is stored, so a database leak does not hand out sessions.
+    static func hash(_ token: String) -> String {
+        SHA256.hash(data: Data(token.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 }
 

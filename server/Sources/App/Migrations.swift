@@ -28,6 +28,14 @@ enum Migrations {
         )
         """,
         "CREATE INDEX IF NOT EXISTS sync_row_pull ON sync_row(user_id, server_seq)",
+        """
+        CREATE TABLE IF NOT EXISTS refresh_token (
+          token_hash  text PRIMARY KEY,
+          user_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+          expires_at  timestamptz NOT NULL,
+          created_at  timestamptz NOT NULL DEFAULT now()
+        )
+        """,
         // The table list lives in SyncDTO's Change.rowTypes; a CHECK here needed a migration per table.
         "ALTER TABLE sync_row DROP CONSTRAINT IF EXISTS sync_row_table_name_check",
     ]

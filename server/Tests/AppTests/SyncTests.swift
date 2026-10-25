@@ -288,4 +288,31 @@ final class SyncTests: XCTestCase {
             try await push([Change(table: "bodyEntry", id: "B", op: "upsert", updatedAt: at.addingTimeInterval(1), row: .object(o))],
                            token: a, expect: .unprocessableEntity) }
     }
+
+    func testRefreshTokensRotateAndExpire() async throws {
+        func tokens(_ path: String, _ body: [String: String]) async throws -> (HTTPStatus, TokenResponse?) {
+            var out: (HTTPStatus, TokenResponse?) = (.ok, nil)
+            try await app.test(.POST, path, beforeRequest: { req async throws in try req.content.encode(body) }) { res async throws in
+                out = (res.status, res.status == .ok ? try res.content.decode(TokenResponse.self) : nil)
+            }
+            return out
+        }
+        let (_, first) = try await tokens("v1/auth/dev", ["subject": "alice"])
+        let refresh = try XCTUnwrap(first?.refreshToken)
+        let (status, second) = try await tokens("v1/auth/refresh", ["refreshToken": refresh])
+        XCTAssertEqual(status, .ok)
+        let newAccess = try XCTUnwrap(second?.accessToken)
+        try await push([set("S1", at: 1)], token: newAccess)                       // the new access token works
+        let (reused, _) = try await tokens("v1/auth/refresh", ["refreshToken": refresh])
+        XCTAssertEqual(reused, .unauthorized, "a refresh token works once")
+        let (unknown, _) = try await tokens("v1/auth/refresh", ["refreshToken": "made-up"])
+        XCTAssertEqual(unknown, .unauthorized)
+
+        try await app.db.query("UPDATE refresh_token SET expires_at = now() - interval '1 second'", logger: app.logger)
+        let (expired, _) = try await tokens("v1/auth/refresh", ["refreshToken": try XCTUnwrap(second?.refreshToken)])
+        XCTAssertEqual(expired, .unauthorized)
+
+        let stored = try await app.db.query("SELECT token_hash FROM refresh_token LIMIT 1", logger: app.logger).collect().first?.decode(String.self)
+        XCTAssertNotEqual(stored, second?.refreshToken, "only the hash is stored")
+    }
 }
