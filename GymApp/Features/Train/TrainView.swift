@@ -25,6 +25,14 @@ struct TrainView: View {
                         StudioSuggestionsCard(count: inbox.pending.count) { showingSuggestions = true }
                     }
                     SyncStatusLine(db: model.db)
+                    if let message = model.breakGuard?.message {
+                        // Rulebook §16: catch the slide before it becomes a long break.
+                        Label(message, systemImage: "flame")
+                            .font(.subheadline).foregroundStyle(Theme.accent)
+                            .padding(Tokens.Space.m)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Theme.row, in: .rect(cornerRadius: Tokens.Radius.card))
+                    }
                     if let program = model.program {
                         Text(program.name.uppercased())
                             .font(.caption.weight(.semibold)).foregroundStyle(.secondary)

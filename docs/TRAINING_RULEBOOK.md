@@ -323,3 +323,21 @@ After a break, lifts fall below their peak. The app shows how much of the peak i
 - **The charts** of e1RM and heaviest weight draw a dashed line at the best value in the shown
   range.
 
+## §16 Keeping the habit (25 October 2026)
+
+Long breaks cost the most strength: in this log, 3–5 month breaks took 20–60% off the main lifts.
+They start as a slide, so the app watches the slide. It uses a forgiving rule, "never miss
+twice", not a streak.
+
+- **The goal** is the active program's sessions per week.
+- **One short week** (a completed week below the goal): Train shows "Never miss twice", with the
+  sessions this week still needs.
+- **Two or more short weeks in a row:** Train says how many, and that long breaks started like
+  this.
+- **A slide:** the last 4 completed weeks average 60% or less of the 8 weeks before, and those 8
+  averaged 2 or more a week. Train names both figures.
+- **Nothing is shown** once this week meets the goal, or before there is any history.
+- **The reminder:** one notification at the usual start hour (the median of the last ten
+  workouts), on the day the gap reaches 1 + ⌈7 ÷ goal⌉ days (4 days for 3 a week). Each app open
+  or close moves it; it never fires in the past.
+
