@@ -118,7 +118,13 @@ DELETE FROM users WHERE apple_sub LIKE 'dev:load-%' OR apple_sub LIKE 'dev:smoke
 
 Last run on 21 October 2026: PASS.
 
-The same backup of the hosted database. Run it on the Mac, with the Neon connection string in
+**Weekly backup, one command:** `tools/backup.sh`. It reads the Neon connection string from the
+login Keychain (store it once with
+`security add-generic-password -s bashi-neon -a backup -w '<postgresql://...>'`), writes
+`~/Backups/bashi-gym/bashi-YYYY-MM-DD.dump`, checks that the dump holds the synced rows, and keeps
+the newest 8.
+
+The same backup by hand. Run it on the Mac, with the Neon connection string in
 your shell only, never in a file in the repository:
 
 ```bash
