@@ -46,6 +46,7 @@ struct RootView: View {
             .onChange(of: scenePhase) { _, phase in
                 // Launch counts too: the scene becomes active once at start.
                 if phase == .background { BackgroundSync.schedule() }
+                if phase != .inactive { Task { await WeeklyDigest.schedule(db) } }
                 if phase == .active {
                     Task { await workout.returnedToForeground() }
                     Task { try? await HealthService.shared.sync(into: db) }

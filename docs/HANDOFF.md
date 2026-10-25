@@ -277,6 +277,7 @@ card should know.
 - 22 Oct, hard sets by effort (rulebook §6a, decision #39): each set counts 0–1 against the exercise's best e1RM in the 56 days before, with labels winning (deload/injury = 0, any effort label max/MR −1/−2/−3 = 1). App: TrainingMath.effort and EffortQueries, used by recovery, weekly muscles and the summary. Studio: rulebook.set_effort and stats.session_hard_sets, used by weekly muscles, balance and reports. 18 shared cases in GymAppTests/Fixtures/effort_cases.json run in both test suites.
 - 24 Oct, sync step 8: exercise notes, body entries and owner form cues sync (v14; library cues stay local to avoid duplicates). Background refresh added: GymApp/Info.plist (BG task id and fetch mode, merged with the generated plist and excluded from the folder's resources, like the widget's) and BackgroundSync in SyncEngine.swift. Deploy the server before installing this build.
 - 25 Oct: tools/reinstall.sh builds and installs on the connected iPhone in one command (signing team from `git config bashi.team`, never committed). tools/backup.sh dumps the hosted database weekly (connection string from the Keychain, service bashi-neon), checks the dump, keeps 8.
+- 25 Oct: weekly digest (Services/WeeklyDigest.swift): one local notification at 19:00 on the last day of the training week, with the week's recap figures (workouts, sets, volume, records, most-trained muscle). Re-scheduled on every open and close with the same identifier, so it carries the newest figures. No setting to turn it off yet; iOS notification settings cover it.
 
 ## Open questions
 
