@@ -139,6 +139,26 @@ nonisolated enum ProgressQueries {
         try BodyQueries.weights(db).map { ($0.day, $0.kg) }
     }
 
+    // MARK: Rest (rulebook §18)
+
+    /// Back-to-back working sets of one exercise in one workout, at the same load, both logged in
+    /// the app (so both have a completion time).
+    static func restPairs(_ db: Database) throws -> [TrainingMath.RestPair] {
+        let sets = try WorkoutSetRecord.fetchAll(db, sql: """
+            SELECT s.* FROM workoutSet s JOIN workoutExercise we ON we.id = s.workoutExerciseId
+            JOIN workout w ON w.id = we.workoutId
+            WHERE w.endedAt IS NOT NULL AND s.completedAt IS NOT NULL AND s.type = 'working'
+            ORDER BY s.workoutExerciseId, s.completedAt
+            """)
+        var out: [TrainingMath.RestPair] = []
+        for (a, b) in zip(sets, sets.dropFirst()) where a.workoutExerciseId == b.workoutExerciseId
+            && a.loadHundredths == b.loadHundredths && a.unit == b.unit {
+            guard let t0 = a.completedAt, let t1 = b.completedAt else { continue }
+            out.append(.init(restSeconds: t1.timeIntervalSince(t0), repsBefore: a.reps, repsAfter: b.reps))
+        }
+        return out
+    }
+
     // MARK: Plateaus (rulebook §8) and the deload prompt
 
     static func plateau(_ db: Database, exercise: ExerciseRecord, now: Date) throws -> TrainingMath.Plateau? {

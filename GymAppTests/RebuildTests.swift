@@ -78,4 +78,35 @@ import Testing
         #expect(ProgressQueries.deloadMessage([(a, p)]) == nil)
         #expect(ProgressQueries.deloadMessage([(a, p), (b, p)])?.hasPrefix("2 lifts have stalled for 3 weeks: Bench, Row.") == true)
     }
+
+    // Rulebook §18
+
+    @Test func restBucketsAverageTheRepChange() {
+        let b = TrainingMath.restBuckets([
+            .init(restSeconds: 60, repsBefore: 10, repsAfter: 7),
+            .init(restSeconds: 80, repsBefore: 10, repsAfter: 8),
+            .init(restSeconds: 150, repsBefore: 10, repsAfter: 9),
+            .init(restSeconds: 240, repsBefore: 8, repsAfter: 8),
+            .init(restSeconds: 3_000, repsBefore: 8, repsAfter: 2),   // a break, not a rest: left out
+        ])
+        #expect(b.map(\.label) == ["Under 90 s", "90 s to 3 min", "Over 3 min"])
+        #expect(b.map(\.pairs) == [2, 1, 1])
+        #expect(abs(b[0].repChange - -0.25) < 1e-9)
+        #expect(b[2].repChange == 0)
+    }
+
+    @Test func restPairsAreSameLoadNeighboursWithTimes() throws {
+        let db = try AppDatabase.inMemory()
+        try db.writer.write { db in
+            try TestData.exercise(db, id: "bench")
+            try TestData.finishedWorkout(db, dayId: nil, startedAt: TestData.base,
+                                         exercises: [("bench", [(kg: 60, reps: 10), (kg: 60, reps: 8), (kg: 70, reps: 6)])])
+            let ids = try String.fetchAll(db, sql: "SELECT id FROM workoutSet ORDER BY position")
+            for (i, id) in ids.enumerated() {
+                try db.execute(sql: "UPDATE workoutSet SET completedAt = ? WHERE id = ?", arguments: [TestData.base.addingTimeInterval(Double(i) * 120), id])
+            }
+        }
+        let pairs = try db.reader.read { try ProgressQueries.restPairs($0) }
+        #expect(pairs == [TrainingMath.RestPair(restSeconds: 120, repsBefore: 10, repsAfter: 8)], "60 → 70 kg is a new weight, not a rest pair")
+    }
 }

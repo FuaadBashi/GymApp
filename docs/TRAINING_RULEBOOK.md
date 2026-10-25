@@ -364,3 +364,16 @@ Daily strength varies, so one weak first set is information, not a failure.
   today's weights instead of chasing a best.
 - It changes no suggestion and no figure. It is advice only.
 
+## §18 Your rest and your reps (25 October 2026)
+
+This shows what short rest costs, using your own set times.
+
+- **A pair:** two back-to-back working sets of one exercise in one workout, at the same load and
+  unit, both completed in the app.
+- **Rest:** the time between the two completions. It includes the second set itself, so it reads
+  a little long.
+- **Leaving out:** pairs more than 10 minutes apart, because that is a break, not rest.
+- **Groups:** under 90 s, 90 s to 3 min, and over 3 min. For each group, the mean change in reps
+  on the second set, as a share of the first.
+- **When it shows:** Progress shows the card when there are 10 pairs or more.
+

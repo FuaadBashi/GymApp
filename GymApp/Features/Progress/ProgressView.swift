@@ -15,6 +15,7 @@ final class ProgressModel {
     private(set) var patterns: [PatternTrend] = []
     private(set) var rebuilds: [(exercise: ExerciseRecord, rebuild: TrainingMath.Rebuild)] = []
     private(set) var plateaus: [(exercise: ExerciseRecord, plateau: TrainingMath.Plateau)] = []
+    private(set) var rest: [TrainingMath.RestBucket] = []
     private(set) var settings = AppSettings()
     private(set) var loaded = false
 
@@ -39,9 +40,10 @@ final class ProgressModel {
                     try ProgressQueries.recovery(db, now: now),
                     try ProgressQueries.patterns(db, now: now, weekStartsOn: settings.weekStartsOn),
                     try ProgressQueries.rebuilds(db, now: now),
-                    try ProgressQueries.plateaus(db, now: now))
+                    try ProgressQueries.plateaus(db, now: now),
+                    TrainingMath.restBuckets(try ProgressQueries.restPairs(db)))
         }) else { return }
-        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns, rebuilds, plateaus) = result
+        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns, rebuilds, plateaus, rest) = result
         loaded = true
     }
 
@@ -71,6 +73,7 @@ struct ProgressTab: View {
                     liftsSummary
                     if !model.rebuilds.isEmpty { rebuildCard }
                     if !model.plateaus.isEmpty { plateauCard }
+                    if model.rest.map(\.pairs).reduce(0, +) >= 10 { restCard }
                     VStack(spacing: 0) {
                         NavigationLink { ReportsView(db: model.db) } label: { linkRow("Reports") }
                         Divider()
@@ -134,6 +137,25 @@ struct ProgressTab: View {
                 RebuildBar(rebuild: r.rebuild, title: r.exercise.name)
             }
             Text("Best estimated 1RM in the last 4 weeks against your all-time best.").font(.caption2).foregroundStyle(.secondary)
+        }
+    }
+
+    /// Rulebook §18: what rest costs you, from your own set times.
+    private var restCard: some View {
+        card("Your rest and your reps") {
+            ForEach(model.rest, id: \.label) { b in
+                HStack {
+                    Text(b.label).font(.subheadline)
+                    Spacer()
+                    Text(b.repChange >= 0 ? "+\(Int((b.repChange * 100).rounded()))% reps" : "\(Int((b.repChange * 100).rounded()))% reps")
+                        .font(Theme.number(.subheadline, weight: .semibold))
+                        .foregroundStyle(b.repChange <= -0.15 ? Theme.note : .primary)
+                    Text("\(b.pairs)").font(.caption.monospacedDigit()).foregroundStyle(.secondary).frame(width: 30, alignment: .trailing)
+                }
+                .accessibilityElement(children: .combine)
+            }
+            Text("Reps on the next set at the same weight, by rest before it. The last column is how many pairs.")
+                .font(.caption2).foregroundStyle(.secondary)
         }
     }
 

@@ -8,6 +8,31 @@ nonisolated enum TrainingMath {
         reps <= 1 ? kg : kg * (1 + Double(reps) / 30)
     }
 
+    /// §18: one pair of back-to-back working sets at the same load.
+    struct RestPair: Equatable {
+        var restSeconds: Double
+        var repsBefore: Int
+        var repsAfter: Int
+    }
+
+    struct RestBucket: Equatable {
+        var label: String
+        var pairs: Int
+        /// Mean change in reps on the second set, as a share of the first (−0.2 = 20% fewer).
+        var repChange: Double
+    }
+
+    /// §18: pairs grouped by rest, under 90 s, 90–180 s and over 180 s (up to 10 minutes).
+    static func restBuckets(_ pairs: [RestPair]) -> [RestBucket] {
+        let usable = pairs.filter { $0.repsBefore > 0 && $0.restSeconds > 0 && $0.restSeconds <= 600 }
+        return [("Under 90 s", 0.0..<90.0), ("90 s to 3 min", 90.0..<180.0), ("Over 3 min", 180.0..<601.0)].compactMap { label, range in
+            let group = usable.filter { range.contains($0.restSeconds) }
+            guard !group.isEmpty else { return nil }
+            let change = group.map { Double($0.repsAfter - $0.repsBefore) / Double($0.repsBefore) }.reduce(0, +) / Double(group.count)
+            return RestBucket(label: label, pairs: group.count, repChange: change)
+        }
+    }
+
     /// §8: one session's progress score: best Epley e1RM of working or failed sets of 1–20
     /// reps, or the most reps for body-weight and reps-only exercises.
     static func progressScore(_ sets: [PastSet], loadMode: LoadMode) -> Double? {
