@@ -8,6 +8,26 @@ nonisolated enum TrainingMath {
         reps <= 1 ? kg : kg * (1 + Double(reps) / 30)
     }
 
+    /// §15: a lift that has fallen below its peak, and how much of it is back.
+    struct Rebuild: Equatable {
+        var peak: Double
+        var peakDate: Date
+        var current: Double
+        var share: Double { current / peak }
+    }
+
+    static let rebuildWindowDays: Double = 28
+
+    /// §15: the all-time best e1RM against the best of the last 28 days. Nil when the lift was
+    /// not trained in those 28 days, or is at 95% of its peak or more (nothing to rebuild).
+    static func rebuild(_ history: [(date: Date, e1RM: Double)], now: Date) -> Rebuild? {
+        guard let peak = history.max(by: { $0.e1RM < $1.e1RM }) else { return nil }
+        let since = now.addingTimeInterval(-rebuildWindowDays * 86_400)
+        guard let current = history.filter({ $0.date >= since && $0.date <= now }).map(\.e1RM).max(),
+              current < 0.95 * peak.e1RM else { return nil }
+        return Rebuild(peak: peak.e1RM, peakDate: peak.date, current: current)
+    }
+
     /// §6a: how far back "recent best" looks when judging a set's effort.
     static let effortWindowDays: Double = 56
 

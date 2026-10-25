@@ -13,6 +13,7 @@ final class ProgressModel {
     private(set) var steps: StepsSummary?
     private(set) var recovery: [(muscle: Muscle, sets: Double)] = []
     private(set) var patterns: [PatternTrend] = []
+    private(set) var rebuilds: [(exercise: ExerciseRecord, rebuild: TrainingMath.Rebuild)] = []
     private(set) var settings = AppSettings()
     private(set) var loaded = false
 
@@ -35,9 +36,10 @@ final class ProgressModel {
                     try ProgressQueries.bodyWeights(db),
                     try ProgressQueries.steps(db, now: now, weekStartsOn: settings.weekStartsOn),
                     try ProgressQueries.recovery(db, now: now),
-                    try ProgressQueries.patterns(db, now: now, weekStartsOn: settings.weekStartsOn))
+                    try ProgressQueries.patterns(db, now: now, weekStartsOn: settings.weekStartsOn),
+                    try ProgressQueries.rebuilds(db, now: now))
         }) else { return }
-        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns) = result
+        (settings, weeks, thisWeekMuscles, lastWeekMuscles, records, weights, steps, recovery, patterns, rebuilds) = result
         loaded = true
     }
 
@@ -65,6 +67,7 @@ struct ProgressTab: View {
                     NavigationLink { detail("Recovery") { recovery } } label: { linkRow("Recovery, last 72 hours") }
                         .buttonStyle(.plain)
                     liftsSummary
+                    if !model.rebuilds.isEmpty { rebuildCard }
                     VStack(spacing: 0) {
                         NavigationLink { ReportsView(db: model.db) } label: { linkRow("Reports") }
                         Divider()
@@ -119,6 +122,16 @@ struct ProgressTab: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+    }
+
+    /// §15: lifts below their peak, furthest first; the back-to-best story after a break.
+    private var rebuildCard: some View {
+        card("Back to your best") {
+            ForEach(model.rebuilds.prefix(6), id: \.exercise.id) { r in
+                RebuildBar(rebuild: r.rebuild, title: r.exercise.name)
+            }
+            Text("Best estimated 1RM in the last 4 weeks against your all-time best.").font(.caption2).foregroundStyle(.secondary)
+        }
     }
 
     private var liftsSummary: some View {

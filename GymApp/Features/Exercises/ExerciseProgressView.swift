@@ -69,7 +69,17 @@ struct ExerciseProgressView: View {
                     .frame(maxWidth: .infinity, minHeight: 200)
             } else {
                 let selected = data.first { $0.workoutId == selectedId }
+                let peak = metric == .volume ? nil : data.map(\.value).max()
                 Chart(data, id: \.workoutId) { p in
+                    if let peak, p.workoutId == data.first?.workoutId {
+                        // §15: the best in this range, so a comeback reads as a climb back to it.
+                        RuleMark(y: .value("Best", peak))
+                            .foregroundStyle(Theme.accent.opacity(0.45))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                            .annotation(position: .top, alignment: .leading) {
+                                Text("Best \(Load.format((peak * 10).rounded() / 10)) kg").font(.caption2).foregroundStyle(.secondary)
+                            }
+                    }
                     LineMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
                         .foregroundStyle(Theme.accent)
                     PointMark(x: .value("Date", p.date), y: .value(metric.rawValue, p.value))
@@ -168,6 +178,10 @@ struct ExerciseProgressView: View {
 
     /// Card 10.6: the one dominant figure, the best estimated 1RM (or best volume), with the
     /// latest session beside it for context.
+    private var rebuild: TrainingMath.Rebuild? {
+        TrainingMath.rebuild(points.compactMap { p in p.bestE1RM.map { (p.date, $0) } }, now: .now)
+    }
+
     @ViewBuilder private var hero: some View {
         let best = hasLoadRecords ? records.bestE1RM : records.bestVolume
         let latest = hasLoadRecords ? points.last?.bestE1RM : points.last?.volumeKg
@@ -182,6 +196,7 @@ struct ExerciseProgressView: View {
                 Text(best.date.formatted(.dateTime.day().month(.abbreviated).year())
                      + (latest.map { " · latest \(Load.format(($0 * 10).rounded() / 10)) kg" } ?? ""))
                     .font(.caption).foregroundStyle(.secondary)
+                if hasLoadRecords, let r = rebuild { RebuildBar(rebuild: r).padding(.top, Tokens.Space.xs) }
             }
             .accessibilityElement(children: .combine)
         }

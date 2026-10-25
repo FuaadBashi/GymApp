@@ -139,6 +139,22 @@ nonisolated enum ProgressQueries {
         try BodyQueries.weights(db).map { ($0.day, $0.kg) }
     }
 
+    // MARK: Rebuild (rulebook §15)
+
+    /// Lifts trained in the last 28 days that are below their peak, furthest from it first.
+    static func rebuilds(_ db: Database, now: Date) throws -> [(exercise: ExerciseRecord, rebuild: TrainingMath.Rebuild)] {
+        let since = now.addingTimeInterval(-TrainingMath.rebuildWindowDays * 86_400)
+        let ids = try String.fetchAll(db, sql: """
+            SELECT DISTINCT we.exerciseId FROM workoutExercise we JOIN workout w ON w.id = we.workoutId
+            WHERE w.endedAt IS NOT NULL AND w.startedAt >= ?
+            """, arguments: [since])
+        return try ExerciseRecord.filter(keys: ids).fetchAll(db).compactMap { exercise in
+            let history = ExerciseStats.e1RMHistory(try ExerciseQueries.sessions(db, exerciseId: exercise.id), loadMode: exercise.loadMode)
+            return TrainingMath.rebuild(history, now: now).map { (exercise, $0) }
+        }
+        .sorted { $0.rebuild.share != $1.rebuild.share ? $0.rebuild.share < $1.rebuild.share : $0.exercise.name < $1.exercise.name }
+    }
+
     // MARK: Recovery and movement patterns (card 6.5)
 
     static let recoveryHours: Double = 72

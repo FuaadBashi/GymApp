@@ -309,3 +309,17 @@ body-weight-plus lifts get no suggestion. The app uses the first rule that appli
 
 The studio's plateau rule (a deload or a swap after 21 days with no increase) stays in the
 studio. Its result comes to the app as an accepted target.
+
+## §15 Rebuilding after a break (25 October 2026)
+
+After a break, lifts fall below their peak. The app shows how much of the peak is back.
+
+- **Peak:** the lift's best Epley e1RM (§4) of all time.
+- **Now:** its best e1RM in finished workouts of the last **28 days**.
+- **Shown when** the lift was trained in those 28 days and "now" is below **95%** of the peak.
+  It reads "60% of 124 kg", with the peak's month and year.
+- **Where:** the exercise page, under the best figure, and Progress → *Back to your best*. That
+  list shows up to six lifts, furthest from the peak first.
+- **The charts** of e1RM and heaviest weight draw a dashed line at the best value in the shown
+  range.
+
