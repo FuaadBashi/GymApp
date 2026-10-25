@@ -70,7 +70,13 @@ struct ExerciseProgressView: View {
             } else {
                 let selected = data.first { $0.workoutId == selectedId }
                 let peak = metric == .volume ? nil : data.map(\.value).max()
-                Chart(data, id: \.workoutId) { p in
+                let dots = setDots
+                Chart {
+                    ForEach(dots, id: \.id) { d in
+                        PointMark(x: .value("Date", d.date), y: .value(metric.rawValue, d.e1RM))
+                            .foregroundStyle(.secondary.opacity(0.35)).symbolSize(12)
+                    }
+                    ForEach(data, id: \.workoutId) { p in
                     if let peak, p.workoutId == data.first?.workoutId {
                         // §15: the best in this range, so a comeback reads as a climb back to it.
                         RuleMark(y: .value("Best", peak))
@@ -96,6 +102,7 @@ struct ExerciseProgressView: View {
                                     .padding(.horizontal, Tokens.Space.s).padding(.vertical, Tokens.Space.xs)
                                     .background(Theme.raised, in: Capsule())
                             }
+                    }
                     }
                 }
                 .chartYScale(domain: .automatic(includesZero: false))
@@ -178,6 +185,19 @@ struct ExerciseProgressView: View {
 
     /// Card 10.6: the one dominant figure, the best estimated 1RM (or best volume), with the
     /// latest session beside it for context.
+    /// Every working set's e1RM in the shown range: faint dots behind the line of session bests.
+    private var setDots: [(id: String, date: Date, e1RM: Double)] {
+        guard metric == .e1RM, let first = shown.first?.date else { return [] }
+        return sessions.filter { $0.workout.startedAt >= first }.flatMap { s in
+            s.sets.compactMap { set -> (String, Date, Double)? in
+                guard set.type == .working || set.type == .failed, let load = set.loadHundredths,
+                      let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                else { return nil }
+                return (set.id, s.workout.startedAt, e)
+            }
+        }
+    }
+
     private var plateau: TrainingMath.Plateau? {
         TrainingMath.plateau(sessions.compactMap { s in
             TrainingMath.progressScore(SetFormat.pastSets(s.sets), loadMode: loadMode).map { (s.workout.startedAt, $0) }

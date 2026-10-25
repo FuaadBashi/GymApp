@@ -13,6 +13,7 @@ struct SetRow: View {
     let onToggle: () -> Void
 
     private var done: Bool { self.set.completedAt != nil }
+    private var isAllTimeBest: Bool { if case .allTime = best { true } else { false } }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -71,6 +72,15 @@ struct SetRow: View {
         .padding(.horizontal, Tokens.Space.s)
         .padding(.vertical, Tokens.Space.xxs)
         .background(isSelected ? Theme.row : Color.clear, in: .rect(cornerRadius: Tokens.Radius.row))
+        .overlay {
+            // An all-time best glows quietly; the banner and haptic already announced it.
+            if isAllTimeBest {
+                RoundedRectangle(cornerRadius: Tokens.Radius.row)
+                    .strokeBorder(Theme.accent.opacity(0.8), lineWidth: 1.5)
+                    .shadow(color: Theme.accent.opacity(0.45), radius: 6)
+                    .allowsHitTesting(false)
+            }
+        }
         .contentShape(.rect)
         .onTapGesture(perform: onSelect)
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: fixed columns; VoiceOver still reads it in full
