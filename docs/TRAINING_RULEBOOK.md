@@ -341,3 +341,15 @@ twice", not a streak.
   workouts), on the day the gap reaches 1 + ⌈7 ÷ goal⌉ days (4 days for 3 a week). Each app open
   or close moves it; it never fires in the past.
 
+## §17 An off day (25 October 2026)
+
+Daily strength varies, so one weak first set is information, not a failure.
+
+- **The usual first set:** for each exercise, the e1RM of the first working (or failed) set in
+  each of up to five recent sessions (in the 56 days before this workout). The median of those
+  values, when there are at least three sessions.
+- **Today:** once the first working set of the exercise is logged, compare its e1RM with that
+  median. If it is **10% or more below**, the card says how far below, and suggests keeping
+  today's weights instead of chasing a best.
+- It changes no suggestion and no figure. It is advice only.
+

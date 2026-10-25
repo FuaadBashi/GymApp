@@ -35,4 +35,19 @@ import Testing
         let list = try db.reader.read { try ProgressQueries.rebuilds($0, now: TestData.day(400)) }
         #expect(list.map(\.exercise.id) == ["squat", "bench"], "squat at 40% before bench at 80%; 'old' was not trained lately")
     }
+
+    // Rulebook §17
+
+    @Test func theUsualFirstSetIsTheMedianOfRecentSessions() {
+        #expect(TrainingMath.usualFirstSet([100, 90, 110]) == 100)
+        #expect(TrainingMath.usualFirstSet([100, 90, 110, 104]) == 102)
+        #expect(TrainingMath.usualFirstSet([100, 90, 110, 104, 96, 20]) == 100, "only the five newest count")
+        #expect(TrainingMath.usualFirstSet([100, 90]) == nil, "too little to judge")
+    }
+
+    @Test func anOffDayIsTenPercentOrMoreBelowTheUsual() {
+        #expect(TrainingMath.tiredDayShortfall(first: 91, usual: 100) == nil)
+        #expect(abs((TrainingMath.tiredDayShortfall(first: 88, usual: 100) ?? 0) - 0.12) < 1e-9)
+        #expect(TrainingMath.tiredDayShortfall(first: 80, usual: nil) == nil)
+    }
 }

@@ -8,6 +8,21 @@ nonisolated enum TrainingMath {
         reps <= 1 ? kg : kg * (1 + Double(reps) / 30)
     }
 
+    /// §17: the usual first working set: the median e1RM of the first working set of up to five
+    /// recent sessions (the 56 days before), when there are at least three.
+    static func usualFirstSet(_ firstSets: [Double]) -> Double? {
+        let recent = Array(firstSets.prefix(5)).sorted()
+        guard recent.count >= 3 else { return nil }
+        return recent.count % 2 == 1 ? recent[recent.count / 2] : (recent[recent.count / 2 - 1] + recent[recent.count / 2]) / 2
+    }
+
+    /// §17: how far today's first working set falls short of the usual, when it is 10% or more.
+    static func tiredDayShortfall(first: Double, usual: Double?) -> Double? {
+        guard let usual, usual > 0 else { return nil }
+        let short = 1 - first / usual
+        return short >= 0.10 ? short : nil
+    }
+
     /// §15: a lift that has fallen below its peak, and how much of it is back.
     struct Rebuild: Equatable {
         var peak: Double

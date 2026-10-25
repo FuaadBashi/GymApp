@@ -36,6 +36,7 @@ nonisolated struct WorkoutSnapshot: Equatable {
         var lastSessionSet: WorkoutSetRecord? = nil
         var lastSessionDate: Date? = nil
         var next: NextSet.Suggestion? = nil          // rulebook §13
+        var usualFirstSet: Double? = nil             // rulebook §17
     }
 }
 
@@ -112,6 +113,13 @@ nonisolated enum WorkoutQueries {
             }.max { $0.0 < $1.0 }
             let longAgo = last.map { (startedAt ?? now).timeIntervalSince($0.workout.startedAt) >= Double(TrainingMath.breakDays) * 86_400 } ?? false
             let showLast = window == nil && longAgo && (lastBest?.0 ?? .infinity) < (allTime ?? 0) - 0.01
+            let recentSince = (startedAt ?? now).addingTimeInterval(-TrainingMath.effortWindowDays * 86_400)
+            let firstSets = sessions.filter { $0.workout.startedAt >= recentSince }.compactMap { s in
+                s.sets.sorted { $0.position < $1.position }.lazy.compactMap { set -> Double? in
+                    guard set.type == .working || set.type == .failed, let load = set.loadHundredths else { return nil }
+                    return TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: set.unit).kg, reps: set.reps, loadMode: loadMode)
+                }.first
+            }
             hints[exerciseId] = .init(allTime: allTime, windowMonths: window?.months,
                                       windowBest: window?.best, step: TrainingMath.step(loads: loads),
                                       allTimeSet: setMaking(allTime, since: .distantPast),
@@ -120,7 +128,8 @@ nonisolated enum WorkoutQueries {
                                       lastSessionSet: showLast ? lastBest?.1 : nil,
                                       lastSessionDate: showLast ? last?.workout.startedAt : nil,
                                       next: NextSet.suggest(sessions: sessions, repRange: repRange(mine.first?.workoutExercise, defaultRange),
-                                                            stepKg: TrainingMath.step(loads: loads), loadMode: loadMode, now: startedAt ?? now))
+                                                            stepKg: TrainingMath.step(loads: loads), loadMode: loadMode, now: startedAt ?? now),
+                                      usualFirstSet: TrainingMath.usualFirstSet(firstSets))
         }
         return out
     }

@@ -141,6 +141,9 @@ struct ExerciseCard: View {
         CueStrip(exerciseId: item.exercise.id)
 
         Text(todayLine).font(.caption.weight(.medium)).foregroundStyle(.secondary)
+        if let line = tiredDayLine {
+            Label(line, systemImage: "battery.25percent").font(.caption).foregroundStyle(Theme.note)
+        }
 
         VStack(spacing: 4) {
             header
@@ -285,6 +288,17 @@ struct ExerciseCard: View {
         .foregroundStyle(.secondary)
         .padding(.horizontal, Tokens.Space.s)
         .dynamicTypeSize(...DynamicTypeSize.xxxLarge)   // R.9: fixed columns
+    }
+
+    /// Rulebook §17: today's first working set against the usual one.
+    private var tiredDayLine: String? {
+        guard let usual = model.snapshot?.hints[item.exercise.id]?.usualFirstSet,
+              let first = item.sets.filter({ $0.completedAt != nil && ($0.type == .working || $0.type == .failed) })
+                  .sorted(by: { $0.position < $1.position }).first,
+              let load = first.loadHundredths,
+              let e = TrainingMath.displayableE1RM(kg: Load(hundredths: load, unit: first.unit).kg, reps: first.reps, loadMode: loadMode),
+              let short = TrainingMath.tiredDayShortfall(first: e, usual: usual) else { return nil }
+        return "First set \(Int((short * 100).rounded()))% below your usual (\(Load.format((usual * 10).rounded() / 10)) kg est.). An off day: keep today's weights, no need to chase a best."
     }
 
     private var todayLine: String {
