@@ -388,3 +388,19 @@ This shows what short rest costs, using your own set times.
   through an App Group, and the free signing profile has no App Group. Add the App Group after
   moving to a paid developer account, or after Xcode regenerates the profiles with App Groups.
 
+## §20 Rest on the lock screen (25 October 2026)
+
+The rest Live Activity shows these, without opening the app:
+
+- **On the lock screen:** a large countdown, a ring that empties as the rest runs down, the next
+  exercise and set, and the buttons **+30s**, **Skip** and **Log**.
+- **In the Dynamic Island:**
+  - compact: the ring and the countdown;
+  - minimal: the ring;
+  - expanded: the same buttons.
+- **The buttons** run in the app's process and do exactly what the workout screen's buttons do.
+  For example, +30s moves the rest end and the rest alert. When the rest is over, only Log
+  remains.
+- **The ring needs the rest's start time.** An activity started by an older build shows the timer
+  icon instead.
+

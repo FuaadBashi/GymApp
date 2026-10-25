@@ -385,7 +385,8 @@ final class ActiveWorkoutModel {
             exerciseName: next?.exercise.name ?? "All sets logged",
             restEndsAt: end,
             nextSetText: Self.notificationBody(snapshot, from: currentItemId),
-            nextSetId: Self.nextPlanned(snapshot, from: currentItemId)?.1.id)
+            nextSetId: Self.nextPlanned(snapshot, from: currentItemId)?.1.id,
+            restStartedAt: snapshot.workout.restDurationSeconds.map { end.addingTimeInterval(-$0) })
         let content = ActivityContent(state: state, staleDate: end)
         if restActivity == nil {
             restActivity = Activity<RestActivityAttributes>.activities.first {

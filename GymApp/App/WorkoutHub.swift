@@ -32,6 +32,20 @@ enum WorkoutHub {
 
     static func install() {
         StartNextWorkoutIntent.handler = { await WorkoutHub.startNext() }
+        AdjustRestIntent.handler = { seconds in
+            await MainActor.run { () -> Task<Void, Never>? in
+                guard let db = WorkoutHub.db else { return nil }
+                let model = WorkoutHub.model(for: db)
+                return Task { await model.resumeIfNeeded(); await model.adjustRest(by: seconds) }
+            }?.value
+        }
+        SkipRestIntent.handler = {
+            await MainActor.run { () -> Task<Void, Never>? in
+                guard let db = WorkoutHub.db else { return nil }
+                let model = WorkoutHub.model(for: db)
+                return Task { await model.resumeIfNeeded(); await model.skipRest() }
+            }?.value
+        }
         LogSetIntent.handler = { setId in
             await MainActor.run { () -> Task<Void, Never>? in
                 guard let db = WorkoutHub.db else { return nil }

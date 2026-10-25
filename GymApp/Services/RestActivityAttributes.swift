@@ -10,6 +10,7 @@ nonisolated struct RestActivityAttributes: ActivityAttributes {
         var restEndsAt: Date
         var nextSetText: String
         var nextSetId: String? = nil   // the set the Log button logs
+        var restStartedAt: Date? = nil // for the ring; older states without it show no ring
     }
 }
 
@@ -41,6 +42,30 @@ nonisolated struct StartNextWorkoutIntent: AppIntent {
 
     init() {}
 
+    func perform() async throws -> some IntentResult {
+        await Self.handler?()
+        return .result()
+    }
+}
+
+/// +30 s and Skip on the rest Live Activity (rulebook §20). Like LogSetIntent, these run in the
+/// app's process, which sets the handlers.
+nonisolated struct AdjustRestIntent: LiveActivityIntent {
+    static let title: LocalizedStringResource = "Add 30 seconds of rest"
+    nonisolated(unsafe) static var handler: (@Sendable (Double) async -> Void)?
+    @Parameter(title: "Seconds") var seconds: Int
+    init() {}
+    init(seconds: Int) { self.seconds = seconds }
+    func perform() async throws -> some IntentResult {
+        await Self.handler?(Double(seconds))
+        return .result()
+    }
+}
+
+nonisolated struct SkipRestIntent: LiveActivityIntent {
+    static let title: LocalizedStringResource = "Skip rest"
+    nonisolated(unsafe) static var handler: (@Sendable () async -> Void)?
+    init() {}
     func perform() async throws -> some IntentResult {
         await Self.handler?()
         return .result()

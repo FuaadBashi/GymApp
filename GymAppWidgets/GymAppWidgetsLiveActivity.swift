@@ -9,15 +9,19 @@ struct GymAppWidgetsLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: RestActivityAttributes.self) { context in
             VStack(alignment: .leading, spacing: 8) {
-                Text(context.attributes.workoutTitle).font(.caption).foregroundStyle(.secondary)
-                HStack {
-                    Text(context.state.exerciseName).font(.headline)
+                HStack(alignment: .center, spacing: 12) {
+                    ring(context).frame(width: 44, height: 44)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(context.attributes.workoutTitle).font(.caption).foregroundStyle(.secondary)
+                        Text(context.state.exerciseName).font(.headline).lineLimit(1)
+                    }
                     Spacer()
-                    restStatus(context).font(.title.bold()).foregroundStyle(volt)
+                    restStatus(context).font(.system(size: 34, weight: .bold, design: .rounded)).foregroundStyle(volt)
                 }
-                HStack {
-                    Text(context.state.nextSetText).font(.caption)
-                    Spacer(minLength: 8)
+                HStack(spacing: 8) {
+                    Text(context.state.nextSetText).font(.caption).lineLimit(2)
+                    Spacer(minLength: 4)
+                    if !context.isStale { restButtons }
                     logButton(context)
                 }
             }
@@ -33,17 +37,22 @@ struct GymAppWidgetsLiveActivity: Widget {
                     restStatus(context).foregroundStyle(volt)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(context.state.exerciseName).font(.headline)
-                            Text(context.state.nextSetText).font(.caption)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(context.state.exerciseName).font(.headline)
+                        Text(context.state.nextSetText).font(.caption)
+                        HStack(spacing: 8) {
+                            if !context.isStale { restButtons }
+                            Spacer(minLength: 4)
+                            logButton(context)
                         }
-                        Spacer(minLength: 8)
-                        logButton(context)
                     }
                 }
             } compactLeading: {
-                Image(systemName: context.isStale ? "checkmark.circle" : "timer").foregroundStyle(volt)
+                if context.isStale {
+                    Image(systemName: "checkmark.circle").foregroundStyle(volt)
+                } else {
+                    ring(context).frame(width: 18, height: 18)
+                }
             } compactTrailing: {
                 if context.isStale {
                     Text("Ready").foregroundStyle(volt)
@@ -54,10 +63,31 @@ struct GymAppWidgetsLiveActivity: Widget {
                 if context.isStale {
                     Image(systemName: "checkmark.circle").foregroundStyle(volt)
                 } else {
-                    restStatus(context).foregroundStyle(volt).font(.caption2)
+                    ring(context)
                 }
             }
             .keylineTint(volt)
+        }
+    }
+
+    /// Rulebook §20: a ring that empties as the rest runs down (none for older activities).
+    @ViewBuilder
+    private func ring(_ context: ActivityViewContext<RestActivityAttributes>) -> some View {
+        if let start = context.state.restStartedAt, start < context.state.restEndsAt, !context.isStale {
+            ProgressView(timerInterval: start...context.state.restEndsAt, countsDown: true) { EmptyView() } currentValueLabel: { EmptyView() }
+                .progressViewStyle(.circular)
+                .tint(volt)
+        } else {
+            Image(systemName: context.isStale ? "checkmark.circle" : "timer").foregroundStyle(volt)
+        }
+    }
+
+    private var restButtons: some View {
+        HStack(spacing: 6) {
+            Button(intent: AdjustRestIntent(seconds: 30)) { Text("+30s").font(.subheadline.bold()) }
+                .tint(.white.opacity(0.2)).foregroundStyle(.white)
+            Button(intent: SkipRestIntent()) { Text("Skip").font(.subheadline.bold()) }
+                .tint(.white.opacity(0.2)).foregroundStyle(.white)
         }
     }
 
