@@ -42,6 +42,7 @@ struct RootView: View {
                 #endif
                 SigningExpiry.scheduleReminder(expiry: SigningExpiry.current())
                 await importFromLaunchArgument()
+                await ClipStore.removeOrphans(db: db)
             }
             .onChange(of: scenePhase) { _, phase in
                 // Launch counts too: the scene becomes active once at start.

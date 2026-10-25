@@ -15,6 +15,7 @@ struct ExerciseCard: View {
     @State private var showDemo = false
     @State private var showSticky = false
     @State private var showWorkoutNote = false
+    @State private var clipSetId: String?
 
     private var done: Int { item.sets.filter { $0.completedAt != nil }.count }
     private var loadMode: LoadMode { item.exercise.loadMode }
@@ -27,6 +28,7 @@ struct ExerciseCard: View {
         .overlay {
             if isCurrent { RoundedRectangle(cornerRadius: Tokens.Radius.card).strokeBorder(Theme.accent.opacity(0.5), lineWidth: 1) }
         }
+        .clipAttacher(setId: $clipSetId, db: model.db)
         .sheet(isPresented: $showingPage) {
             NavigationStack {
                 ExerciseDetailView(db: model.db, exerciseId: item.exercise.id)
@@ -160,6 +162,7 @@ struct ExerciseCard: View {
                                 Task { await model.updateDurably(set.id, edit: SetEdit(loadHundredths: set.loadHundredths, unit: set.unit, reps: set.reps, type: type)) }
                             }
                         }
+                        Button("Attach clip…", systemImage: "video.badge.plus") { clipSetId = set.id }
                         Button("Delete set", systemImage: "trash", role: .destructive) { Task { await model.deleteSet(set.id) } }
                     }
                 if !set.metadataText.isEmpty {

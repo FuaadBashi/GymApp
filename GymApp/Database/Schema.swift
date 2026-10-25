@@ -4,7 +4,7 @@ import GRDB
 /// The schema, as one migration per version. Never edit a shipped migration: add a new one.
 nonisolated enum Schema {
     /// Every migration identifier, oldest first. A backup is valid with any leading run of them.
-    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14"]
+    static let versions = ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15"]
 
     static var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
@@ -222,6 +222,19 @@ nonisolated enum Schema {
                     SELECT '\(table)', id, 'upsert', \(now) FROM \(table) WHERE EXISTS (SELECT 1 FROM syncState WHERE key = 'enabled')\(filter)
                     """)
             }
+        }
+        migrator.registerMigration("v15") { db in
+            // Form check: a video clip attached to a set, kept on this phone only (too large to
+            // sync), with its on-device analysis.
+            try db.execute(sql: """
+                CREATE TABLE setClip (
+                  id TEXT PRIMARY KEY NOT NULL,
+                  setId TEXT NOT NULL UNIQUE REFERENCES workoutSet(id) ON DELETE CASCADE,
+                  fileName TEXT NOT NULL,
+                  createdAt TEXT NOT NULL,
+                  analysis TEXT
+                )
+                """)
         }
         return migrator
     }

@@ -16,6 +16,8 @@ struct WorkoutDetailView: View {
     @State private var confirmingDelete = false
     @State private var error: String?
     @State private var missing = false
+    @State private var clips: [String: SetClipRecord] = [:]
+    @State private var clipTarget: String?
 
     var body: some View {
         Group {
@@ -42,6 +44,7 @@ struct WorkoutDetailView: View {
         } message: {
             Text(error ?? "")
         }
+        .clipAttacher(setId: $clipTarget, db: db) { Task { await reload() } }
         .countsUsage("screen.pastWorkout")
         .task { await reload() }
     }
@@ -125,12 +128,19 @@ struct WorkoutDetailView: View {
                            set.type != .warmUp {
                             Text("e1RM \(Load.format((e * 10).rounded() / 10))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                         }
+                        if let clip = clips[set.id] {
+                            NavigationLink { FormCheckView(db: db, clipId: clip.id, loggedReps: set.reps) } label: {
+                                Image(systemName: "film").frame(width: 32, height: 32)
+                            }
+                            .accessibilityLabel("Form check video")
+                        }
                         if editing {
                             Menu {
                                 ForEach(SetType.allCases, id: \.self) { type in
                                     Button(type.label) { update(set, type: type) }
                                 }
                                 Divider()
+                                Button("Attach clip…", systemImage: "video.badge.plus") { clipTarget = set.id }
                                 Button("Delete set", systemImage: "trash", role: .destructive) { deleteSet(set) }
                             } label: {
                                 Image(systemName: "ellipsis.circle").frame(width: 32, height: 32)
@@ -139,6 +149,9 @@ struct WorkoutDetailView: View {
                     }
                     .contentShape(.rect)
                     .onTapGesture { if editing { selectedSetId = selectedSetId == set.id ? nil : set.id } }
+                    .contextMenu {
+                        Button(clips[set.id] == nil ? "Attach clip…" : "Replace clip…", systemImage: "video.badge.plus") { clipTarget = set.id }
+                    }
                     .padding(.vertical, Tokens.Space.xxs)
                     .background(editing && selectedSetId == set.id ? Theme.row : Color.clear, in: .rect(cornerRadius: Tokens.Radius.chip))
                     if editing && selectedSetId == set.id {
@@ -180,7 +193,12 @@ struct WorkoutDetailView: View {
     private func reload() async {
         let id = workoutId
         do {
-            summary = try await db.reader.read { try SummaryQueries.summary($0, workoutId: id) }
+            let (s, c) = try await db.reader.read { db in
+                let s = try SummaryQueries.summary(db, workoutId: id)
+                return (s, try ClipStore.clips(db, setIds: s.exercises.flatMap { $0.sets.map(\.id) } ?? []))
+            }
+            summary = s
+            clips = c
         } catch {
             missing = true
             summary = nil

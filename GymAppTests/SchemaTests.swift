@@ -43,7 +43,7 @@ struct SchemaTests {
         }
         #expect(tables == ["bodyEntry", "dayExercise", "exercise", "exerciseNote", "importRun", "program",
                            "programDay", "setting", "workout", "workoutExercise", "workoutSet", "healthDay", "studioDecision", "formCue", "formCueSeed", "usageCount",
-                           "syncState", "syncChange", "syncParked", "syncDeadLetter"].sorted())
+                           "syncState", "syncChange", "syncParked", "syncDeadLetter", "setClip"].sorted())
     }
 
     @Test func anExerciseRoundTripsWithMusclesStoredAsJSON() throws {
