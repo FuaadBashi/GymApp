@@ -37,6 +37,14 @@ final class TapCountUITests: XCTestCase {
     }
 
     // 1
+    /// Rulebook §19: the lock-screen widget's link starts the next day with no tap in the app.
+    func testTheStartLinkStartsTheNextWorkout() {
+        launch(workout: false)
+        app.open(URL(string: "bashigym://start")!)
+        XCTAssertTrue(buttonStarting("Log set").waitForExistence(timeout: 10), "the workout screen is up")
+        record("start from the lock-screen widget")
+    }
+
     func testStartTheNextWorkout() {
         launch(workout: false)
         tap(button("Start Day A"))

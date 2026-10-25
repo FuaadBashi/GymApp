@@ -29,3 +29,20 @@ nonisolated struct LogSetIntent: LiveActivityIntent {
         return .result()
     }
 }
+
+/// Starts the next training day, or opens the workout in progress. Used by the Control Center
+/// control (and the Action button). Opens the app, where `handler` does the work; the widget
+/// extension only shows the control.
+nonisolated struct StartNextWorkoutIntent: AppIntent {
+    static let title: LocalizedStringResource = "Start workout"
+    static let description = IntentDescription("Starts your next training day in Bashi Gym.")
+    static let openAppWhenRun = true
+    nonisolated(unsafe) static var handler: (@Sendable () async -> Void)?
+
+    init() {}
+
+    func perform() async throws -> some IntentResult {
+        await Self.handler?()
+        return .result()
+    }
+}

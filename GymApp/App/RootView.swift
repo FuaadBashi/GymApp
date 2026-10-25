@@ -44,6 +44,10 @@ struct RootView: View {
                 await importFromLaunchArgument()
                 await ClipStore.removeOrphans(db: db)
             }
+            .onOpenURL { url in
+                // The lock-screen widget (rulebook §19): bashigym://start.
+                if url.scheme == "bashigym", url.host() == "start" { Task { await WorkoutHub.startNext() } }
+            }
             .onChange(of: scenePhase) { _, phase in
                 // Launch counts too: the scene becomes active once at start.
                 if phase == .background { BackgroundSync.schedule() }

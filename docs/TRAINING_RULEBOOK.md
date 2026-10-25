@@ -377,3 +377,14 @@ This shows what short rest costs, using your own set times.
   on the second set, as a share of the first.
 - **When it shows:** Progress shows the card when there are 10 pairs or more.
 
+## §19 Starting without opening the app (25 October 2026)
+
+- **Control Center control "Start workout"** (it can also go on the Action button). It opens the
+  app and starts the active program's next day. If a workout is in progress, it brings that
+  workout up instead.
+- **Lock-screen widget** (circular or rectangular). A tap opens `bashigym://start`, which does
+  the same.
+- These do not show figures, such as the next day's name. A widget can read the app's data only
+  through an App Group, and the free signing profile has no App Group. Add the App Group after
+  moving to a paid developer account, or after Xcode regenerates the profiles with App Groups.
+

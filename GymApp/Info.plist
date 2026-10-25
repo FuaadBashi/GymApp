@@ -6,6 +6,17 @@
 	<array>
 		<string>com.fuaadshurie.GymApp.sync</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.fuaadshurie.GymApp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bashigym</string>
+			</array>
+		</dict>
+	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>UIBackgroundModes</key>

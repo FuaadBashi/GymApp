@@ -5,5 +5,7 @@ import SwiftUI
 struct GymAppWidgetsBundle: WidgetBundle {
     var body: some Widget {
         GymAppWidgetsLiveActivity()
+        StartWorkoutControl()
+        StartWorkoutWidget()
     }
 }
