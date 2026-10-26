@@ -8,7 +8,7 @@ set -eu
 cd "$(dirname "$0")/.."
 TEAM=$(git config --get bashi.team || true)
 [ -n "$TEAM" ] || { echo "Set the signing team first: git config bashi.team <TEAM_ID>"; exit 1; }
-DEVICE=${1:-$(xcrun devicectl list devices 2>/dev/null | awk '/available \(paired\)/ && /iPhone/ {for (i=1;i<=NF;i++) if ($i ~ /^[0-9A-F]{8}-/) {print $i; exit}}')}
+DEVICE=${1:-$(xcrun devicectl list devices 2>/dev/null | awk '/(available \(paired\)|connected)/ && /iPhone/ {for (i=1;i<=NF;i++) if ($i ~ /^[0-9A-F]{8}-/) {print $i; exit}}')}
 [ -n "$DEVICE" ] || { echo "No paired iPhone found. Connect it, unlock it, and try again."; exit 1; }
 DD=${TMPDIR:-/tmp}/bashi-gym-build
 echo "Building for $DEVICE..."
